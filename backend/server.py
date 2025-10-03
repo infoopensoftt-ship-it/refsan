@@ -292,7 +292,7 @@ async def get_customers(
 @api_router.post("/repairs", response_model=RepairRequest)
 async def create_repair_request(
     repair_data: RepairRequestCreate,
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(require_role([UserRole.ADMIN, UserRole.TECHNICIAN]))
 ):
     # Get customer info
     customer = await db.customers.find_one({"id": repair_data.customer_id})
@@ -301,6 +301,14 @@ async def create_repair_request(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Customer not found"
         )
+    
+    # Teknisyen sadece kendi müşterileri için arıza açabilir
+    if current_user.role == UserRole.TECHNICIAN:
+        if customer.get("created_by_technician") != current_user.id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="You can only create repairs for your own customers"
+            )
     
     repair_dict = repair_data.dict()
     repair_dict["customer_name"] = customer["full_name"]
