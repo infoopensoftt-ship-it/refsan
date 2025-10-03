@@ -635,6 +635,22 @@
                 console.error('Technicians load error:', error);
             }
         }
+        async function loadTechniciansForReport() {
+            try {
+                const response = await fetch(`${API_BASE}/users`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                const users = await response.json();
+                
+                const technicians = users.filter(u => u.role === 'teknisyen');
+                
+                const select = document.getElementById('report-technician');
+                select.innerHTML = '<option value="">Teknisyen Seçin:</option>' + 
+                    technicians.map(tech => `<option value="${tech.id}">${tech.full_name}</option>`).join('');
+            } catch (error) {
+                console.error('Technicians load error:', error);
+            }
+        }
 
         async function loadTechnicianReport() {
             const techId = document.getElementById('technician-select').value;
