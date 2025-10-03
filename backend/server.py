@@ -324,6 +324,100 @@ async def get_customers(
         result.append(Customer(**customer))
     return result
 
+@api_router.get("/customers/{customer_id}", response_model=Customer)
+async def get_customer(
+    customer_id: str,
+    current_user: User = Depends(require_role([UserRole.ADMIN, UserRole.TECHNICIAN]))
+):
+    customer = await db.customers.find_one({"id": customer_id})
+    if not customer:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Customer not found"
+        )
+    
+    # Teknisyen sadece kendi müşterilerini görebilir
+    if current_user.role == UserRole.TECHNICIAN and customer.get("created_by_technician") != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access denied"
+        )
+    
+    if isinstance(customer.get("created_at"), str):
+        customer["created_at"] = datetime.fromisoformat(customer["created_at"])
+    return Customer(**customer)
+
+class CustomerUpdate(BaseModel):
+    full_name: Optional[str] = None
+    email: Optional[EmailStr] = None
+    phone: Optional[str] = None
+    address: Optional[str] = None
+
+@api_router.put("/customers/{customer_id}", response_model=Customer)
+async def update_customer(
+    customer_id: str,
+    customer_update: CustomerUpdate,
+    current_user: User = Depends(require_role([UserRole.ADMIN, UserRole.TECHNICIAN]))
+):
+    customer = await db.customers.find_one({"id": customer_id})
+    if not customer:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Customer not found"
+        )
+    
+    # Teknisyen sadece kendi müşterilerini güncelleyebilir
+    if current_user.role == UserRole.TECHNICIAN and customer.get("created_by_technician") != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access denied"
+        )
+    
+    # Prepare update data
+    update_data = {k: v for k, v in customer_update.dict().items() if v is not None}
+    
+    if update_data:
+        await db.customers.update_one({"id": customer_id}, {"$set": update_data})
+    
+    # Get updated customer
+    updated_customer = await db.customers.find_one({"id": customer_id})
+    if isinstance(updated_customer.get("created_at"), str):
+        updated_customer["created_at"] = datetime.fromisoformat(updated_customer["created_at"])
+    
+    return Customer(**updated_customer)
+
+@api_router.get("/customers/{customer_id}/repairs", response_model=List[RepairRequest])
+async def get_customer_repairs(
+    customer_id: str,
+    current_user: User = Depends(require_role([UserRole.ADMIN, UserRole.TECHNICIAN]))
+):
+    # First check if customer exists
+    customer = await db.customers.find_one({"id": customer_id})
+    if not customer:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Customer not found"
+        )
+    
+    # Teknisyen sadece kendi müşterilerini görebilir
+    if current_user.role == UserRole.TECHNICIAN and customer.get("created_by_technician") != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access denied"
+        )
+    
+    repairs = await db.repairs.find({"customer_id": customer_id}).to_list(1000)
+    result = []
+    for repair in repairs:
+        if isinstance(repair.get("created_at"), str):
+            repair["created_at"] = datetime.fromisoformat(repair["created_at"])
+        if isinstance(repair.get("updated_at"), str):
+            repair["updated_at"] = datetime.fromisoformat(repair["updated_at"])
+        if repair.get("completed_at") and isinstance(repair["completed_at"], str):
+            repair["completed_at"] = datetime.fromisoformat(repair["completed_at"])
+        result.append(RepairRequest(**repair))
+    return result
+
 # Repair Request routes
 @api_router.post("/repairs", response_model=RepairRequest)
 async def create_repair_request(
