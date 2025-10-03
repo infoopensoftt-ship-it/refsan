@@ -265,6 +265,14 @@ async def create_customer(
     # Teknisyen ise kendi ID'sini ekle
     if current_user.role == UserRole.TECHNICIAN:
         customer_dict["created_by_technician"] = current_user.id
+    
+    customer_obj = Customer(**customer_dict)
+    customer_mongo_dict = customer_obj.dict()
+    customer_mongo_dict["created_at"] = customer_mongo_dict["created_at"].isoformat()
+    
+    await db.customers.insert_one(customer_mongo_dict)
+    return customer_obj
+
 # File upload endpoint
 @api_router.post("/upload")
 async def upload_file(
@@ -298,14 +306,6 @@ async def upload_file(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"File upload failed: {str(e)}"
         )
-
-    
-    customer_obj = Customer(**customer_dict)
-    customer_mongo_dict = customer_obj.dict()
-    customer_mongo_dict["created_at"] = customer_mongo_dict["created_at"].isoformat()
-    
-    await db.customers.insert_one(customer_mongo_dict)
-    return customer_obj
 
 @api_router.get("/customers", response_model=List[Customer])
 async def get_customers(
