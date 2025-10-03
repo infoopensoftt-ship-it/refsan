@@ -259,11 +259,16 @@ async def create_customer(
     customer_data: CustomerCreate,
     current_user: User = Depends(require_role([UserRole.ADMIN, UserRole.TECHNICIAN]))
 ):
-    customer_obj = Customer(**customer_data.dict())
-    customer_dict = customer_obj.dict()
-    customer_dict["created_at"] = customer_dict["created_at"].isoformat()
+    customer_dict = customer_data.dict()
+    # Teknisyen ise kendi ID'sini ekle
+    if current_user.role == UserRole.TECHNICIAN:
+        customer_dict["created_by_technician"] = current_user.id
     
-    await db.customers.insert_one(customer_dict)
+    customer_obj = Customer(**customer_dict)
+    customer_mongo_dict = customer_obj.dict()
+    customer_mongo_dict["created_at"] = customer_mongo_dict["created_at"].isoformat()
+    
+    await db.customers.insert_one(customer_mongo_dict)
     return customer_obj
 
 @api_router.get("/customers", response_model=List[Customer])
