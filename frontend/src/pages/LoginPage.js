@@ -117,8 +117,8 @@ const LoginPage = () => {
           <div className="mx-auto w-16 h-16 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl flex items-center justify-center mb-4">
             <Wrench className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-slate-800">Teknik Servis</h1>
-          <p className="text-slate-600">Arıza yönetim sistemi</p>
+          <h1 className="text-3xl font-bold text-slate-800">Refsan Türkiye</h1>
+          <p className="text-slate-600">Seramik Makineleri Teknik Servis</p>
         </div>
 
         {/* Demo Accounts */}
