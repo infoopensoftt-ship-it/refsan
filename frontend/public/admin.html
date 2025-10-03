@@ -1128,7 +1128,7 @@
 
                 if (response.ok) {
                     alert('✅ Müşteri başarıyla silindi!');
-                    loadCustomers();
+                    loadCustomersInModal(); // Reload modal list
                     loadStats();
                 } else {
                     const error = await response.json();
