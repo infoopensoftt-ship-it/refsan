@@ -395,7 +395,7 @@ const AdminDashboard = () => {
                         id="model"
                         value={repairForm.model}
                         onChange={(e) => setRepairForm({ ...repairForm, model: e.target.value })}
-                        placeholder="iPhone 14, Galaxy S23..."
+                        placeholder="Makine modeli (ör: RS-1000, SP-250...)"
                         required
                         data-testid="model-input"
                       />
