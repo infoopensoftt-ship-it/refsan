@@ -801,7 +801,13 @@ async def update_repair_request(
             notification_type="repair_status_update",
             title="Arıza Durumu Güncellendi",
             message=f"{repair['customer_name']} - {repair['device_type']}: {update_data['status']}",
-            related_id=repair_id
+            related_id=repair_id,
+            extra_data={
+                "repair_id": repair_id,
+                "customer_name": repair['customer_name'],
+                "device_info": f"{repair['device_type']} {repair['brand']} {repair['model']}",
+                "new_status": update_data['status']
+            }
         )
     
     # Get updated repair
