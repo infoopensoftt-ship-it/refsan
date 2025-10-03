@@ -259,6 +259,42 @@ frontend:
         agent: "main"
         comment: "Updated loadCustomers() function to make customers clickable and display properly with new customer detail functionality"
 
+  - task: "Delete functionality UI"
+    implemented: false
+    working: "NA"
+    file: "frontend/public/admin.html"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Need to add delete buttons and confirmation dialogs for customers and repairs"
+
+  - task: "Notification system UI"
+    implemented: false
+    working: "NA"
+    file: "frontend/public/admin.html"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Need to add notification display system for new repairs/customers"
+
+  - task: "Technician search functionality"
+    implemented: false
+    working: "NA"
+    file: "frontend/public/teknisyen.html"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Need to add customer search functionality to technician panel"
+
 metadata:
   created_by: "main_agent"
   version: "1.0"
