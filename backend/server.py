@@ -325,7 +325,18 @@ async def get_repair_requests(current_user: User = Depends(get_current_user)):
     
     # Role-based filtering
     if current_user.role == UserRole.TECHNICIAN:
-        query["assigned_technician_id"] = current_user.id
+        # Teknisyen hem atanan işleri hem kendi eklediği müşterilerin arızalarını görebilir
+        customer_ids = []
+        customers = await db.customers.find({"created_by_technician": current_user.id}).to_list(1000)
+        customer_ids = [customer["id"] for customer in customers]
+        
+        query = {
+            "$or": [
+                {"assigned_technician_id": current_user.id},
+                {"customer_id": {"$in": customer_ids}},
+                {"created_by": current_user.id}
+            ]
+        }
     elif current_user.role == UserRole.CUSTOMER:
         query["created_by"] = current_user.id
     # Admin can see all
