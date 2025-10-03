@@ -314,18 +314,34 @@ async def upload_file(
     current_user: User = Depends(get_current_user)
 ):
     try:
+        # Validate file type
+        allowed_extensions = {'.jpg', '.jpeg', '.png', '.pdf', '.docx', '.doc', '.txt'}
+        file_extension = Path(file.filename).suffix.lower()
+        
+        if file_extension not in allowed_extensions:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"File type not allowed. Allowed types: {', '.join(allowed_extensions)}"
+            )
+        
+        # Check file size (10MB max)
+        content = await file.read()
+        if len(content) > 10 * 1024 * 1024:  # 10MB
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="File size too large. Maximum size is 10MB"
+            )
+        
         # Create uploads directory if it doesn't exist
         upload_dir = Path(ROOT_DIR) / "uploads"
         upload_dir.mkdir(exist_ok=True)
         
         # Generate unique filename
-        file_extension = Path(file.filename).suffix
         unique_filename = f"{uuid.uuid4()}{file_extension}"
         file_path = upload_dir / unique_filename
         
         # Save file
         with open(file_path, "wb") as buffer:
-            content = await file.read()
             buffer.write(content)
         
         # Return file info
@@ -335,6 +351,60 @@ async def upload_file(
             "file_size": len(content),
             "file_url": f"/uploads/{unique_filename}"
         }
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"File upload failed: {str(e)}"
+        )
+
+@api_router.post("/upload-multiple")
+async def upload_multiple_files(
+    files: List[UploadFile] = File(...),
+    current_user: User = Depends(get_current_user)
+):
+    try:
+        uploaded_files = []
+        
+        for file in files:
+            # Validate file type
+            allowed_extensions = {'.jpg', '.jpeg', '.png', '.pdf', '.docx', '.doc', '.txt'}
+            file_extension = Path(file.filename).suffix.lower()
+            
+            if file_extension not in allowed_extensions:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"File type not allowed for {file.filename}. Allowed types: {', '.join(allowed_extensions)}"
+                )
+            
+            # Check file size (10MB max)
+            content = await file.read()
+            if len(content) > 10 * 1024 * 1024:  # 10MB
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"File size too large for {file.filename}. Maximum size is 10MB"
+                )
+            
+            # Create uploads directory if it doesn't exist
+            upload_dir = Path(ROOT_DIR) / "uploads"
+            upload_dir.mkdir(exist_ok=True)
+            
+            # Generate unique filename
+            unique_filename = f"{uuid.uuid4()}{file_extension}"
+            file_path = upload_dir / unique_filename
+            
+            # Save file
+            with open(file_path, "wb") as buffer:
+                buffer.write(content)
+            
+            # Add to uploaded files list
+            uploaded_files.append({
+                "filename": unique_filename,
+                "original_filename": file.filename,
+                "file_size": len(content),
+                "file_url": f"/uploads/{unique_filename}"
+            })
+        
+        return {"uploaded_files": uploaded_files}
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
