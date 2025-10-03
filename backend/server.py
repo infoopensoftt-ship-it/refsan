@@ -883,6 +883,50 @@ async def get_stats(current_user: User = Depends(get_current_user)):
             "my_pending": my_pending
         }
 
+# Notifications endpoint
+@api_router.get("/notifications")
+async def get_notifications(
+    limit: int = 50,
+    unread_only: bool = False,
+    current_user: User = Depends(require_role([UserRole.ADMIN]))
+):
+    query = {}
+    if unread_only:
+        query["read"] = False
+    
+    notifications = await db.notifications.find(query).sort("created_at", -1).limit(limit).to_list(limit)
+    result = []
+    for notification in notifications:
+        if isinstance(notification.get("created_at"), str):
+            notification["created_at"] = datetime.fromisoformat(notification["created_at"])
+        result.append(Notification(**notification))
+    return result
+
+@api_router.put("/notifications/{notification_id}/read")
+async def mark_notification_read(
+    notification_id: str,
+    current_user: User = Depends(require_role([UserRole.ADMIN]))
+):
+    result = await db.notifications.update_one(
+        {"id": notification_id}, 
+        {"$set": {"read": True}}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Notification not found"
+        )
+    
+    return {"message": "Notification marked as read"}
+
+@api_router.get("/notifications/unread-count")
+async def get_unread_notifications_count(
+    current_user: User = Depends(require_role([UserRole.ADMIN]))
+):
+    count = await db.notifications.count_documents({"read": False})
+    return {"unread_count": count}
+
 # Include the router in the main app
 app.include_router(api_router)
 
