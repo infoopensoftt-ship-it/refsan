@@ -98,6 +98,18 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleCreateUser = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.post(`${API}/auth/register`, userForm);
+      toast.success('Kullanıcı başarıyla oluşturuldu');
+      setShowUserForm(false);
+      setUserForm({ full_name: '', email: '', password: '', role: '', phone: '' });
+      fetchData();
+    } catch (error) {
+      toast.error('Kullanıcı oluşturulamadı: ' + (error.response?.data?.detail || error.message));
+    }
+  };
   const handleCreateCustomer = async (e) => {
     e.preventDefault();
     try {
