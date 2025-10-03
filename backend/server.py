@@ -743,34 +743,6 @@ async def get_repair_requests(current_user: User = Depends(get_current_user)):
         result.append(RepairRequest(**repair))
     return result
 
-@api_router.get("/repairs/{repair_id}", response_model=RepairRequest)
-async def get_repair_request(repair_id: str, current_user: User = Depends(get_current_user)):
-    repair = await db.repairs.find_one({"id": repair_id})
-    if not repair:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Repair request not found"
-        )
-    
-    # Check permissions
-    if (current_user.role == UserRole.TECHNICIAN and repair.get("assigned_technician_id") != current_user.id) or \
-       (current_user.role == UserRole.CUSTOMER and repair.get("created_by") != current_user.id):
-        if current_user.role != UserRole.ADMIN:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Access denied"
-            )
-    
-    # Parse dates
-    if isinstance(repair.get("created_at"), str):
-        repair["created_at"] = datetime.fromisoformat(repair["created_at"])
-    if isinstance(repair.get("updated_at"), str):
-        repair["updated_at"] = datetime.fromisoformat(repair["updated_at"])
-    if repair.get("completed_at") and isinstance(repair["completed_at"], str):
-        repair["completed_at"] = datetime.fromisoformat(repair["completed_at"])
-    
-    return RepairRequest(**repair)
-
 @api_router.put("/repairs/{repair_id}", response_model=RepairRequest)
 async def update_repair_request(
     repair_id: str,
