@@ -423,9 +423,11 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Delete functionality UI"
-    - "Notification system UI"
-    - "Technician search functionality"
+    - "Repair cancellation endpoint"
+    - "Clear all notifications endpoint"
+    - "Multiple file upload endpoint"
+    - "Enhanced single file upload endpoint"
+    - "Enhanced repair creation with files"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
