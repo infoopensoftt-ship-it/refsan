@@ -143,12 +143,17 @@ class RepairRequestUpdate(BaseModel):
 
 class Notification(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    type: str  # "new_repair", "new_customer", "repair_status_update"
+    type: str  # "new_repair", "new_customer", "repair_status_update", "repair_cancelled"
     title: str
     message: str
     related_id: str  # ID of the related customer or repair
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     read: bool = False
+    # Enhanced fields for frontend linking
+    repair_id: Optional[str] = None
+    customer_name: Optional[str] = None
+    device_info: Optional[str] = None
+    new_status: Optional[str] = None
 
 # Utility functions
 def verify_password(plain_password, hashed_password):
