@@ -694,7 +694,12 @@ async def create_repair_request(
         notification_type="new_repair",
         title="Yeni Arıza Kaydı",
         message=f"{repair_obj.customer_name} için yeni arıza: {repair_obj.device_type} {repair_obj.brand}",
-        related_id=repair_obj.id
+        related_id=repair_obj.id,
+        extra_data={
+            "repair_id": repair_obj.id,
+            "customer_name": repair_obj.customer_name,
+            "device_info": f"{repair_obj.device_type} {repair_obj.brand} {repair_obj.model}"
+        }
     )
     
     return repair_obj
