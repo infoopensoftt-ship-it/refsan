@@ -307,7 +307,7 @@
     </div>
 
     <script>
-        const API_BASE = 'https://repair-manager-10.preview.emergentagent.com/api';
+        const API_BASE = window.location.origin + '/api';
         let authToken = localStorage.getItem('token');
         let currentUser = null;
         let repairs = [];
