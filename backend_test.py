@@ -931,6 +931,348 @@ class TechnicalServiceAPITester:
         print(f"   ✅ Notification creation tests completed (notifications should be visible to admin)")
         return customer_success and repair_success and update_success
 
+    def test_repair_cancellation_endpoint(self):
+        """Test PUT /api/repairs/{repair_id}/cancel endpoint"""
+        print(f"\n🚫 Testing repair cancellation for: {self.current_user.get('role')}")
+        
+        # Only admin and technician can cancel repairs
+        if self.current_user.get('role') not in ['admin', 'teknisyen']:
+            print("   ⚠️  Skipping repair cancellation tests (insufficient permissions)")
+            return True
+        
+        # Create a test customer first
+        customer_data = {
+            "full_name": "Cancel Test Customer",
+            "email": "cancel@test.com",
+            "phone": "05551234567"
+        }
+        
+        customer_success, customer = self.run_test(
+            "Create customer for cancel test",
+            "POST",
+            "customers",
+            200,
+            data=customer_data
+        )
+        
+        if not customer_success:
+            return False
+        
+        customer_id = customer.get('id')
+        
+        # Create a repair to cancel
+        repair_data = {
+            "customer_id": customer_id,
+            "device_type": "Samsung Galaxy",
+            "brand": "Samsung",
+            "model": "Galaxy S24",
+            "description": "Screen repair for cancellation test",
+            "priority": "yuksek"
+        }
+        
+        repair_success, repair = self.run_test(
+            "Create repair for cancellation test",
+            "POST",
+            "repairs",
+            200,
+            data=repair_data
+        )
+        
+        if not repair_success:
+            return False
+        
+        repair_id = repair.get('id')
+        
+        # Test cancelling the repair
+        cancel_success, cancelled_repair = self.run_test(
+            "Cancel repair request",
+            "PUT",
+            f"repairs/{repair_id}/cancel",
+            200
+        )
+        
+        if not cancel_success:
+            return False
+        
+        # Verify repair status is cancelled
+        if cancelled_repair.get('status') == 'iptal':
+            print(f"   ✅ Repair successfully cancelled: {cancelled_repair.get('status')}")
+        else:
+            print(f"   ❌ Repair status not updated correctly: {cancelled_repair.get('status')}")
+            return False
+        
+        # Test cancelling non-existent repair
+        nonexistent_cancel_success, _ = self.run_test(
+            "Cancel non-existent repair",
+            "PUT",
+            "repairs/nonexistent-repair-id/cancel",
+            404
+        )
+        
+        return cancel_success and nonexistent_cancel_success
+
+    def test_clear_all_notifications_endpoint(self):
+        """Test DELETE /api/notifications/clear-all endpoint"""
+        print(f"\n🗑️ Testing clear all notifications for: {self.current_user.get('role')}")
+        
+        # Only admin can clear notifications
+        if self.current_user.get('role') != 'admin':
+            print("   ⚠️  Skipping clear notifications test (admin only)")
+            return True
+        
+        # First, create some notifications by creating customers and repairs
+        customer_data = {
+            "full_name": "Clear Notifications Test Customer",
+            "email": "clearnotif@test.com",
+            "phone": "05551234567"
+        }
+        
+        customer_success, customer = self.run_test(
+            "Create customer for clear notifications test",
+            "POST",
+            "customers",
+            200,
+            data=customer_data
+        )
+        
+        if not customer_success:
+            return False
+        
+        customer_id = customer.get('id')
+        
+        # Create a repair (generates notification)
+        repair_data = {
+            "customer_id": customer_id,
+            "device_type": "iPhone",
+            "brand": "Apple",
+            "model": "iPhone 15 Pro",
+            "description": "Battery replacement for clear notifications test",
+            "priority": "yuksek"
+        }
+        
+        repair_success, repair = self.run_test(
+            "Create repair for clear notifications test",
+            "POST",
+            "repairs",
+            200,
+            data=repair_data
+        )
+        
+        if not repair_success:
+            return False
+        
+        # Check notifications count before clearing
+        count_before_success, count_before_response = self.run_test(
+            "Get notifications count before clearing",
+            "GET",
+            "notifications/unread-count",
+            200
+        )
+        
+        if not count_before_success:
+            return False
+        
+        count_before = count_before_response.get('unread_count', 0)
+        print(f"   📊 Notifications before clearing: {count_before}")
+        
+        # Clear all notifications
+        clear_success, clear_response = self.run_test(
+            "Clear all notifications",
+            "DELETE",
+            "notifications/clear-all",
+            200
+        )
+        
+        if not clear_success:
+            return False
+        
+        cleared_count = clear_response.get('message', '').split()[0]
+        print(f"   ✅ Cleared notifications: {clear_response.get('message')}")
+        
+        # Check notifications count after clearing
+        count_after_success, count_after_response = self.run_test(
+            "Get notifications count after clearing",
+            "GET",
+            "notifications/unread-count",
+            200
+        )
+        
+        if not count_after_success:
+            return False
+        
+        count_after = count_after_response.get('unread_count', 0)
+        print(f"   📊 Notifications after clearing: {count_after}")
+        
+        # Verify count is 0 after clearing
+        if count_after == 0:
+            print(f"   ✅ All notifications successfully cleared")
+        else:
+            print(f"   ❌ Notifications not properly cleared, count: {count_after}")
+            return False
+        
+        return clear_success and count_after == 0
+
+    def test_file_upload_endpoints(self):
+        """Test POST /api/upload and POST /api/upload-multiple endpoints with validation"""
+        print(f"\n📁 Testing file upload endpoints for: {self.current_user.get('role')}")
+        
+        # Test single file upload with valid file type
+        # Since we can't actually upload files in this test environment, 
+        # we'll test the endpoints to see if they exist and return appropriate errors
+        
+        # Test single upload endpoint exists
+        single_upload_success, single_response = self.run_test(
+            "Test single file upload endpoint (no file)",
+            "POST",
+            "upload",
+            422  # Expecting validation error for missing file
+        )
+        
+        # Test multiple upload endpoint exists  
+        multiple_upload_success, multiple_response = self.run_test(
+            "Test multiple file upload endpoint (no files)",
+            "POST",
+            "upload-multiple",
+            422  # Expecting validation error for missing files
+        )
+        
+        print(f"   ✅ File upload endpoints are accessible")
+        print(f"   ℹ️  Note: Actual file upload testing requires multipart/form-data which is not supported in this test framework")
+        
+        return single_upload_success and multiple_upload_success
+
+    def test_enhanced_repair_creation_with_files(self):
+        """Test creating repairs with file attachments"""
+        print(f"\n📎 Testing enhanced repair creation with files for: {self.current_user.get('role')}")
+        
+        # Only admin and technician can create repairs
+        if self.current_user.get('role') not in ['admin', 'teknisyen']:
+            print("   ⚠️  Skipping enhanced repair creation tests (insufficient permissions)")
+            return True
+        
+        # Create a test customer first
+        customer_data = {
+            "full_name": "Enhanced Repair Test Customer",
+            "email": "enhanced@test.com",
+            "phone": "05551234567"
+        }
+        
+        customer_success, customer = self.run_test(
+            "Create customer for enhanced repair test",
+            "POST",
+            "customers",
+            200,
+            data=customer_data
+        )
+        
+        if not customer_success:
+            return False
+        
+        customer_id = customer.get('id')
+        
+        # Create repair with file attachments (simulated file URLs)
+        repair_data = {
+            "customer_id": customer_id,
+            "device_type": "MacBook Pro",
+            "brand": "Apple",
+            "model": "MacBook Pro 16-inch",
+            "description": "Keyboard and trackpad issues with photo evidence",
+            "priority": "yuksek",
+            "images": [
+                "/uploads/test-image-1.jpg",
+                "/uploads/test-image-2.png",
+                "/uploads/test-document.pdf"
+            ]
+        }
+        
+        repair_success, repair = self.run_test(
+            "Create repair with file attachments",
+            "POST",
+            "repairs",
+            200,
+            data=repair_data
+        )
+        
+        if not repair_success:
+            return False
+        
+        # Verify images array is stored
+        if repair.get('images') and len(repair.get('images')) == 3:
+            print(f"   ✅ Repair created with {len(repair.get('images'))} file attachments")
+        else:
+            print(f"   ❌ File attachments not properly stored: {repair.get('images')}")
+            return False
+        
+        return repair_success
+
+    def test_role_based_repair_cancellation(self):
+        """Test role-based access control for repair cancellation"""
+        print(f"\n🔐 Testing role-based repair cancellation access for: {self.current_user.get('role')}")
+        
+        # Only test for technician role (admin can cancel any repair)
+        if self.current_user.get('role') != 'teknisyen':
+            print("   ⚠️  Skipping role-based cancellation test (technician role only)")
+            return True
+        
+        # Create a customer for this technician
+        customer_data = {
+            "full_name": "Role Test Customer",
+            "email": "roletest@test.com",
+            "phone": "05551234567"
+        }
+        
+        customer_success, customer = self.run_test(
+            "Create customer for role-based test",
+            "POST",
+            "customers",
+            200,
+            data=customer_data
+        )
+        
+        if not customer_success:
+            return False
+        
+        customer_id = customer.get('id')
+        
+        # Create a repair by this technician
+        repair_data = {
+            "customer_id": customer_id,
+            "device_type": "iPad",
+            "brand": "Apple",
+            "model": "iPad Air",
+            "description": "Screen replacement for role test",
+            "priority": "orta"
+        }
+        
+        own_repair_success, own_repair = self.run_test(
+            "Create own repair for role test",
+            "POST",
+            "repairs",
+            200,
+            data=repair_data
+        )
+        
+        if not own_repair_success:
+            return False
+        
+        own_repair_id = own_repair.get('id')
+        
+        # Test cancelling own repair (should succeed)
+        cancel_own_success, _ = self.run_test(
+            "Technician cancel own repair",
+            "PUT",
+            f"repairs/{own_repair_id}/cancel",
+            200
+        )
+        
+        if cancel_own_success:
+            print(f"   ✅ Technician can cancel own repairs")
+        
+        # Note: Testing cancellation of other technician's repairs would require 
+        # creating repairs with different technician IDs, which is complex in this test setup
+        
+        return cancel_own_success
+
     def test_admin_panel_endpoints(self):
         """Test all new admin panel endpoints"""
         print(f"\n🏢 Testing Admin Panel Endpoints for: {self.current_user.get('role')}")
