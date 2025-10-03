@@ -500,9 +500,13 @@
                     <div class="list-item">
                         <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
                             <strong>${repair.customer_name}</strong>
-                            <button class="btn" style="padding: 4px 8px; font-size: 0.8em;" onclick="openUpdateModal('${repair.id}', '${repair.status}', '${repair.final_cost || ''}', '${repair.payment_status || ''}')">
-                                ✏️ Güncelle
-                            </button>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <button class="btn" style="padding: 4px 8px; font-size: 0.8em;" onclick="openUpdateModal('${repair.id}', '${repair.status}', '${repair.final_cost || ''}', '${repair.payment_status || ''}')">
+                                    ✏️ Güncelle
+                                </button>
+                                ${repair.status !== 'iptal' && repair.status !== 'tamamlandi' ? 
+                                    `<button class="btn" style="padding: 4px 8px; font-size: 0.8em; background: #f59e0b;" onclick="cancelRepairTech('${repair.id}', '${repair.customer_name}')">❌ İptal Et</button>` : ''}
+                            </div>
                         </div>
                         <div style="margin-bottom: 0.5rem;">
                             <span class="status-badge ${statusClass}">${repair.status}</span>
