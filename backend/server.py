@@ -264,6 +264,40 @@ async def create_customer(
     # Teknisyen ise kendi ID'sini ekle
     if current_user.role == UserRole.TECHNICIAN:
         customer_dict["created_by_technician"] = current_user.id
+# File upload endpoint
+@api_router.post("/upload")
+async def upload_file(
+    file: UploadFile = File(...),
+    current_user: User = Depends(get_current_user)
+):
+    try:
+        # Create uploads directory if it doesn't exist
+        upload_dir = Path(ROOT_DIR) / "uploads"
+        upload_dir.mkdir(exist_ok=True)
+        
+        # Generate unique filename
+        file_extension = Path(file.filename).suffix
+        unique_filename = f"{uuid.uuid4()}{file_extension}"
+        file_path = upload_dir / unique_filename
+        
+        # Save file
+        with open(file_path, "wb") as buffer:
+            content = await file.read()
+            buffer.write(content)
+        
+        # Return file info
+        return {
+            "filename": unique_filename,
+            "original_filename": file.filename,
+            "file_size": len(content),
+            "file_url": f"/uploads/{unique_filename}"
+        }
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"File upload failed: {str(e)}"
+        )
+
     
     customer_obj = Customer(**customer_dict)
     customer_mongo_dict = customer_obj.dict()
