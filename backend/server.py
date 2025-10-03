@@ -686,6 +686,36 @@ async def update_repair_request(
     
     return RepairRequest(**updated_repair)
 
+@api_router.delete("/repairs/{repair_id}")
+async def delete_repair_request(
+    repair_id: str,
+    current_user: User = Depends(require_role([UserRole.ADMIN, UserRole.TECHNICIAN]))
+):
+    repair = await db.repairs.find_one({"id": repair_id})
+    if not repair:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Repair request not found"
+        )
+    
+    # Check permissions - admin can delete any repair, technician can only delete own repairs
+    if current_user.role == UserRole.TECHNICIAN:
+        if repair.get("created_by") != current_user.id and repair.get("assigned_technician_id") != current_user.id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Access denied"
+            )
+    
+    result = await db.repairs.delete_one({"id": repair_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Repair request not found"
+        )
+    
+    return {"message": "Repair request deleted successfully"}
+
 # Users management (Admin only)
 @api_router.get("/users", response_model=List[User])
 async def get_users(current_user: User = Depends(require_role([UserRole.ADMIN]))):
