@@ -883,10 +883,15 @@ async def cancel_repair_request(
     
     # Create notification for cancellation
     await create_notification(
-        notification_type="repair_status_update",
+        notification_type="repair_cancelled",
         title="Arıza İptal Edildi",
         message=f"{repair['customer_name']} - {repair['device_type']}: İptal edildi",
-        related_id=repair_id
+        related_id=repair_id,
+        extra_data={
+            "repair_id": repair_id,
+            "customer_name": repair['customer_name'],
+            "device_info": f"{repair['device_type']} {repair['brand']} {repair['model']}"
+        }
     )
     
     # Get updated repair
