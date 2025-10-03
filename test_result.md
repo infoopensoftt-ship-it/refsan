@@ -453,11 +453,8 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Repair cancellation endpoint"
-    - "Clear all notifications endpoint"
-    - "Multiple file upload endpoint"
-    - "Enhanced single file upload endpoint"
-    - "Enhanced repair creation with files"
+    - "Repair detail endpoint with role-based access"
+    - "Enhanced notification system with extra_data"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
