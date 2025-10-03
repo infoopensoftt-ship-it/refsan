@@ -375,6 +375,118 @@ const CustomerDashboard = () => {
                                 </div>
                               )}
                             </div>
+        {/* Repair Form Dialog */}
+        <Dialog open={showRepairForm} onOpenChange={setShowRepairForm}>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Yeni Arıza Kaydı</DialogTitle>
+            </DialogHeader>
+            <form onSubmit={handleCreateRepair} className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="device-type">Makine Türü *</Label>
+                  <Select value={repairForm.device_type} onValueChange={(value) => setRepairForm({ ...repairForm, device_type: value })}>
+                    <SelectTrigger data-testid="device-type-select">
+                      <SelectValue placeholder="Makine türü seçin" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Seramik Makinesi">Seramik Makinesi</SelectItem>
+                      <SelectItem value="Porselen Üretim Makinesi">Porselen Üretim Makinesi</SelectItem>
+                      <SelectItem value="Çini İşleme Makinesi">Çini İşleme Makinesi</SelectItem>
+                      <SelectItem value="Fırın Sistemi">Fırın Sistemi</SelectItem>
+                      <SelectItem value="Glazür Makinesi">Glazür Makinesi</SelectItem>
+                      <SelectItem value="Karışım Makinesi">Karışım Makinesi</SelectItem>
+                      <SelectItem value="Diğer">Diğer</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="brand">Marka *</Label>
+                  <Select value={repairForm.brand} onValueChange={(value) => setRepairForm({ ...repairForm, brand: value })}>
+                    <SelectTrigger data-testid="brand-select">
+                      <SelectValue placeholder="Marka seçin" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Refsan">Refsan</SelectItem>
+                      <SelectItem value="Sacmi">Sacmi</SelectItem>
+                      <SelectItem value="System Ceramics">System Ceramics</SelectItem>
+                      <SelectItem value="LB">LB</SelectItem>
+                      <SelectItem value="Barbieri e Tarozzi">Barbieri e Tarozzi</SelectItem>
+                      <SelectItem value="Diğer">Diğer</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="model">Model *</Label>
+                <Input
+                  id="model"
+                  value={repairForm.model}
+                  onChange={(e) => setRepairForm({ ...repairForm, model: e.target.value })}
+                  placeholder="Makine modeli (ör: RS-1000, SP-250...)"
+                  required
+                  data-testid="model-input"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="description">Arıza Açıklaması *</Label>
+                <Textarea
+                  id="description"
+                  value={repairForm.description}
+                  onChange={(e) => setRepairForm({ ...repairForm, description: e.target.value })}
+                  placeholder="Arıza detayları ve yaşanan sorunlar..."
+                  required
+                  rows={4}
+                  data-testid="description-input"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="priority">Öncelik</Label>
+                  <Select value={repairForm.priority} onValueChange={(value) => setRepairForm({ ...repairForm, priority: value })}>
+                    <SelectTrigger data-testid="priority-select">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="dusuk">Düşük</SelectItem>
+                      <SelectItem value="orta">Orta</SelectItem>
+                      <SelectItem value="yuksek">Yüksek</SelectItem>
+                      <SelectItem value="acil">Acil</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="cost-estimate">Tahmini Tutar (₺)</Label>
+                  <Input
+                    id="cost-estimate"
+                    type="number"
+                    value={repairForm.cost_estimate}
+                    onChange={(e) => setRepairForm({ ...repairForm, cost_estimate: e.target.value })}
+                    placeholder="0"
+                    data-testid="cost-estimate-input"
+                  />
+                </div>
+              </div>
+              
+              {/* File Upload Section */}
+              <div className="space-y-2">
+                <Label>Dosyalar ve Resimler</Label>
+                <FileUpload onFilesUploaded={handleFilesUploaded} maxFiles={5} />
+                {repairForm.images.length > 0 && (
+                  <div className="mt-2">
+                    <p className="text-sm text-green-600">
+                      {repairForm.images.length} dosya eklendi
+                    </p>
+                  </div>
+                )}
+              </div>
+              
+              <Button type="submit" className="w-full btn-primary" data-testid="create-repair-btn">
+                Arıza Kaydı Oluştur
+              </Button>
+            </form>
+          </DialogContent>
+        </Dialog>
                             
                             <div className="grid grid-cols-3 gap-4">
                               <div>
