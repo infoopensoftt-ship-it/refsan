@@ -327,7 +327,7 @@ async def get_customers(
 @api_router.post("/repairs", response_model=RepairRequest)
 async def create_repair_request(
     repair_data: RepairRequestCreate,
-    current_user: User = Depends(require_role([UserRole.ADMIN, UserRole.TECHNICIAN]))
+    current_user: User = Depends(get_current_user)
 ):
     # Get customer info
     customer = await db.customers.find_one({"id": repair_data.customer_id})
