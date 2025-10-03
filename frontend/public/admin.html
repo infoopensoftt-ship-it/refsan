@@ -1102,6 +1102,31 @@
             }
         }
 
+        async function cancelRepair(repairId, customerName) {
+            if (!confirm(`"${customerName}" müşterisine ait arıza kaydını iptal etmek istediğinizden emin misiniz?`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/repairs/${repairId}/cancel`, {
+                    method: 'PUT',
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+
+                if (response.ok) {
+                    alert('✅ Arıza kaydı başarıyla iptal edildi!');
+                    loadRepairs();
+                    loadStats();
+                    playNotificationSound(); // Play sound when repair is cancelled
+                } else {
+                    const error = await response.json();
+                    alert('❌ ' + (error.detail || 'İptal işlemi başarısız'));
+                }
+            } catch (error) {
+                alert('❌ Hata: ' + error.message);
+            }
+        }
+
         // Add enter key support for search
         document.addEventListener('DOMContentLoaded', function() {
             const searchInput = document.getElementById('search-input');
