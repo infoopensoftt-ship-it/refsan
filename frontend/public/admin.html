@@ -958,6 +958,9 @@
                                 ${repair.final_cost ? ` | Final: ₺${repair.final_cost}` : ''}
                                 ${repair.assigned_technician_name ? `<br>👨‍🔧 ${repair.assigned_technician_name}` : '<br>⏳ Teknisyen atanmadı'}
                             </div>
+                            <div style="margin-top: 0.5rem;">
+                                <button class="delete-btn" onclick="deleteRepair('${repair.id}', '${repair.customer_name}')">🗑️ Sil</button>
+                            </div>
                         </div>
                     `;
                 }).join('');
