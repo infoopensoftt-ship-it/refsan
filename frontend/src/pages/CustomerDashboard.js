@@ -18,6 +18,20 @@ import {
   Wrench,
   Plus
 } from 'lucide-react';
+  const [showRepairForm, setShowRepairForm] = useState(false);
+  const [customers, setCustomers] = useState([]);
+  
+  // Repair form state
+  const [repairForm, setRepairForm] = useState({
+    customer_id: '',
+    device_type: '',
+    brand: '',
+    model: '',
+    description: '',
+    priority: 'orta',
+    cost_estimate: '',
+    images: []
+  });
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
