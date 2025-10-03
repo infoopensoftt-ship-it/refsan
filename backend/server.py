@@ -92,6 +92,7 @@ class Customer(BaseModel):
     email: Optional[EmailStr] = None
     phone: str
     address: Optional[str] = None
+    created_by_technician: Optional[str] = None  # Müşteriyi ekleyen teknisyen ID'si
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class CustomerCreate(BaseModel):
