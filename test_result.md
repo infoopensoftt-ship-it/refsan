@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Admin should be able to see customer list and click on each customer to view details and edit their information. Admin should see all service records for that customer. Also need search functionality to search customers and service records by name, phone, device type etc."
+user_problem_statement: "Admin should be able to see customer list and click on each customer to view details and edit their information. Admin should see all service records for that customer. Also need search functionality to search customers and service records by name, phone, device type etc. ADDITIONAL FEATURES: Admin panel should show notifications for new repairs/customers, admin should be able to delete customers and repair records with confirmation, both admin and technician should have customer search functionality."
 
 backend:
   - task: "Customer detail endpoint"
