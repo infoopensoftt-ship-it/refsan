@@ -768,6 +768,55 @@ async def delete_repair_request(
     
     return {"message": "Repair request deleted successfully"}
 
+@api_router.put("/repairs/{repair_id}/cancel")
+async def cancel_repair_request(
+    repair_id: str,
+    current_user: User = Depends(require_role([UserRole.ADMIN, UserRole.TECHNICIAN]))
+):
+    repair = await db.repairs.find_one({"id": repair_id})
+    if not repair:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Repair request not found"
+        )
+    
+    # Check permissions - admin can cancel any repair, technician can only cancel own repairs
+    if current_user.role == UserRole.TECHNICIAN:
+        if repair.get("created_by") != current_user.id and repair.get("assigned_technician_id") != current_user.id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Access denied"
+            )
+    
+    # Update repair status to cancelled
+    update_data = {
+        "status": RepairStatus.CANCELLED,
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.repairs.update_one({"id": repair_id}, {"$set": update_data})
+    
+    # Create notification for cancellation
+    await create_notification(
+        notification_type="repair_status_update",
+        title="Arıza İptal Edildi",
+        message=f"{repair['customer_name']} - {repair['device_type']}: İptal edildi",
+        related_id=repair_id
+    )
+    
+    # Get updated repair
+    updated_repair = await db.repairs.find_one({"id": repair_id})
+    
+    # Parse dates
+    if isinstance(updated_repair.get("created_at"), str):
+        updated_repair["created_at"] = datetime.fromisoformat(updated_repair["created_at"])
+    if isinstance(updated_repair.get("updated_at"), str):
+        updated_repair["updated_at"] = datetime.fromisoformat(updated_repair["updated_at"])
+    if updated_repair.get("completed_at") and isinstance(updated_repair["completed_at"], str):
+        updated_repair["completed_at"] = datetime.fromisoformat(updated_repair["completed_at"])
+    
+    return RepairRequest(**updated_repair)
+
 # Users management (Admin only)
 @api_router.get("/users", response_model=List[User])
 async def get_users(current_user: User = Depends(require_role([UserRole.ADMIN]))):
