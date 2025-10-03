@@ -262,6 +262,7 @@ const AdminDashboard = () => {
               <TabsTrigger value="repairs" data-testid="repairs-tab">Arızalar</TabsTrigger>
               <TabsTrigger value="customers" data-testid="customers-tab">Müşteriler</TabsTrigger>
               <TabsTrigger value="users" data-testid="users-tab">Kullanıcılar</TabsTrigger>
+              <TabsTrigger value="reports" data-testid="reports-tab">Teknisyen Raporları</TabsTrigger>
             </TabsList>
             
             <div className="flex space-x-3">
