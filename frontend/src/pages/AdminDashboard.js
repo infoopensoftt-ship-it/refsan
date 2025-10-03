@@ -278,6 +278,77 @@ const AdminDashboard = () => {
                 </div>
                 <Users className="w-8 h-8 text-purple-600" />
               </div>
+        {/* User Form Dialog */}
+        <Dialog open={showUserForm} onOpenChange={setShowUserForm}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Yeni Kullanıcı Ekle</DialogTitle>
+            </DialogHeader>
+            <form onSubmit={handleCreateUser} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="user-name">Ad Soyad *</Label>
+                <Input
+                  id="user-name"
+                  value={userForm.full_name}
+                  onChange={(e) => setUserForm({ ...userForm, full_name: e.target.value })}
+                  placeholder="Kullanıcı adı"
+                  required
+                  data-testid="user-name-input"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="user-email">E-posta *</Label>
+                <Input
+                  id="user-email"
+                  type="email"
+                  value={userForm.email}
+                  onChange={(e) => setUserForm({ ...userForm, email: e.target.value })}
+                  placeholder="ornek@email.com"
+                  required
+                  data-testid="user-email-input"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="user-password">Şifre *</Label>
+                <Input
+                  id="user-password"
+                  type="password"
+                  value={userForm.password}
+                  onChange={(e) => setUserForm({ ...userForm, password: e.target.value })}
+                  placeholder="Şifre"
+                  required
+                  data-testid="user-password-input"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="user-role">Rol *</Label>
+                <Select value={userForm.role} onValueChange={(value) => setUserForm({ ...userForm, role: value })}>
+                  <SelectTrigger data-testid="user-role-select">
+                    <SelectValue placeholder="Rol seçin" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="admin">Admin</SelectItem>
+                    <SelectItem value="teknisyen">Teknisyen</SelectItem>
+                    <SelectItem value="musteri">Müşteri</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="user-phone">Telefon</Label>
+                <Input
+                  id="user-phone"
+                  value={userForm.phone}
+                  onChange={(e) => setUserForm({ ...userForm, phone: e.target.value })}
+                  placeholder="05XX XXX XX XX"
+                  data-testid="user-phone-input"
+                />
+              </div>
+              <Button type="submit" className="w-full btn-primary" data-testid="create-user-btn">
+                Kullanıcı Oluştur
+              </Button>
+            </form>
+          </DialogContent>
+        </Dialog>
             </CardContent>
           </Card>
           
