@@ -1008,6 +1008,51 @@
             document.getElementById('notifications-panel').style.display = 'none';
         }
 
+        async function clearAllNotifications() {
+            if (!confirm('Tüm bildirimleri temizlemek istediğinizden emin misiniz?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/notifications/clear-all`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+
+                if (response.ok) {
+                    alert('✅ Tüm bildirimler temizlendi!');
+                    loadNotifications();
+                    loadNotificationCount();
+                } else {
+                    alert('❌ Bildirimler temizlenemedi');
+                }
+            } catch (error) {
+                console.error('Error clearing notifications:', error);
+                alert('❌ Hata: ' + error.message);
+            }
+        }
+
+        function playNotificationSound() {
+            // Create simple beep sound
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.3);
+            } catch (error) {
+                console.log('Could not play notification sound:', error);
+            }
+        }
+
         // Delete functions
         async function deleteCustomer(customerId, customerName) {
             if (!confirm(`"${customerName}" müşterisini ve tüm arıza kayıtlarını silmek istediğinizden emin misiniz?\n\nBu işlem geri alınamaz!`)) {
