@@ -173,7 +173,7 @@ const AdminDashboard = () => {
                 <Settings className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-semibold text-slate-800">Admin Panel</h1>
+                <h1 className="text-xl font-semibold text-slate-800">Refsan Türkiye Admin</h1>
                 <p className="text-sm text-slate-600">Hoş geldin, {user?.full_name}</p>
               </div>
             </div>
