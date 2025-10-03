@@ -106,52 +106,64 @@ user_problem_statement: "Admin should be able to see customer list and click on 
 
 backend:
   - task: "Customer detail endpoint"
-    implemented: false
+    implemented: true
     working: "NA"
     file: "backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Need to create GET /api/customers/{customer_id} endpoint"
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented GET /api/customers/{customer_id} endpoint with role-based access control"
   
   - task: "Customer update endpoint"
-    implemented: false
+    implemented: true
     working: "NA"
     file: "backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Need to create PUT /api/customers/{customer_id} endpoint"
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented PUT /api/customers/{customer_id} endpoint with CustomerUpdate model"
   
   - task: "Search functionality endpoint"
-    implemented: false
+    implemented: true
     working: "NA"
     file: "backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Need to create GET /api/search endpoint with query parameters"
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented GET /api/search endpoint with support for customers and repairs search, with role-based filtering"
 
   - task: "Customer repairs endpoint"
-    implemented: false
+    implemented: true
     working: "NA"
     file: "backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Need to create GET /api/customers/{customer_id}/repairs endpoint"
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented GET /api/customers/{customer_id}/repairs endpoint with proper access control"
 
 frontend:
   - task: "Customer detail page"
