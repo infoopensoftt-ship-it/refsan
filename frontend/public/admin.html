@@ -451,10 +451,72 @@
                     <div class="list-item">
                         <strong>${user.full_name}</strong> (${user.role})<br>
                         <small>📧 ${user.email}</small>
+                        ${user.phone ? `<br><small>📞 ${user.phone}</small>` : ''}
+                        <br><small>📅 ${new Date(user.created_at).toLocaleDateString('tr-TR')}</small>
                     </div>
                 `).join('');
             } catch (error) {
                 console.error('Users load error:', error);
+            }
+        }
+
+        async function loadCustomers() {
+            try {
+                const response = await fetch(`${API_BASE}/customers`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                const customers = await response.json();
+                
+                const listDiv = document.getElementById('customer-list');
+                listDiv.innerHTML = customers.map(customer => `
+                    <div class="list-item">
+                        <strong>${customer.full_name}</strong><br>
+                        <small>📞 ${customer.phone}</small>
+                        ${customer.email ? `<br><small>📧 ${customer.email}</small>` : ''}
+                        ${customer.address ? `<br><small>📍 ${customer.address}</small>` : ''}
+                        ${customer.created_by_technician ? `<br><small>🔧 Teknisyen eklemesi</small>` : ''}
+                        <br><small>📅 ${new Date(customer.created_at).toLocaleDateString('tr-TR')}</small>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Customers load error:', error);
+            }
+        }
+
+        async function loadRepairs() {
+            try {
+                const response = await fetch(`${API_BASE}/repairs`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                const repairs = await response.json();
+                
+                const listDiv = document.getElementById('repair-list');
+                listDiv.innerHTML = repairs.map(repair => {
+                    const statusClass = `status-${repair.status.replace('ç', 'c').replace('ı', 'i')}`;
+                    const priorityClass = `priority-${repair.priority}`;
+                    
+                    return `
+                        <div class="list-item">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                <strong>${repair.customer_name}</strong>
+                                <small>${new Date(repair.created_at).toLocaleDateString('tr-TR')}</small>
+                            </div>
+                            <div style="margin-bottom: 0.5rem;">
+                                <span class="status-badge ${statusClass}">${repair.status}</span>
+                                <span class="status-badge ${priorityClass}">${repair.priority}</span>
+                            </div>
+                            <div style="font-size: 0.9em; color: #475569;">
+                                🔧 ${repair.device_type} - ${repair.brand} ${repair.model}<br>
+                                📝 ${repair.description}<br>
+                                ${repair.cost_estimate ? `💰 Tahmini: ₺${repair.cost_estimate}` : ''}
+                                ${repair.final_cost ? ` | Final: ₺${repair.final_cost}` : ''}
+                                ${repair.assigned_technician_name ? `<br>👨‍🔧 ${repair.assigned_technician_name}` : '<br>⏳ Teknisyen atanmadı'}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } catch (error) {
+                console.error('Repairs load error:', error);
             }
         }
 
