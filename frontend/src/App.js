@@ -9,22 +9,6 @@ function App() {
   return <HtmlRedirect />;
 }
 
-// Dashboard Router based on user role
-const DashboardRouter = () => {
-  const { user } = useAuth();
-  
-  if (!user) return <Navigate to="/login" replace />;
-  
-  switch (user.role) {
-    case 'admin':
-      return <Navigate to="/admin" replace />;
-    case 'teknisyen':
-      return <Navigate to="/teknisyen" replace />;
-    case 'musteri':
-      return <Navigate to="/musteri" replace />;
-    default:
-      return <Navigate to="/login" replace />;
-  }
-};
+// Removed dashboard router
 
 export default App;
