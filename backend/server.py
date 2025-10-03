@@ -275,7 +275,12 @@ async def create_customer(
 async def get_customers(
     current_user: User = Depends(require_role([UserRole.ADMIN, UserRole.TECHNICIAN]))
 ):
-    customers = await db.customers.find().to_list(1000)
+    # Teknisyen sadece kendi müşterilerini görebilir
+    query = {}
+    if current_user.role == UserRole.TECHNICIAN:
+        query["created_by_technician"] = current_user.id
+    
+    customers = await db.customers.find(query).to_list(1000)
     result = []
     for customer in customers:
         if isinstance(customer.get("created_at"), str):
