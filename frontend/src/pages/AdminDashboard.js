@@ -28,6 +28,9 @@ import {
 } from 'lucide-react';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+  const [selectedTechnician, setSelectedTechnician] = useState(null);
+  const [technicianReport, setTechnicianReport] = useState(null);
+  const [loadingReport, setLoadingReport] = useState(false);
 const API = `${BACKEND_URL}/api`;
 
 const AdminDashboard = () => {
