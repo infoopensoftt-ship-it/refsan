@@ -951,9 +951,16 @@
                 if (response.ok) {
                     const data = await response.json();
                     const countSpan = document.getElementById('notification-count');
+                    const previousCount = parseInt(countSpan.textContent) || 0;
+                    
                     if (data.unread_count > 0) {
                         countSpan.textContent = data.unread_count;
                         countSpan.style.display = 'inline-block';
+                        
+                        // Play sound if count increased (new notification)
+                        if (data.unread_count > previousCount && previousCount >= 0) {
+                            playNotificationSound();
+                        }
                     } else {
                         countSpan.style.display = 'none';
                     }
