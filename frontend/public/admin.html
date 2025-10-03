@@ -1024,13 +1024,19 @@
             if (notifications.length === 0) {
                 listDiv.innerHTML = '<div class="loading">Bildirim bulunamadı</div>';
             } else {
-                listDiv.innerHTML = notifications.map(notification => `
-                    <div class="notification-item ${notification.read ? '' : 'unread'}" onclick="markNotificationRead('${notification.id}')">
-                        <div class="notification-title">${notification.title}</div>
-                        <div class="notification-message">${notification.message}</div>
-                        <div class="notification-time">${new Date(notification.created_at).toLocaleDateString('tr-TR')} ${new Date(notification.created_at).toLocaleTimeString('tr-TR')}</div>
-                    </div>
-                `).join('');
+                listDiv.innerHTML = notifications.map(notification => {
+                    const isRepairNotification = notification.type === 'new_repair' || notification.type === 'repair_status_update' || notification.type === 'repair_cancelled';
+                    const clickAction = isRepairNotification ? `openRepairFromNotification('${notification.repair_id || notification.related_id}')` : `markNotificationRead('${notification.id}')`;
+                    
+                    return `
+                        <div class="notification-item ${notification.read ? '' : 'unread'}" onclick="${clickAction}">
+                            <div class="notification-title">${notification.title}</div>
+                            <div class="notification-message">${notification.message}</div>
+                            <div class="notification-time">${new Date(notification.created_at).toLocaleDateString('tr-TR')} ${new Date(notification.created_at).toLocaleTimeString('tr-TR')}</div>
+                            ${isRepairNotification ? '<div style="font-size: 0.8em; color: #3b82f6; margin-top: 0.25rem;">📱 Arıza detayını görüntülemek için tıklayın</div>' : ''}
+                        </div>
+                    `;
+                }).join('');
             }
         }
 
