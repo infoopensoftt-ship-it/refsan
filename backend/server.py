@@ -49,6 +49,7 @@ class RepairStatus(str, Enum):
     IN_PROGRESS = "isleniyor"
     COMPLETED = "tamamlandi"
     CANCELLED = "iptal"
+    REJECTED = "reddedildi"
 
 class Priority(str, Enum):
     LOW = "dusuk"
