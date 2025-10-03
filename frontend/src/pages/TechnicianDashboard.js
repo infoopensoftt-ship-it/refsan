@@ -33,6 +33,7 @@ const TechnicianDashboard = () => {
   const { user, logout } = useAuth();
   const [stats, setStats] = useState(null);
   const [repairs, setRepairs] = useState([]);
+  const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedRepair, setSelectedRepair] = useState(null);
   const [showUpdateForm, setShowUpdateForm] = useState(false);
