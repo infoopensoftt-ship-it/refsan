@@ -458,6 +458,210 @@ const AdminDashboard = () => {
                     </div>
                     <Button type="submit" className="w-full btn-primary" data-testid="create-repair-btn">
                       Arıza Kaydı Oluştur
+          <TabsContent value="reports" className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>Teknisyen Performans Raporları</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-6">
+                  {/* Technician Selection */}
+                  <div className="space-y-2">
+                    <Label htmlFor="technician-select">Teknisyen Seçin</Label>
+                    <Select 
+                      value={selectedTechnician} 
+                      onValueChange={(value) => {
+                        setSelectedTechnician(value);
+                        fetchTechnicianReport(value);
+                      }}
+                    >
+                      <SelectTrigger data-testid="technician-report-select">
+                        <SelectValue placeholder="Rapor görmek istediğiniz teknisyeni seçin" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {users.filter(u => u.role === 'teknisyen').map(tech => (
+                          <SelectItem key={tech.id} value={tech.id}>
+                            {tech.full_name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Loading State */}
+                  {loadingReport && (
+                    <div className="flex items-center justify-center py-8">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                      <span className="ml-3">Rapor yükleniyor...</span>
+                    </div>
+                  )}
+
+                  {/* Report Content */}
+                  {technicianReport && !loadingReport && (
+                    <div className="space-y-6">
+                      {/* Summary Cards */}
+                      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+                          <CardContent className="p-4">
+                            <div className="text-center">
+                              <p className="text-sm font-medium text-blue-700">Toplam Müşteri</p>
+                              <p className="text-2xl font-bold text-blue-900">{technicianReport.summary.total_customers}</p>
+                            </div>
+                          </CardContent>
+                        </Card>
+                        
+                        <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
+                          <CardContent className="p-4">
+                            <div className="text-center">
+                              <p className="text-sm font-medium text-green-700">Toplam Arıza</p>
+                              <p className="text-2xl font-bold text-green-900">{technicianReport.summary.total_repairs}</p>
+                            </div>
+                          </CardContent>
+                        </Card>
+                        
+                        <Card className="bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200">
+                          <CardContent className="p-4">
+                            <div className="text-center">
+                              <p className="text-sm font-medium text-yellow-700">Tahmini Gelir</p>
+                              <p className="text-2xl font-bold text-yellow-900">₺{technicianReport.summary.total_estimate}</p>
+                            </div>
+                          </CardContent>
+                        </Card>
+                        
+                        <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
+                          <CardContent className="p-4">
+                            <div className="text-center">
+                              <p className="text-sm font-medium text-purple-700">Gerçek Gelir</p>
+                              <p className="text-2xl font-bold text-purple-900">₺{technicianReport.summary.total_cost}</p>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </div>
+
+                      {/* Technician Info */}
+                      <Card>
+                        <CardHeader>
+                          <CardTitle>Teknisyen Bilgileri</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                              <Label>Ad Soyad</Label>
+                              <p className="font-medium">{technicianReport.technician.full_name}</p>
+                            </div>
+                            <div>
+                              <Label>E-posta</Label>
+                              <p className="font-medium">{technicianReport.technician.email}</p>
+                            </div>
+                            <div>
+                              <Label>Telefon</Label>
+                              <p className="font-medium">{technicianReport.technician.phone || 'Belirtilmemiş'}</p>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+
+                      {/* Repairs by Date */}
+                      <Card>
+                        <CardHeader>
+                          <CardTitle>Tarihine Göre Arıza Kayıtları</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="space-y-4">
+                            {Object.entries(technicianReport.repairs_by_date)
+                              .sort(([a], [b]) => new Date(b) - new Date(a))
+                              .map(([date, dayRepairs]) => (
+                              <div key={date} className="border rounded-lg p-4">
+                                <div className="flex items-center justify-between mb-3">
+                                  <h4 className="font-semibold text-lg">{new Date(date).toLocaleDateString('tr-TR')}</h4>
+                                  <Badge variant="outline">{dayRepairs.length} arıza</Badge>
+                                </div>
+                                
+                                <div className="space-y-2">
+                                  {dayRepairs.map((repair, index) => (
+                                    <div key={index} className="bg-gray-50 p-3 rounded">
+                                      <div className="flex items-start justify-between">
+                                        <div>
+                                          <p className="font-medium">{repair.customer_name}</p>
+                                          <p className="text-sm text-gray-600">{repair.device_type} - {repair.brand} {repair.model}</p>
+                                          <p className="text-sm text-gray-700">{repair.description}</p>
+                                        </div>
+                                        <div className="text-right">
+                                          {repair.final_cost && (
+                                            <p className="text-sm font-medium text-green-600">₺{repair.final_cost}</p>
+                                          )}
+                                          {repair.cost_estimate && !repair.final_cost && (
+                                            <p className="text-sm font-medium text-blue-600">~₺{repair.cost_estimate}</p>
+                                          )}
+                                          <Badge className={getStatusColor(repair.status)}>
+                                            {repair.status}
+                                          </Badge>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            ))}
+                            
+                            {Object.keys(technicianReport.repairs_by_date).length === 0 && (
+                              <div className="text-center py-8 text-slate-500">
+                                Bu teknisyenin henüz arıza kaydı bulunmuyor
+                              </div>
+                            )}
+                          </div>
+                        </CardContent>
+                      </Card>
+
+                      {/* Customer List */}
+                      <Card>
+                        <CardHeader>
+                          <CardTitle>Teknisyenin Müşterileri</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="space-y-3">
+                            {technicianReport.customers.map(customer => (
+                              <div key={customer.id} className="border rounded-lg p-3 hover:bg-gray-50">
+                                <div className="flex items-center justify-between">
+                                  <div>
+                                    <h4 className="font-medium">{customer.full_name}</h4>
+                                    <p className="text-sm text-gray-600">{customer.phone}</p>
+                                    {customer.email && (
+                                      <p className="text-sm text-gray-600">{customer.email}</p>
+                                    )}
+                                  </div>
+                                  <div className="text-sm text-gray-500">
+                                    {new Date(customer.created_at).toLocaleDateString('tr-TR')}
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                            
+                            {technicianReport.customers.length === 0 && (
+                              <div className="text-center py-8 text-slate-500">
+                                Bu teknisyenin henüz müşterisi bulunmuyor
+                              </div>
+                            )}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  )}
+
+                  {/* No Technician Selected */}
+                  {!selectedTechnician && !loadingReport && (
+                    <div className="text-center py-12">
+                      <div className="text-gray-500">
+                        <Calendar className="w-16 h-16 mx-auto mb-4" />
+                        <h3 className="text-lg font-medium mb-2">Teknisyen Seçin</h3>
+                        <p>Rapor görmek için yukarıdan bir teknisyen seçin</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
                     </Button>
                   </form>
                 </DialogContent>
