@@ -270,11 +270,13 @@ const LoginPage = () => {
                         <SelectValue placeholder="Rolünüzü seçin" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="admin">Admin</SelectItem>
                         <SelectItem value="teknisyen">Teknisyen</SelectItem>
                         <SelectItem value="musteri">Müşteri</SelectItem>
                       </SelectContent>
                     </Select>
+                    <p className="text-xs text-gray-500">
+                      Not: Admin hesabı oluşturmak için mevcut admin ile iletişime geçin.
+                    </p>
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="register-password">Şifre *</Label>
