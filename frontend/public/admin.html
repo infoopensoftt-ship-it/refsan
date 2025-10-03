@@ -871,6 +871,41 @@
             }
         }
 
+        async function createCustomer(event) {
+            event.preventDefault();
+            
+            const customerData = {
+                full_name: document.getElementById('customer-name').value,
+                phone: document.getElementById('customer-phone').value,
+                email: document.getElementById('customer-email').value || null,
+                address: document.getElementById('customer-address').value || null
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/customers`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}` 
+                    },
+                    body: JSON.stringify(customerData)
+                });
+
+                if (response.ok) {
+                    alert('✅ Müşteri başarıyla oluşturuldu!');
+                    closeModal('customerModal');
+                    event.target.reset();
+                    loadStats();
+                    loadCustomers();
+                } else {
+                    const error = await response.json();
+                    alert('❌ ' + (error.detail || 'Müşteri oluşturulamadı'));
+                }
+            } catch (error) {
+                alert('❌ Hata: ' + error.message);
+            }
+        }
+
         function openModal(modalId) {
             document.getElementById(modalId).style.display = 'block';
         }
