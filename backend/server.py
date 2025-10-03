@@ -200,6 +200,21 @@ def require_role(required_roles: List[UserRole]):
         return current_user
     return role_checker
 
+async def create_notification(notification_type: str, title: str, message: str, related_id: str):
+    """Helper function to create notifications"""
+    notification = Notification(
+        type=notification_type,
+        title=title,
+        message=message,
+        related_id=related_id
+    )
+    
+    notification_dict = notification.dict()
+    notification_dict["created_at"] = notification_dict["created_at"].isoformat()
+    
+    await db.notifications.insert_one(notification_dict)
+    return notification
+
 # Authentication routes
 @api_router.post("/auth/register", response_model=User)
 async def register(user_data: UserCreate):
