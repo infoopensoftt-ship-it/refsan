@@ -132,15 +132,25 @@ const CustomerDashboard = () => {
               </div>
             </div>
             
-            <Button
-              variant="outline"
-              onClick={logout}
-              className="hover:bg-red-50 hover:text-red-600 hover:border-red-300"
-              data-testid="logout-btn"
-            >
-              <LogOut className="w-4 h-4 mr-2" />
-              Çıkış Yap
-            </Button>
+            <div className="flex space-x-3">
+              <Button
+                onClick={() => setShowRepairForm(true)}
+                className="btn-primary"
+                data-testid="add-repair-btn"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Yeni Arıza
+              </Button>
+              <Button
+                variant="outline"
+                onClick={logout}
+                className="hover:bg-red-50 hover:text-red-600 hover:border-red-300"
+                data-testid="logout-btn"
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Çıkış Yap
+              </Button>
+            </div>
           </div>
         </div>
       </div>
