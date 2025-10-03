@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Refsan Türkiye - Admin Panel</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: #f1f5f9;
+            min-height: 100vh;
+        }
+        .header {
+            background: linear-gradient(135deg, #dc2626, #991b1b);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header h1 { font-size: 1.5em; }
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .logout-btn:hover { background: rgba(255,255,255,0.3); }
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            padding: 2rem;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.3s;
+        }
+        .stat-card:hover { transform: translateY(-5px); }
+        .stat-card h3 { color: #64748b; font-size: 0.9em; margin-bottom: 0.5rem; }
+        .stat-card .number { font-size: 2em; font-weight: bold; }
+        .admin-sections {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .section h2 { 
+            color: #1e293b; 
+            margin-bottom: 1rem; 
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #f1f5f9;
+        }
+        .btn {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 5px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        .btn-secondary { background: linear-gradient(135deg, #64748b, #475569); }
+        .btn-success { background: linear-gradient(135deg, #059669, #047857); }
+        .form-group {
+            margin: 1rem 0;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #374151;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+        .technician-list, .user-list, .repair-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .list-item {
+            background: #f8fafc;
+            padding: 0.75rem;
+            margin: 0.5rem 0;
+            border-radius: 6px;
+            border-left: 4px solid #3b82f6;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 2rem;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 90%;
+        }
+        .close {
+            float: right;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+        }
+        .close:hover { color: #333; }
+        .report-section {
+            background: #f0f9ff;
+            border: 1px solid #0ea5e9;
+        }
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #64748b;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div>
+            <h1>🔧 Refsan Türkiye Admin</h1>
+            <small id="user-info">Yükleniyor...</small>
+        </div>
+        <button class="logout-btn" onclick="logout()">🚪 Çıkış Yap</button>
+    </div>
+
+    <div class="container">
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Toplam Arıza</h3>
+                <div class="number" id="total-repairs">-</div>
+            </div>
+            <div class="stat-card">
+                <h3>Bekleyen</h3>
+                <div class="number" id="pending-repairs">-</div>
+            </div>
+            <div class="stat-card">
+                <h3>Tamamlanan</h3>
+                <div class="number" id="completed-repairs">-</div>
+            </div>
+            <div class="stat-card">
+                <h3>Müşteriler</h3>
+                <div class="number" id="total-customers">-</div>
+            </div>
+            <div class="stat-card">
+                <h3>Teknisyenler</h3>
+                <div class="number" id="total-technicians">-</div>
+            </div>
+        </div>
+
+        <!-- Admin Sections -->
+        <div class="admin-sections">
+            <!-- Teknisyen Raporları -->
+            <div class="section report-section">
+                <h2>📊 Teknisyen Raporları</h2>
+                <div class="form-group">
+                    <label>Teknisyen Seçin:</label>
+                    <select id="technician-select" onchange="loadTechnicianReport()">
+                        <option value="">Seçiniz...</option>
+                    </select>
+                </div>
+                <div id="technician-report" class="loading" style="display: none;">
+                    Rapor yükleniyor...
+                </div>
+            </div>
+
+            <!-- Yeni Kullanıcı -->
+            <div class="section">
+                <h2>👤 Kullanıcı Yönetimi</h2>
+                <button class="btn" onclick="openModal('userModal')">➕ Yeni Kullanıcı</button>
+                <button class="btn btn-secondary" onclick="loadUsers()">👥 Kullanıcı Listesi</button>
+                <div id="user-list" class="user-list"></div>
+            </div>
+
+            <!-- Müşteri Yönetimi -->
+            <div class="section">
+                <h2>🏢 Müşteri Yönetimi</h2>
+                <button class="btn" onclick="openModal('customerModal')">➕ Yeni Müşteri</button>
+                <button class="btn btn-secondary" onclick="loadCustomers()">📋 Müşteri Listesi</button>
+                <div id="customer-list"></div>
+            </div>
+
+            <!-- Arıza Yönetimi -->
+            <div class="section">
+                <h2>🔧 Arıza Yönetimi</h2>
+                <button class="btn" onclick="openModal('repairModal')">➕ Yeni Arıza</button>
+                <button class="btn btn-secondary" onclick="loadRepairs()">📝 Arıza Listesi</button>
+                <div id="repair-list" class="repair-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Modal -->
+    <div id="userModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('userModal')">&times;</span>
+            <h2>Yeni Kullanıcı Ekle</h2>
+            <form onsubmit="createUser(event)">
+                <div class="form-group">
+                    <label>Ad Soyad *</label>
+                    <input type="text" id="user-name" required>
+                </div>
+                <div class="form-group">
+                    <label>E-posta *</label>
+                    <input type="email" id="user-email" required>
+                </div>
+                <div class="form-group">
+                    <label>Şifre *</label>
+                    <input type="password" id="user-password" required>
+                </div>
+                <div class="form-group">
+                    <label>Rol *</label>
+                    <select id="user-role" required>
+                        <option value="">Seçiniz</option>
+                        <option value="admin">Admin</option>
+                        <option value="teknisyen">Teknisyen</option>
+                        <option value="musteri">Müşteri</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Telefon</label>
+                    <input type="tel" id="user-phone">
+                </div>
+                <button type="submit" class="btn">Kullanıcı Oluştur</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Customer Modal -->
+    <div id="customerModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('customerModal')">&times;</span>
+            <h2>Yeni Müşteri Ekle</h2>
+            <form onsubmit="createCustomer(event)">
+                <div class="form-group">
+                    <label>Ad Soyad *</label>
+                    <input type="text" id="customer-name" required>
+                </div>
+                <div class="form-group">
+                    <label>Telefon *</label>
+                    <input type="tel" id="customer-phone" required>
+                </div>
+                <div class="form-group">
+                    <label>E-posta</label>
+                    <input type="email" id="customer-email">
+                </div>
+                <div class="form-group">
+                    <label>Adres</label>
+                    <input type="text" id="customer-address">
+                </div>
+                <button type="submit" class="btn">Müşteri Oluştur</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'https://fixservice-app.preview.emergentagent.com/api';
+        let authToken = localStorage.getItem('token');
+        let currentUser = null;
+
+        // Check authentication
+        window.onload = async function() {
+            if (!authToken) {
+                alert('Giriş gerekli!');
+                window.location.href = 'test.html';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/auth/me`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+
+                if (response.ok) {
+                    currentUser = await response.json();
+                    if (currentUser.role !== 'admin') {
+                        alert('Admin yetkisi gerekli!');
+                        window.location.href = 'test.html';
+                        return;
+                    }
+                    document.getElementById('user-info').textContent = `Hoş geldin, ${currentUser.full_name}`;
+                    loadStats();
+                    loadTechnicians();
+                } else {
+                    throw new Error('Auth failed');
+                }
+            } catch (error) {
+                alert('Giriş doğrulanamadı!');
+                window.location.href = 'test.html';
+            }
+        };
+
+        async function loadStats() {
+            try {
+                const response = await fetch(`${API_BASE}/stats`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                const stats = await response.json();
+                
+                document.getElementById('total-repairs').textContent = stats.total_repairs || 0;
+                document.getElementById('pending-repairs').textContent = stats.pending_repairs || 0;
+                document.getElementById('completed-repairs').textContent = stats.completed_repairs || 0;
+                document.getElementById('total-customers').textContent = stats.total_customers || 0;
+                document.getElementById('total-technicians').textContent = stats.total_technicians || 0;
+            } catch (error) {
+                console.error('Stats load error:', error);
+            }
+        }
+
+        async function loadTechnicians() {
+            try {
+                const response = await fetch(`${API_BASE}/users`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                const users = await response.json();
+                const technicians = users.filter(u => u.role === 'teknisyen');
+                
+                const select = document.getElementById('technician-select');
+                select.innerHTML = '<option value="">Seçiniz...</option>';
+                
+                technicians.forEach(tech => {
+                    const option = document.createElement('option');
+                    option.value = tech.id;
+                    option.textContent = tech.full_name;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Technicians load error:', error);
+            }
+        }
+
+        async function loadTechnicianReport() {
+            const techId = document.getElementById('technician-select').value;
+            const reportDiv = document.getElementById('technician-report');
+            
+            if (!techId) {
+                reportDiv.style.display = 'none';
+                return;
+            }
+
+            reportDiv.style.display = 'block';
+            reportDiv.innerHTML = '<div class="loading">Rapor yükleniyor...</div>';
+
+            try {
+                const response = await fetch(`${API_BASE}/reports/technician/${techId}`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                
+                if (response.ok) {
+                    const report = await response.json();
+                    displayTechnicianReport(report);
+                } else {
+                    reportDiv.innerHTML = '<div style="color: red;">Rapor yüklenemedi</div>';
+                }
+            } catch (error) {
+                reportDiv.innerHTML = '<div style="color: red;">Hata: ' + error.message + '</div>';
+            }
+        }
+
+        function displayTechnicianReport(report) {
+            const reportDiv = document.getElementById('technician-report');
+            
+            let html = `
+                <div style="background: white; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                    <h4>${report.technician.full_name}</h4>
+                    <p>📧 ${report.technician.email}</p>
+                    ${report.technician.phone ? `<p>📞 ${report.technician.phone}</p>` : ''}
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin: 1rem 0;">
+                    <div style="background: #dbeafe; padding: 1rem; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 1.5em; font-weight: bold;">${report.summary.total_customers}</div>
+                        <div>Müşteri</div>
+                    </div>
+                    <div style="background: #dcfce7; padding: 1rem; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 1.5em; font-weight: bold;">${report.summary.total_repairs}</div>
+                        <div>Arıza</div>
+                    </div>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin: 1rem 0;">
+                    <div style="background: #fef3c7; padding: 1rem; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 1.2em; font-weight: bold;">₺${report.summary.total_estimate}</div>
+                        <div>Tahmini</div>
+                    </div>
+                    <div style="background: #f3e8ff; padding: 1rem; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 1.2em; font-weight: bold;">₺${report.summary.total_cost}</div>
+                        <div>Gerçek</div>
+                    </div>
+                </div>
+            `;
+
+            if (report.repairs && report.repairs.length > 0) {
+                html += '<h4 style="margin: 1rem 0;">Son Arızalar:</h4>';
+                report.repairs.slice(0, 5).forEach(repair => {
+                    html += `
+                        <div style="background: #f8fafc; padding: 0.75rem; margin: 0.5rem 0; border-radius: 6px; border-left: 4px solid #3b82f6;">
+                            <strong>${repair.customer_name}</strong><br>
+                            <small>${repair.device_type} - ${repair.brand} ${repair.model}</small><br>
+                            <small style="color: #059669;">₺${repair.final_cost || repair.cost_estimate || 0}</small>
+                        </div>
+                    `;
+                });
+            }
+
+            reportDiv.innerHTML = html;
+        }
+
+        async function loadUsers() {
+            try {
+                const response = await fetch(`${API_BASE}/users`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                const users = await response.json();
+                
+                const listDiv = document.getElementById('user-list');
+                listDiv.innerHTML = users.map(user => `
+                    <div class="list-item">
+                        <strong>${user.full_name}</strong> (${user.role})<br>
+                        <small>📧 ${user.email}</small>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Users load error:', error);
+            }
+        }
+
+        async function createUser(event) {
+            event.preventDefault();
+            
+            const userData = {
+                full_name: document.getElementById('user-name').value,
+                email: document.getElementById('user-email').value,
+                password: document.getElementById('user-password').value,
+                role: document.getElementById('user-role').value,
+                phone: document.getElementById('user-phone').value
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/auth/register`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}` 
+                    },
+                    body: JSON.stringify(userData)
+                });
+
+                if (response.ok) {
+                    alert('✅ Kullanıcı başarıyla oluşturuldu!');
+                    closeModal('userModal');
+                    event.target.reset();
+                    loadStats();
+                    loadTechnicians();
+                } else {
+                    const error = await response.json();
+                    alert('❌ ' + (error.detail || 'Kullanıcı oluşturulamadı'));
+                }
+            } catch (error) {
+                alert('❌ Hata: ' + error.message);
+            }
+        }
+
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'test.html';
+        }
+    </script>
+</body>
+</html>
