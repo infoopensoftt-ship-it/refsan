@@ -928,6 +928,13 @@ async def get_unread_notifications_count(
     count = await db.notifications.count_documents({"read": False})
     return {"unread_count": count}
 
+@api_router.delete("/notifications/clear-all")
+async def clear_all_notifications(
+    current_user: User = Depends(require_role([UserRole.ADMIN]))
+):
+    result = await db.notifications.delete_many({})
+    return {"message": f"{result.deleted_count} notifications cleared"}
+
 # Include the router in the main app
 app.include_router(api_router)
 
