@@ -114,19 +114,6 @@ const TechnicianDashboard = () => {
       images: [...prev.images, ...files.map(f => f.url)]
     }));
   };
-    address: ''
-  });
-  
-  // Repair form state
-  const [repairForm, setRepairForm] = useState({
-    customer_id: '',
-    device_type: '',
-    brand: '',
-    model: '',
-    description: '',
-    priority: 'orta',
-    cost_estimate: ''
-  });
 
   useEffect(() => {
     fetchData();
