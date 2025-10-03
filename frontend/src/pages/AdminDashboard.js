@@ -357,14 +357,20 @@ const AdminDashboard = () => {
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="device-type">Cihaz Türü *</Label>
-                        <Input
-                          id="device-type"
-                          value={repairForm.device_type}
-                          onChange={(e) => setRepairForm({ ...repairForm, device_type: e.target.value })}
-                          placeholder="Telefon, Laptop..."
-                          required
-                          data-testid="device-type-input"
-                        />
+                        <Select value={repairForm.device_type} onValueChange={(value) => setRepairForm({ ...repairForm, device_type: value })}>
+                          <SelectTrigger data-testid="device-type-select">
+                            <SelectValue placeholder="Makine türü seçin" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Seramik Makinesi">Seramik Makinesi</SelectItem>
+                            <SelectItem value="Porselen Üretim Makinesi">Porselen Üretim Makinesi</SelectItem>
+                            <SelectItem value="Çini İşleme Makinesi">Çini İşleme Makinesi</SelectItem>
+                            <SelectItem value="Fırın Sistemi">Fırın Sistemi</SelectItem>
+                            <SelectItem value="Glazür Makinesi">Glazür Makinesi</SelectItem>
+                            <SelectItem value="Karışım Makinesi">Karışım Makinesi</SelectItem>
+                            <SelectItem value="Diğer">Diğer</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="brand">Marka *</Label>
