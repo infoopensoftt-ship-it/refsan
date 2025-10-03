@@ -63,6 +63,15 @@ const AdminDashboard = () => {
     priority: 'orta',
     cost_estimate: ''
   });
+  
+  // User form state
+  const [userForm, setUserForm] = useState({
+    full_name: '',
+    email: '',
+    password: '',
+    role: '',
+    phone: ''
+  });
 
   useEffect(() => {
     fetchData();
