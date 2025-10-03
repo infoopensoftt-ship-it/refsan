@@ -53,6 +53,21 @@ const TechnicianDashboard = () => {
     full_name: '',
     email: '',
     phone: '',
+    address: ''
+  });
+  
+  // Repair form state
+  const [repairForm, setRepairForm] = useState({
+    customer_id: '',
+    device_type: '',
+    brand: '',
+    model: '',
+    description: '',
+    priority: 'orta',
+    cost_estimate: '',
+    images: []
+  });
+
   const handleCreateCustomer = async (e) => {
     e.preventDefault();
     try {
