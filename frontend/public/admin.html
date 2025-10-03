@@ -734,14 +734,14 @@
             }
         }
 
-        async function loadCustomers() {
+        async function loadCustomersInModal() {
             try {
                 const response = await fetch(`${API_BASE}/customers`, {
                     headers: { 'Authorization': `Bearer ${authToken}` }
                 });
                 const customers = await response.json();
                 
-                const listDiv = document.getElementById('customer-list');
+                const listDiv = document.getElementById('modal-customer-list');
                 listDiv.innerHTML = customers.map(customer => `
                     <div class="list-item">
                         <div class="clickable-customer" onclick="openCustomerDetail('${customer.id}')" style="cursor: pointer;">
@@ -759,6 +759,7 @@
                 `).join('');
             } catch (error) {
                 console.error('Customers load error:', error);
+                document.getElementById('modal-customer-list').innerHTML = '<div style="color: red;">Müşteriler yüklenemedi</div>';
             }
         }
 
