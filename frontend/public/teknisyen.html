@@ -526,6 +526,7 @@
                             ${repair.cost_estimate ? `💰 Tahmini: ₺${repair.cost_estimate}` : ''}
                             ${repair.final_cost ? ` | Final: ₺${repair.final_cost}` : ''}
                             ${repair.payment_status ? ` | Ödeme: ${repair.payment_status}` : ''}
+                            ${repair.images && repair.images.length > 0 ? `<br>📎 ${repair.images.length} dosya eklendi` : ''}
                         </div>
                     </div>
                 `;
