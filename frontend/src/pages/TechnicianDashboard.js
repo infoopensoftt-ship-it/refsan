@@ -10,6 +10,7 @@ import { Textarea } from '../components/ui/textarea';
 import { Label } from '../components/ui/label';
 import { Input } from '../components/ui/input';
 import { toast } from 'sonner';
+import FileUpload from '../components/FileUpload';
 import { 
   Wrench, 
   LogOut, 
@@ -20,7 +21,9 @@ import {
   Eye,
   Phone,
   Calendar,
-  DollarSign
+  DollarSign,
+  Plus,
+  UserPlus
 } from 'lucide-react';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
