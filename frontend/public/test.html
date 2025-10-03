@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Refsan Türkiye - Test</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container { 
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+        }
+        h1 { 
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        .subtitle {
+            color: #718096;
+            margin-bottom: 30px;
+            font-size: 1.2em;
+        }
+        .form-section {
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        input, select, button {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        button {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .demo-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .demo-btn {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 8px;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .admin { background: #e53e3e; }
+        .tech { background: #3182ce; }
+        .customer { background: #38a169; }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 8px;
+            display: none;
+        }
+        .success { background: #c6f6d5; color: #22543d; }
+        .error { background: #fed7d7; color: #742a2a; }
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        .tab {
+            flex: 1;
+            padding: 10px;
+            background: #edf2f7;
+            border: none;
+            cursor: pointer;
+            border-radius: 8px 8px 0 0;
+        }
+        .tab.active {
+            background: white;
+            border-bottom: 2px solid #667eea;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Refsan Türkiye</h1>
+        <p class="subtitle">Seramik Makineleri Teknik Servis</p>
+        
+        <!-- Demo Buttons -->
+        <div class="form-section">
+            <h3>Demo Hesaplar</h3>
+            <div class="demo-buttons">
+                <button class="demo-btn admin" onclick="quickLogin('admin@demo.com', 'admin123')">
+                    👨‍💼 Admin
+                </button>
+                <button class="demo-btn tech" onclick="quickLogin('teknisyen@demo.com', 'teknisyen123')">
+                    🔧 Teknisyen
+                </button>
+                <button class="demo-btn customer" onclick="quickLogin('musteri@demo.com', 'musteri123')">
+                    👤 Müşteri
+                </button>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('login')">Giriş Yap</button>
+            <button class="tab" onclick="showTab('register')">Kayıt Ol</button>
+        </div>
+
+        <!-- Login Tab -->
+        <div id="login-tab" class="tab-content active">
+            <div class="form-section">
+                <input type="email" id="login-email" placeholder="E-posta" value="">
+                <input type="password" id="login-password" placeholder="Şifre" value="">
+                <button onclick="login()">Giriş Yap</button>
+            </div>
+        </div>
+
+        <!-- Register Tab -->
+        <div id="register-tab" class="tab-content">
+            <div class="form-section">
+                <input type="text" id="reg-name" placeholder="Ad Soyad *" required>
+                <input type="email" id="reg-email" placeholder="E-posta *" required>
+                <input type="tel" id="reg-phone" placeholder="Telefon (05XX XXX XX XX)">
+                <select id="reg-role" required>
+                    <option value="">Rol seçin *</option>
+                    <option value="teknisyen">Teknisyen</option>
+                    <option value="musteri">Müşteri</option>
+                </select>
+                <input type="password" id="reg-password" placeholder="Şifre *" required>
+                <button onclick="register()">Kayıt Ol</button>
+                <small style="color: #666; font-size: 12px;">
+                    Not: Admin hesabı için mevcut admin ile iletişime geçin.
+                </small>
+            </div>
+        </div>
+
+        <div id="result" class="status"></div>
+
+        <!-- Test New Account -->
+        <div class="form-section" style="border-top: 1px solid #e2e8f0; margin-top: 30px; padding-top: 20px;">
+            <h4>🆕 Test Hesabı</h4>
+            <button class="demo-btn tech" onclick="quickLogin('test@test.com', 'test123')">
+                Test Teknisyen Girişi
+            </button>
+            <small style="color: #666;">Az önce oluşturulan test hesabı</small>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'https://fixservice-app.preview.emergentagent.com/api';
+        
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName + '-tab').classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function showResult(message, isSuccess = true) {
+            const result = document.getElementById('result');
+            result.textContent = message;
+            result.className = isSuccess ? 'status success' : 'status error';
+            result.style.display = 'block';
+            
+            setTimeout(() => {
+                result.style.display = 'none';
+            }, 5000);
+        }
+
+        function quickLogin(email, password) {
+            document.getElementById('login-email').value = email;
+            document.getElementById('login-password').value = password;
+            showTab('login');
+            setTimeout(login, 500);
+        }
+
+        async function login() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+
+            if (!email || !password) {
+                showResult('E-posta ve şifre gerekli!', false);
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    showResult(`✅ ${data.user.full_name} olarak giriş yapıldı! (${data.user.role})`);
+                    
+                    // Store token
+                    localStorage.setItem('token', data.access_token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    
+                    // Redirect based on role
+                    setTimeout(() => {
+                        switch(data.user.role) {
+                            case 'admin':
+                                window.location.href = '#admin-dashboard';
+                                break;
+                            case 'teknisyen':
+                                window.location.href = '#teknisyen-dashboard';
+                                break;
+                            case 'musteri':
+                                window.location.href = '#musteri-dashboard';
+                                break;
+                        }
+                    }, 2000);
+                } else {
+                    const error = await response.json();
+                    showResult('❌ ' + (error.detail || 'Giriş başarısız'), false);
+                }
+            } catch (error) {
+                showResult('❌ Bağlantı hatası: ' + error.message, false);
+            }
+        }
+
+        async function register() {
+            const full_name = document.getElementById('reg-name').value;
+            const email = document.getElementById('reg-email').value;
+            const phone = document.getElementById('reg-phone').value;
+            const role = document.getElementById('reg-role').value;
+            const password = document.getElementById('reg-password').value;
+
+            if (!full_name || !email || !role || !password) {
+                showResult('Zorunlu alanları doldurun!', false);
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/auth/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ full_name, email, phone, role, password })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    showResult(`✅ Kayıt başarılı! ${data.full_name} (${data.role}) hesabı oluşturuldu. Şimdi giriş yapabilirsiniz.`);
+                    
+                    // Clear form and switch to login
+                    document.getElementById('reg-name').value = '';
+                    document.getElementById('reg-email').value = '';
+                    document.getElementById('reg-phone').value = '';
+                    document.getElementById('reg-role').value = '';
+                    document.getElementById('reg-password').value = '';
+                    
+                    // Fill login form
+                    document.getElementById('login-email').value = email;
+                    setTimeout(() => showTab('login'), 2000);
+                } else {
+                    const error = await response.json();
+                    showResult('❌ ' + (error.detail || 'Kayıt başarısız'), false);
+                }
+            } catch (error) {
+                showResult('❌ Bağlantı hatası: ' + error.message, false);
+            }
+        }
+
+        // Check if user is already logged in
+        window.onload = function() {
+            const token = localStorage.getItem('token');
+            const user = localStorage.getItem('user');
+            
+            if (token && user) {
+                const userData = JSON.parse(user);
+                showResult(`Merhaba ${userData.full_name}! Zaten giriş yapmışsınız (${userData.role})`);
+            }
+        };
+    </script>
+</body>
+</html>
