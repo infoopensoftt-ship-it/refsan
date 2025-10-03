@@ -129,7 +129,7 @@ const TechnicianDashboard = () => {
                 <Wrench className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-semibold text-slate-800">Teknisyen Panel</h1>
+                <h1 className="text-xl font-semibold text-slate-800">Refsan Teknisyen Panel</h1>
                 <p className="text-sm text-slate-600">Hoş geldin, {user?.full_name}</p>
               </div>
             </div>
