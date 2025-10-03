@@ -148,6 +148,20 @@ const AdminDashboard = () => {
   };
 
   const getPriorityColor = (priority) => {
+  const fetchTechnicianReport = async (technicianId) => {
+    if (!technicianId) return;
+    
+    setLoadingReport(true);
+    try {
+      const response = await axios.get(`${API}/reports/technician/${technicianId}`);
+      setTechnicianReport(response.data);
+    } catch (error) {
+      console.error('Report fetch error:', error);
+      toast.error('Rapor yüklenirken hata oluştu');
+    } finally {
+      setLoadingReport(false);
+    }
+  };
     switch (priority) {
       case 'dusuk': return 'bg-gray-100 text-gray-800';
       case 'orta': return 'bg-yellow-100 text-yellow-800';
