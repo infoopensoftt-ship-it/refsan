@@ -177,6 +177,42 @@ backend:
         agent: "testing"
         comment: "✅ PASSED: GET /api/customers/{customer_id}/repairs endpoint working correctly. Tested customers with no repairs (returns empty array), customers with multiple repairs, invalid customer IDs (returns 404). Role-based access control working properly."
 
+  - task: "Delete customer endpoint"
+    implemented: false
+    working: "NA"
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Need to create DELETE /api/customers/{customer_id} endpoint"
+
+  - task: "Delete repair endpoint"
+    implemented: false
+    working: "NA"
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Need to create DELETE /api/repairs/{repair_id} endpoint"
+
+  - task: "Notifications endpoint"
+    implemented: false
+    working: "NA"
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Need to create notification system for new repairs, customers, and status updates"
+
 frontend:
   - task: "Customer detail page"
     implemented: true
