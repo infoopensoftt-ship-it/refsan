@@ -131,6 +131,7 @@ class RepairRequestCreate(BaseModel):
     description: str
     priority: Priority = Priority.MEDIUM
     cost_estimate: Optional[float] = None
+    images: List[str] = []  # File URLs from upload endpoint
 
 class RepairRequestUpdate(BaseModel):
     status: Optional[RepairStatus] = None
