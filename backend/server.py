@@ -613,6 +613,15 @@ async def create_repair_request(
         repair_mongo_dict["completed_at"] = repair_mongo_dict["completed_at"].isoformat()
     
     await db.repairs.insert_one(repair_mongo_dict)
+    
+    # Create notification for new repair
+    await create_notification(
+        notification_type="new_repair",
+        title="Yeni Arıza Kaydı",
+        message=f"{repair_obj.customer_name} için yeni arıza: {repair_obj.device_type} {repair_obj.brand}",
+        related_id=repair_obj.id
+    )
+    
     return repair_obj
 
 @api_router.get("/repairs", response_model=List[RepairRequest])
