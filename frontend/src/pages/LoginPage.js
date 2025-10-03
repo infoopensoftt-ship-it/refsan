@@ -319,7 +319,7 @@ const LoginPage = () => {
         </Card>
         
         <div className="text-center text-sm text-slate-500">
-          Teknik servis arıza yönetim sistemi
+          Refsan Türkiye seramik makineleri servis sistemi
         </div>
       </div>
     </div>
