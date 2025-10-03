@@ -418,6 +418,90 @@ async def get_customer_repairs(
         result.append(RepairRequest(**repair))
     return result
 
+# Search functionality
+@api_router.get("/search")
+async def search_data(
+    query: str,
+    type: Optional[str] = None,  # "customers", "repairs", or None for both
+    current_user: User = Depends(get_current_user)
+):
+    results = {"customers": [], "repairs": []}
+    
+    if not query or len(query.strip()) < 2:
+        return results
+    
+    query = query.strip()
+    
+    # Search customers
+    if type is None or type == "customers":
+        customer_query = {
+            "$or": [
+                {"full_name": {"$regex": query, "$options": "i"}},
+                {"phone": {"$regex": query, "$options": "i"}},
+                {"email": {"$regex": query, "$options": "i"}},
+                {"address": {"$regex": query, "$options": "i"}}
+            ]
+        }
+        
+        # Apply role-based filtering
+        if current_user.role == UserRole.TECHNICIAN:
+            customer_query["created_by_technician"] = current_user.id
+        elif current_user.role == UserRole.CUSTOMER:
+            customer_query["email"] = current_user.email
+        
+        customers = await db.customers.find(customer_query).to_list(100)
+        for customer in customers:
+            if isinstance(customer.get("created_at"), str):
+                customer["created_at"] = datetime.fromisoformat(customer["created_at"])
+            results["customers"].append(Customer(**customer))
+    
+    # Search repairs
+    if type is None or type == "repairs":
+        repair_query = {
+            "$or": [
+                {"customer_name": {"$regex": query, "$options": "i"}},
+                {"device_type": {"$regex": query, "$options": "i"}},
+                {"brand": {"$regex": query, "$options": "i"}},
+                {"model": {"$regex": query, "$options": "i"}},
+                {"description": {"$regex": query, "$options": "i"}},
+                {"status": {"$regex": query, "$options": "i"}},
+                {"priority": {"$regex": query, "$options": "i"}}
+            ]
+        }
+        
+        # Apply role-based filtering (same as get_repair_requests)
+        if current_user.role == UserRole.TECHNICIAN:
+            customer_ids = []
+            customers = await db.customers.find({"created_by_technician": current_user.id}).to_list(1000)
+            customer_ids = [customer["id"] for customer in customers]
+            
+            repair_query = {
+                "$and": [
+                    repair_query,
+                    {
+                        "$or": [
+                            {"assigned_technician_id": current_user.id},
+                            {"customer_id": {"$in": customer_ids}},
+                            {"created_by": current_user.id}
+                        ]
+                    }
+                ]
+            }
+        elif current_user.role == UserRole.CUSTOMER:
+            repair_query["created_by"] = current_user.id
+        
+        repairs = await db.repairs.find(repair_query).to_list(100)
+        for repair in repairs:
+            if isinstance(repair.get("created_at"), str):
+                repair["created_at"] = datetime.fromisoformat(repair["created_at"])
+            if isinstance(repair.get("updated_at"), str):
+                repair["updated_at"] = datetime.fromisoformat(repair["updated_at"])
+            if repair.get("completed_at") and isinstance(repair["completed_at"], str):
+                repair["completed_at"] = datetime.fromisoformat(repair["completed_at"])
+            results["repairs"].append(RepairRequest(**repair))
+    
+    return results
+
 # Repair Request routes
 @api_router.post("/repairs", response_model=RepairRequest)
 async def create_repair_request(
