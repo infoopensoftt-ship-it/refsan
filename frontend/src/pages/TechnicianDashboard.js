@@ -36,6 +36,8 @@ const TechnicianDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [selectedRepair, setSelectedRepair] = useState(null);
   const [showUpdateForm, setShowUpdateForm] = useState(false);
+  const [showCustomerForm, setShowCustomerForm] = useState(false);
+  const [showRepairForm, setShowRepairForm] = useState(false);
   
   // Update form state
   const [updateForm, setUpdateForm] = useState({
@@ -43,6 +45,25 @@ const TechnicianDashboard = () => {
     final_cost: '',
     payment_status: '',
     notes: ''
+  });
+
+  // Customer form state
+  const [customerForm, setCustomerForm] = useState({
+    full_name: '',
+    email: '',
+    phone: '',
+    address: ''
+  });
+  
+  // Repair form state
+  const [repairForm, setRepairForm] = useState({
+    customer_id: '',
+    device_type: '',
+    brand: '',
+    model: '',
+    description: '',
+    priority: 'orta',
+    cost_estimate: ''
   });
 
   useEffect(() => {
