@@ -1378,7 +1378,10 @@
                     closeModal('customerModal');
                     event.target.reset();
                     loadStats();
-                    loadCustomers();
+                    // Reload customer list if modal is open
+                    if (document.getElementById('customerListModal').style.display === 'block') {
+                        loadCustomersInModal();
+                    }
                 } else {
                     const error = await response.json();
                     alert('❌ ' + (error.detail || 'Müşteri oluşturulamadı'));
