@@ -43,6 +43,7 @@ const AdminDashboard = () => {
   const [selectedRepair, setSelectedRepair] = useState(null);
   const [showCustomerForm, setShowCustomerForm] = useState(false);
   const [showRepairForm, setShowRepairForm] = useState(false);
+  const [showUserForm, setShowUserForm] = useState(false);
   
   // Customer form state
   const [customerForm, setCustomerForm] = useState({
