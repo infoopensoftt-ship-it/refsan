@@ -99,7 +99,8 @@ const TechnicianDashboard = () => {
         model: '',
         description: '',
         priority: 'orta',
-        cost_estimate: ''
+        cost_estimate: '',
+        images: []
       });
       fetchData();
     } catch (error) {
