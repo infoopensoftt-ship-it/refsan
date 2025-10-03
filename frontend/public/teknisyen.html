@@ -831,6 +831,45 @@
             window.location.href = 'test.html';
         }
 
+        // File preview functionality
+        function updateFilePreview() {
+            const fileInput = document.getElementById('repair-files');
+            const previewDiv = document.getElementById('file-preview');
+            
+            if (!fileInput.files.length) {
+                previewDiv.innerHTML = '';
+                return;
+            }
+            
+            let html = '<div style="font-size: 0.9em; color: #374151; margin-top: 0.5rem;"><strong>Seçilen Dosyalar:</strong></div>';
+            
+            Array.from(fileInput.files).forEach((file, index) => {
+                const fileSize = (file.size / 1024 / 1024).toFixed(2);
+                html += `
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.25rem 0; border-bottom: 1px solid #e5e7eb;">
+                        <span style="font-size: 0.8em;">${file.name} (${fileSize} MB)</span>
+                        <button type="button" onclick="removeFile(${index})" style="color: #ef4444; background: none; border: none; cursor: pointer;">✕</button>
+                    </div>
+                `;
+            });
+            
+            previewDiv.innerHTML = html;
+        }
+
+        function removeFile(index) {
+            const fileInput = document.getElementById('repair-files');
+            const dt = new DataTransfer();
+            
+            Array.from(fileInput.files).forEach((file, i) => {
+                if (i !== index) {
+                    dt.items.add(file);
+                }
+            });
+            
+            fileInput.files = dt.files;
+            updateFilePreview();
+        }
+
         // Add enter key support for customer search
         document.addEventListener('DOMContentLoaded', function() {
             const searchInput = document.getElementById('customer-search-input');
@@ -840,6 +879,12 @@
                         searchCustomers();
                     }
                 });
+            }
+            
+            // Add file input change listener
+            const fileInput = document.getElementById('repair-files');
+            if (fileInput) {
+                fileInput.addEventListener('change', updateFilePreview);
             }
         });
     </script>
