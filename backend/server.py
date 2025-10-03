@@ -386,6 +386,39 @@ async def update_customer(
     
     return Customer(**updated_customer)
 
+@api_router.delete("/customers/{customer_id}")
+async def delete_customer(
+    customer_id: str,
+    current_user: User = Depends(require_role([UserRole.ADMIN, UserRole.TECHNICIAN]))
+):
+    customer = await db.customers.find_one({"id": customer_id})
+    if not customer:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Customer not found"
+        )
+    
+    # Teknisyen sadece kendi müşterilerini silebilir
+    if current_user.role == UserRole.TECHNICIAN and customer.get("created_by_technician") != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access denied"
+        )
+    
+    # Delete all repairs for this customer first
+    await db.repairs.delete_many({"customer_id": customer_id})
+    
+    # Delete the customer
+    result = await db.customers.delete_one({"id": customer_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Customer not found"
+        )
+    
+    return {"message": "Customer and all associated repairs deleted successfully"}
+
 @api_router.get("/customers/{customer_id}/repairs", response_model=List[RepairRequest])
 async def get_customer_repairs(
     customer_id: str,
