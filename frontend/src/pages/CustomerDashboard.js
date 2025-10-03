@@ -27,6 +27,7 @@ const CustomerDashboard = () => {
   const [stats, setStats] = useState(null);
   const [repairs, setRepairs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showRepairForm, setShowRepairForm] = useState(false);
 
   useEffect(() => {
     fetchData();
