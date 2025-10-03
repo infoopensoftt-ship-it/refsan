@@ -715,6 +715,15 @@ async def update_repair_request(
     
     await db.repairs.update_one({"id": repair_id}, {"$set": update_data})
     
+    # Create notification for status update if status changed
+    if "status" in update_data:
+        await create_notification(
+            notification_type="repair_status_update",
+            title="Arıza Durumu Güncellendi",
+            message=f"{repair['customer_name']} - {repair['device_type']}: {update_data['status']}",
+            related_id=repair_id
+        )
+    
     # Get updated repair
     updated_repair = await db.repairs.find_one({"id": repair_id})
     
