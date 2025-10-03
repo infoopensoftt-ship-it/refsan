@@ -579,7 +579,7 @@
                 
                 const listDiv = document.getElementById('customer-list');
                 listDiv.innerHTML = customers.map(customer => `
-                    <div class="list-item">
+                    <div class="list-item clickable-customer" onclick="openCustomerDetail('${customer.id}')">
                         <strong>${customer.full_name}</strong><br>
                         <small>📞 ${customer.phone}</small>
                         ${customer.email ? `<br><small>📧 ${customer.email}</small>` : ''}
@@ -592,6 +592,211 @@
                 console.error('Customers load error:', error);
             }
         }
+
+        async function openCustomerDetail(customerId) {
+            try {
+                // Load customer details
+                const response = await fetch(`${API_BASE}/customers/${customerId}`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                
+                if (response.ok) {
+                    const customer = await response.json();
+                    
+                    // Fill the edit form
+                    document.getElementById('edit-customer-id').value = customer.id;
+                    document.getElementById('edit-customer-name').value = customer.full_name;
+                    document.getElementById('edit-customer-phone').value = customer.phone;
+                    document.getElementById('edit-customer-email').value = customer.email || '';
+                    document.getElementById('edit-customer-address').value = customer.address || '';
+                    document.getElementById('customer-detail-title').textContent = `Müşteri: ${customer.full_name}`;
+                    
+                    // Load customer repairs
+                    loadCustomerRepairs(customerId);
+                    
+                    // Open modal
+                    openModal('customerDetailModal');
+                } else {
+                    alert('Müşteri bilgileri yüklenemedi');
+                }
+            } catch (error) {
+                console.error('Error loading customer details:', error);
+                alert('Hata: ' + error.message);
+            }
+        }
+
+        async function loadCustomerRepairs(customerId) {
+            try {
+                const response = await fetch(`${API_BASE}/customers/${customerId}/repairs`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                
+                if (response.ok) {
+                    const repairs = await response.json();
+                    const repairsDiv = document.getElementById('customer-repairs-list');
+                    
+                    if (repairs.length === 0) {
+                        repairsDiv.innerHTML = '<div class="loading">Bu müşteriye ait arıza kaydı bulunamadı.</div>';
+                    } else {
+                        repairsDiv.innerHTML = repairs.map(repair => {
+                            const statusClass = `status-${repair.status.replace('ç', 'c').replace('ı', 'i')}`;
+                            const priorityClass = `priority-${repair.priority}`;
+                            
+                            return `
+                                <div class="list-item">
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                        <strong>Arıza #${repair.id.substring(0, 8)}</strong>
+                                        <small>${new Date(repair.created_at).toLocaleDateString('tr-TR')}</small>
+                                    </div>
+                                    <div style="margin-bottom: 0.5rem;">
+                                        <span class="status-badge ${statusClass}">${repair.status}</span>
+                                        <span class="status-badge ${priorityClass}">${repair.priority}</span>
+                                    </div>
+                                    <div style="font-size: 0.9em; color: #475569;">
+                                        🔧 ${repair.device_type} - ${repair.brand} ${repair.model}<br>
+                                        📝 ${repair.description}<br>
+                                        ${repair.cost_estimate ? `💰 Tahmini: ₺${repair.cost_estimate}` : ''}
+                                        ${repair.final_cost ? ` | Final: ₺${repair.final_cost}` : ''}
+                                        ${repair.assigned_technician_name ? `<br>👨‍🔧 ${repair.assigned_technician_name}` : '<br>⏳ Teknisyen atanmadı'}
+                                    </div>
+                                </div>
+                            `;
+                        }).join('');
+                    }
+                } else {
+                    document.getElementById('customer-repairs-list').innerHTML = '<div style="color: red;">Arızalar yüklenemedi</div>';
+                }
+            } catch (error) {
+                console.error('Error loading customer repairs:', error);
+                document.getElementById('customer-repairs-list').innerHTML = '<div style="color: red;">Hata: ' + error.message + '</div>';
+            }
+        }
+
+        async function updateCustomer(event) {
+            event.preventDefault();
+            
+            const customerId = document.getElementById('edit-customer-id').value;
+            const updateData = {
+                full_name: document.getElementById('edit-customer-name').value,
+                phone: document.getElementById('edit-customer-phone').value,
+                email: document.getElementById('edit-customer-email').value || null,
+                address: document.getElementById('edit-customer-address').value || null
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/customers/${customerId}`, {
+                    method: 'PUT',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}` 
+                    },
+                    body: JSON.stringify(updateData)
+                });
+
+                if (response.ok) {
+                    alert('✅ Müşteri bilgileri güncellendi!');
+                    closeModal('customerDetailModal');
+                    loadCustomers(); // Refresh the customer list
+                    loadStats(); // Refresh stats
+                } else {
+                    const error = await response.json();
+                    alert('❌ ' + (error.detail || 'Güncelleme başarısız'));
+                }
+            } catch (error) {
+                alert('❌ Hata: ' + error.message);
+            }
+        }
+
+        async function performSearch() {
+            const query = document.getElementById('search-input').value.trim();
+            const type = document.getElementById('search-type').value;
+            
+            if (query.length < 2) {
+                alert('En az 2 karakter girin');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/search?query=${encodeURIComponent(query)}&type=${type}`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                
+                if (response.ok) {
+                    const results = await response.json();
+                    displaySearchResults(results);
+                } else {
+                    alert('Arama başarısız');
+                }
+            } catch (error) {
+                console.error('Search error:', error);
+                alert('Hata: ' + error.message);
+            }
+        }
+
+        function displaySearchResults(results) {
+            const resultsDiv = document.getElementById('search-results');
+            resultsDiv.style.display = 'block';
+            
+            let html = '<h4>Arama Sonuçları:</h4>';
+            
+            if (results.customers.length === 0 && results.repairs.length === 0) {
+                html += '<div class="loading">Sonuç bulunamadı</div>';
+            } else {
+                // Display customers
+                if (results.customers.length > 0) {
+                    html += '<div style="margin-bottom: 1rem;"><strong>Müşteriler:</strong></div>';
+                    results.customers.forEach(customer => {
+                        html += `
+                            <div class="search-result-item" onclick="openCustomerDetail('${customer.id}')">
+                                <div class="search-result-type">Müşteri</div>
+                                <div class="search-result-header">${customer.full_name}</div>
+                                <small>📞 ${customer.phone}</small>
+                                ${customer.email ? `<br><small>📧 ${customer.email}</small>` : ''}
+                            </div>
+                        `;
+                    });
+                }
+                
+                // Display repairs
+                if (results.repairs.length > 0) {
+                    html += '<div style="margin: 1rem 0;"><strong>Arızalar:</strong></div>';
+                    results.repairs.forEach(repair => {
+                        const statusClass = `status-${repair.status.replace('ç', 'c').replace('ı', 'i')}`;
+                        html += `
+                            <div class="search-result-item">
+                                <div class="search-result-type">Arıza</div>
+                                <div class="search-result-header">${repair.customer_name}</div>
+                                <div style="margin: 0.25rem 0;">
+                                    <span class="status-badge ${statusClass}">${repair.status}</span>
+                                </div>
+                                <small>🔧 ${repair.device_type} - ${repair.brand} ${repair.model}</small><br>
+                                <small>📝 ${repair.description}</small>
+                            </div>
+                        `;
+                    });
+                }
+            }
+            
+            resultsDiv.innerHTML = html;
+        }
+
+        function clearSearch() {
+            document.getElementById('search-input').value = '';
+            document.getElementById('search-type').value = '';
+            document.getElementById('search-results').style.display = 'none';
+        }
+
+        // Add enter key support for search
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('search-input');
+            if (searchInput) {
+                searchInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        performSearch();
+                    }
+                });
+            }
+        });
 
         async function loadRepairs() {
             try {
