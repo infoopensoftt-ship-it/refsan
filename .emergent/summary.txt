@@ -1,0 +1,73 @@
+<analysis>
+The trajectory documents the development of a Technical Service Program from inception to a partially functional state. The process began with clarifying the user's initial Turkish request into a concrete feature set: a three-role system (Admin, Technician, Customer), service record creation with image uploads, and customer management, all localized in Turkish.
+
+The initial development phase involved scaffolding the full-stack application using a bulk writer to create FastAPI backend and React frontend files. This was followed by a significant debugging period focused on the backend, specifically resolving JWT authentication and password hashing issues in  related to . A demo data script () was created to aid testing.
+
+Subsequent work involved incorporating new user requirements, such as rebranding the application for Refsan Türkiye and implementing logic for technicians to add customers and service records. This led to extensive modifications in the React components, particularly . However, these changes introduced persistent frontend compilation and runtime errors, ultimately causing the React application to fail to render entirely.
+
+As a critical workaround to unblock the user, the development pivoted to creating static HTML pages (, , etc.) in the  directory. These pages interact directly with the fully functional backend via vanilla JavaScript, providing a usable, albeit non-React-based, interface. The most recent user interaction was a request for new features and bug fixes for this static HTML version, including admin panel reporting and data visibility issues. The AI was about to begin addressing these new requests when this summary was initiated.
+</analysis>
+
+<product_requirements>
+The goal is to build a comprehensive technical service management application for Refsan Türkiye, a company specializing in ceramic machinery.
+
+The system must support three distinct user roles:
+1.  **Admin:** Has a global view of the system. They can see all customers, all service records created by all technicians, and manage users. A key feature is a reporting dashboard to track technician performance (e.g., number of customers added, service records filed) within a specified date range.
+2.  **Technician:** Can create new service records for existing or new customers. They can view only the customers and records they have personally created. Technicians must be able to upload files (images, documents) associated with a service record.
+3.  **Customer:** Can create their own service records and view their history.
+
+The application's interface must be entirely in Turkish. The system should facilitate the creation and tracking of service requests, from initiation by a customer or technician to resolution, including associated costs and device details (type, brand, model).
+</product_requirements>
+
+<key_technical_concepts>
+- **Backend:** FastAPI (Python) for creating RESTful APIs.
+- **Frontend:** Initially React, but currently implemented using static HTML and vanilla JavaScript due to React mounting issues.
+- **Database:** MongoDB for data persistence.
+- **Authentication:** JWT (JSON Web Tokens) for securing API endpoints.
+- **Authorization:** Role-Based Access Control (RBAC) implemented in the backend to restrict access based on user roles (Admin, Technician, Customer).
+- **UI Components:** Utilizes shadcn/ui components within the (currently non-functional) React portion of the codebase.
+</key_technical_concepts>
+
+<code_architecture>
+The application is a standard full-stack project with a decoupled frontend and backend. The backend provides a JSON-based API that the frontend consumes. Due to frontend issues, the primary user interface is currently a set of static HTML files.
+
+**Directory Structure:**
+
+
+- ****
+  - **Importance:** This is the application's core. It defines all API endpoints, handles user authentication (registration, login, token generation), manages database interactions with MongoDB (using Pydantic models for data validation), and enforces role-based access control for all operations.
+  - **Changes:** Heavily modified from its initial template to include endpoints for creating users, customers, and service records (), fetching data based on user roles, and fixing critical authentication bugs.
+
+- **** (and other  files)
+  - **Importance:** These static files represent the **current working version** of the user interface.  serves as the login/registration page, using vanilla JavaScript's  API to communicate with the backend. After successful login, it redirects to the appropriate static dashboard (, ).
+  - **Changes:** These files were created from scratch as a workaround when the React application failed to load. They contain the essential UI elements and JavaScript logic for the application to be usable.
+
+- ****
+  - **Importance:** In the intended React architecture, this is a critical component where technicians would manage their work. It contains the forms (within shadcn Dialog components) for creating new customers and new service records.
+  - **Changes:** This file underwent numerous edits to add functionality, which ultimately led to compilation errors and runtime issues that broke the entire React app. It is currently not being rendered.
+
+- ****
+  - **Importance:** A standalone Python script used to populate the MongoDB database with initial user accounts (Admin, Technician, Customer) for testing and demonstration purposes.
+  - **Changes:** Created to simplify the testing process after the backend authentication logic was stabilized.
+</code_architecture>
+
+<pending_tasks>
+- **Admin Data Visibility:** The admin dashboard needs to be fixed to correctly display the lists of all customers and all service records.
+- **Reporting Feature:** Implement a Reports section in the admin panel. This should allow admins to select a technician and a date range to view a summary of their activity (e.g., number of customers added, service records created).
+- **File Upload:** Ensure the file upload functionality is working for service records created by technicians.
+- **React App Fix:** The root cause of the React application failing to mount needs to be investigated and fixed to move away from the static HTML workaround.
+</pending_tasks>
+
+<current_work>
+The project is in a hybrid, partially-functional state. The FastAPI backend is stable and robust. All core API endpoints for user registration, role-based login, creating customers, and creating service records are working correctly, as verified by  commands and the functionality of the static pages.
+
+The primary issue is the non-operational React frontend. Due to a series of compilation and runtime errors that could not be resolved in the short term, the main  fails to render, resulting in a blank page.
+
+To provide a working product to the user, a workaround was implemented by creating a set of static HTML files (, , , ) in the  directory. These pages use vanilla JavaScript to interact directly with the backend API. The  page handles both login and registration and correctly redirects users to their respective static dashboard pages based on their role.
+
+Immediately before this summary, the user tested this static HTML version and provided a new list of feature requests and bug fixes. The most recent task was acknowledging these requests and preparing to start work on the first item: fixing the data lists on the admin's static dashboard.
+</current_work>
+
+<optional_next_step>
+I will begin by fixing the admin dashboard to ensure the lists of all customers and service records are correctly fetched from the backend and displayed.
+</optional_next_step>

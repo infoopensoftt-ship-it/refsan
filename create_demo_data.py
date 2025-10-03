@@ -5,7 +5,7 @@ Demo verileri oluşturma scripti
 import requests
 import json
 
-BACKEND_URL = "https://fixservice-app.preview.emergentagent.com/api"
+BACKEND_URL = "https://repair-manager-10.preview.emergentagent.com/api"
 
 def create_demo_users():
     """Demo kullanıcıları oluştur"""
