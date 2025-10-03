@@ -1357,6 +1357,8 @@ class TechnicalServiceAPITester:
             customers_success = self.test_customers_crud()
             # Test new admin panel endpoints
             admin_panel_success = self.test_admin_panel_endpoints()
+            # Test new backend endpoints
+            new_endpoints_success = self.test_new_backend_endpoints()
         else:
             # Customer role should not have access to create customers
             success, _ = self.run_test(
@@ -1367,6 +1369,7 @@ class TechnicalServiceAPITester:
             )
             customers_success = success  # Success means it correctly returned 403
             admin_panel_success = True  # Skip admin panel tests for customers
+            new_endpoints_success = True  # Skip new endpoint tests for customers
         
         # Test users list (admin only)
         users_success = self.test_users_list()
@@ -1390,7 +1393,8 @@ class TechnicalServiceAPITester:
                 403
             )
         
-        return stats_success and customers_success and users_success and admin_panel_success and notifications_access_success
+        return (stats_success and customers_success and users_success and 
+                admin_panel_success and notifications_access_success and new_endpoints_success)
 
 def main():
     print("🚀 Starting Technical Service API Tests")
