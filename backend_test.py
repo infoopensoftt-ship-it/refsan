@@ -1007,7 +1007,26 @@ class TechnicalServiceAPITester:
         # Test users list (admin only)
         users_success = self.test_users_list()
         
-        return stats_success and customers_success and users_success and admin_panel_success
+        # Test notifications access (admin only)
+        notifications_access_success = True
+        if self.current_user.get('role') == 'admin':
+            # Admin should have access
+            notifications_access_success, _ = self.run_test(
+                "Admin access to notifications",
+                "GET",
+                "notifications",
+                200
+            )
+        else:
+            # Non-admin should be forbidden
+            notifications_access_success, _ = self.run_test(
+                f"{self.current_user.get('role')} access to notifications (should fail)",
+                "GET",
+                "notifications",
+                403
+            )
+        
+        return stats_success and customers_success and users_success and admin_panel_success and notifications_access_success
 
 def main():
     print("🚀 Starting Technical Service API Tests")
