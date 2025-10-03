@@ -306,6 +306,36 @@ backend:
         agent: "testing"
         comment: "✅ PASSED: Enhanced repair creation working perfectly. Repairs can be created with file attachments stored in images array. Successfully tested creating repair with 3 file URLs. File attachments properly stored and retrieved. Works for both admin and technician roles."
 
+  - task: "Repair detail endpoint with role-based access"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented GET /api/repairs/{repair_id} endpoint with comprehensive role-based access control"
+      - working: true
+        agent: "testing"
+        comment: "✅ PASSED: GET /api/repairs/{repair_id} endpoint working perfectly with role-based access control. Admin can access any repair details (200). Technician can access assigned repairs and own customer repairs (200), but gets 403 for unassigned repairs. Customer can access own repairs only. Invalid repair IDs return 404 as expected. Fixed duplicate function definition issue and enhanced access control logic."
+
+  - task: "Enhanced notification system with extra_data"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Enhanced notification system to include extra_data fields (repair_id, customer_name, device_info, new_status)"
+      - working: true
+        agent: "testing"
+        comment: "✅ PASSED: Enhanced notification system working perfectly. Notifications now contain extra_data fields: repair_id, customer_name, device_info for frontend linking. New repair notifications include all device details. Status update notifications include new_status field. Repair cancellation creates 'repair_cancelled' type notifications. Updated Notification model to include optional enhanced fields. All notification types properly store and retrieve enhanced data for improved frontend integration."
+
 frontend:
   - task: "Customer detail page"
     implemented: true
