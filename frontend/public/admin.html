@@ -1294,6 +1294,13 @@
 
         function openModal(modalId) {
             document.getElementById(modalId).style.display = 'block';
+            
+            // Load data when specific modals are opened
+            if (modalId === 'customerListModal') {
+                loadCustomersInModal();
+            } else if (modalId === 'technicianReportsModal') {
+                loadTechniciansForReport();
+            }
         }
 
         function closeModal(modalId) {
