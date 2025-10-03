@@ -322,7 +322,10 @@
     <div id="notifications-panel" class="notifications-panel" style="display: none;">
         <div class="notifications-header">
             <h3>🔔 Bildirimler</h3>
-            <button onclick="closeNotifications()" class="close-btn">×</button>
+            <div style="display: flex; gap: 0.5rem;">
+                <button onclick="clearAllNotifications()" class="btn" style="padding: 4px 8px; font-size: 0.8em; margin: 0;">🗑️ Tümünü Temizle</button>
+                <button onclick="closeNotifications()" class="close-btn">×</button>
+            </div>
         </div>
         <div id="notifications-list" class="notifications-list">
             <div class="loading">Bildirimler yükleniyor...</div>
