@@ -917,6 +917,139 @@
             document.getElementById('search-results').style.display = 'none';
         }
 
+        // Notification functions
+        async function loadNotifications() {
+            try {
+                const response = await fetch(`${API_BASE}/notifications?limit=20`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                
+                if (response.ok) {
+                    const notifications = await response.json();
+                    displayNotifications(notifications);
+                } else {
+                    console.error('Failed to load notifications');
+                }
+            } catch (error) {
+                console.error('Error loading notifications:', error);
+            }
+        }
+
+        async function loadNotificationCount() {
+            try {
+                const response = await fetch(`${API_BASE}/notifications/unread-count`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    const countSpan = document.getElementById('notification-count');
+                    if (data.unread_count > 0) {
+                        countSpan.textContent = data.unread_count;
+                        countSpan.style.display = 'inline-block';
+                    } else {
+                        countSpan.style.display = 'none';
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading notification count:', error);
+            }
+        }
+
+        function displayNotifications(notifications) {
+            const listDiv = document.getElementById('notifications-list');
+            
+            if (notifications.length === 0) {
+                listDiv.innerHTML = '<div class="loading">Bildirim bulunamadı</div>';
+            } else {
+                listDiv.innerHTML = notifications.map(notification => `
+                    <div class="notification-item ${notification.read ? '' : 'unread'}" onclick="markNotificationRead('${notification.id}')">
+                        <div class="notification-title">${notification.title}</div>
+                        <div class="notification-message">${notification.message}</div>
+                        <div class="notification-time">${new Date(notification.created_at).toLocaleDateString('tr-TR')} ${new Date(notification.created_at).toLocaleTimeString('tr-TR')}</div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        async function markNotificationRead(notificationId) {
+            try {
+                await fetch(`${API_BASE}/notifications/${notificationId}/read`, {
+                    method: 'PUT',
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                
+                // Reload notifications and count
+                loadNotifications();
+                loadNotificationCount();
+            } catch (error) {
+                console.error('Error marking notification as read:', error);
+            }
+        }
+
+        function toggleNotifications() {
+            const panel = document.getElementById('notifications-panel');
+            if (panel.style.display === 'none') {
+                panel.style.display = 'block';
+                loadNotifications();
+            } else {
+                panel.style.display = 'none';
+            }
+        }
+
+        function closeNotifications() {
+            document.getElementById('notifications-panel').style.display = 'none';
+        }
+
+        // Delete functions
+        async function deleteCustomer(customerId, customerName) {
+            if (!confirm(`"${customerName}" müşterisini ve tüm arıza kayıtlarını silmek istediğinizden emin misiniz?\n\nBu işlem geri alınamaz!`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/customers/${customerId}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+
+                if (response.ok) {
+                    alert('✅ Müşteri başarıyla silindi!');
+                    loadCustomers();
+                    loadStats();
+                } else {
+                    const error = await response.json();
+                    alert('❌ ' + (error.detail || 'Silme işlemi başarısız'));
+                }
+            } catch (error) {
+                alert('❌ Hata: ' + error.message);
+            }
+        }
+
+        async function deleteRepair(repairId, customerName) {
+            if (!confirm(`"${customerName}" müşterisine ait arıza kaydını silmek istediğinizden emin misiniz?\n\nBu işlem geri alınamaz!`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/repairs/${repairId}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+
+                if (response.ok) {
+                    alert('✅ Arıza kaydı başarıyla silindi!');
+                    loadRepairs();
+                    loadStats();
+                } else {
+                    const error = await response.json();
+                    alert('❌ ' + (error.detail || 'Silme işlemi başarısız'));
+                }
+            } catch (error) {
+                alert('❌ Hata: ' + error.message);
+            }
+        }
+
         // Add enter key support for search
         document.addEventListener('DOMContentLoaded', function() {
             const searchInput = document.getElementById('search-input');
