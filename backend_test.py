@@ -282,6 +282,344 @@ class TechnicalServiceAPITester:
         
         return success
 
+    def test_customer_detail_endpoint(self, customer_id=None):
+        """Test GET /api/customers/{customer_id} endpoint"""
+        if not customer_id:
+            # Create a customer first
+            customer_data = {
+                "full_name": "Detail Test Customer",
+                "email": "detail@test.com",
+                "phone": "05551234567",
+                "address": "Test Address for Detail"
+            }
+            success, customer = self.run_test(
+                "Create customer for detail test",
+                "POST",
+                "customers",
+                200,
+                data=customer_data
+            )
+            if not success:
+                return False
+            customer_id = customer.get('id')
+        
+        # Test valid customer ID
+        success, customer_detail = self.run_test(
+            "Get customer detail - valid ID",
+            "GET",
+            f"customers/{customer_id}",
+            200
+        )
+        
+        if success:
+            print(f"   ✅ Customer detail retrieved: {customer_detail.get('full_name')}")
+        
+        # Test invalid customer ID
+        invalid_success, _ = self.run_test(
+            "Get customer detail - invalid ID",
+            "GET",
+            "customers/invalid-id-12345",
+            404
+        )
+        
+        return success and invalid_success
+
+    def test_customer_update_endpoint(self, customer_id=None):
+        """Test PUT /api/customers/{customer_id} endpoint"""
+        if not customer_id:
+            # Create a customer first
+            customer_data = {
+                "full_name": "Update Test Customer",
+                "email": "update@test.com", 
+                "phone": "05551234567",
+                "address": "Original Address"
+            }
+            success, customer = self.run_test(
+                "Create customer for update test",
+                "POST",
+                "customers",
+                200,
+                data=customer_data
+            )
+            if not success:
+                return False
+            customer_id = customer.get('id')
+        
+        # Test updating all fields
+        update_data = {
+            "full_name": "Updated Customer Name",
+            "email": "updated@test.com",
+            "phone": "05559876543",
+            "address": "Updated Address"
+        }
+        
+        success, updated_customer = self.run_test(
+            "Update customer - all fields",
+            "PUT",
+            f"customers/{customer_id}",
+            200,
+            data=update_data
+        )
+        
+        if success:
+            print(f"   ✅ Customer updated: {updated_customer.get('full_name')}")
+        
+        # Test partial update
+        partial_update = {
+            "phone": "05551111111"
+        }
+        
+        partial_success, _ = self.run_test(
+            "Update customer - partial update",
+            "PUT", 
+            f"customers/{customer_id}",
+            200,
+            data=partial_update
+        )
+        
+        # Test invalid customer ID
+        invalid_success, _ = self.run_test(
+            "Update customer - invalid ID",
+            "PUT",
+            "customers/invalid-id-12345",
+            404,
+            data=update_data
+        )
+        
+        return success and partial_success and invalid_success
+
+    def test_search_functionality(self):
+        """Test GET /api/search endpoint"""
+        # Create test data first
+        customer_data = {
+            "full_name": "Search Test Customer",
+            "email": "search@test.com",
+            "phone": "05551234567",
+            "address": "Search Test Address"
+        }
+        
+        success, customer = self.run_test(
+            "Create customer for search test",
+            "POST",
+            "customers",
+            200,
+            data=customer_data
+        )
+        
+        if not success:
+            return False
+        
+        customer_id = customer.get('id')
+        
+        # Create a repair for search testing
+        repair_data = {
+            "customer_id": customer_id,
+            "device_type": "Samsung Galaxy",
+            "brand": "Samsung",
+            "model": "Galaxy S23",
+            "description": "Screen replacement needed",
+            "priority": "yuksek"
+        }
+        
+        repair_success, repair = self.run_test(
+            "Create repair for search test",
+            "POST",
+            "repairs",
+            200,
+            data=repair_data
+        )
+        
+        # Test search customers only
+        search_customers_success, customers_result = self.run_test(
+            "Search customers only",
+            "GET",
+            "search?query=Search Test&type=customers",
+            200
+        )
+        
+        if search_customers_success:
+            print(f"   ✅ Found {len(customers_result.get('customers', []))} customers")
+        
+        # Test search repairs only
+        search_repairs_success, repairs_result = self.run_test(
+            "Search repairs only", 
+            "GET",
+            "search?query=Samsung&type=repairs",
+            200
+        )
+        
+        if search_repairs_success:
+            print(f"   ✅ Found {len(repairs_result.get('repairs', []))} repairs")
+        
+        # Test search both (no type parameter)
+        search_both_success, both_result = self.run_test(
+            "Search both customers and repairs",
+            "GET",
+            "search?query=Search",
+            200
+        )
+        
+        if search_both_success:
+            customers_count = len(both_result.get('customers', []))
+            repairs_count = len(both_result.get('repairs', []))
+            print(f"   ✅ Found {customers_count} customers and {repairs_count} repairs")
+        
+        # Test empty query
+        empty_query_success, empty_result = self.run_test(
+            "Search with empty query",
+            "GET",
+            "search?query=",
+            200
+        )
+        
+        # Test special characters
+        special_char_success, _ = self.run_test(
+            "Search with special characters",
+            "GET",
+            "search?query=@#$%",
+            200
+        )
+        
+        # Test phone number search
+        phone_search_success, phone_result = self.run_test(
+            "Search by phone number",
+            "GET",
+            "search?query=05551234567&type=customers",
+            200
+        )
+        
+        return (search_customers_success and search_repairs_success and 
+                search_both_success and empty_query_success and 
+                special_char_success and phone_search_success)
+
+    def test_customer_repairs_endpoint(self, customer_id=None):
+        """Test GET /api/customers/{customer_id}/repairs endpoint"""
+        if not customer_id:
+            # Create a customer first
+            customer_data = {
+                "full_name": "Repairs Test Customer",
+                "email": "repairs@test.com",
+                "phone": "05551234567"
+            }
+            success, customer = self.run_test(
+                "Create customer for repairs test",
+                "POST",
+                "customers",
+                200,
+                data=customer_data
+            )
+            if not success:
+                return False
+            customer_id = customer.get('id')
+        
+        # Test customer with no repairs
+        no_repairs_success, no_repairs_result = self.run_test(
+            "Get customer repairs - no repairs",
+            "GET",
+            f"customers/{customer_id}/repairs",
+            200
+        )
+        
+        if no_repairs_success:
+            print(f"   ✅ Customer has {len(no_repairs_result)} repairs (expected 0)")
+        
+        # Create some repairs for the customer
+        repair_data_1 = {
+            "customer_id": customer_id,
+            "device_type": "iPhone",
+            "brand": "Apple",
+            "model": "iPhone 14",
+            "description": "Battery replacement",
+            "priority": "orta"
+        }
+        
+        repair_data_2 = {
+            "customer_id": customer_id,
+            "device_type": "MacBook",
+            "brand": "Apple", 
+            "model": "MacBook Pro",
+            "description": "Keyboard repair",
+            "priority": "yuksek"
+        }
+        
+        repair1_success, repair1 = self.run_test(
+            "Create first repair for customer",
+            "POST",
+            "repairs",
+            200,
+            data=repair_data_1
+        )
+        
+        repair2_success, repair2 = self.run_test(
+            "Create second repair for customer",
+            "POST",
+            "repairs",
+            200,
+            data=repair_data_2
+        )
+        
+        if not (repair1_success and repair2_success):
+            return False
+        
+        # Test customer with repairs
+        with_repairs_success, with_repairs_result = self.run_test(
+            "Get customer repairs - with repairs",
+            "GET",
+            f"customers/{customer_id}/repairs",
+            200
+        )
+        
+        if with_repairs_success:
+            print(f"   ✅ Customer has {len(with_repairs_result)} repairs")
+        
+        # Test invalid customer ID
+        invalid_customer_success, _ = self.run_test(
+            "Get customer repairs - invalid customer ID",
+            "GET",
+            "customers/invalid-id-12345/repairs",
+            404
+        )
+        
+        return no_repairs_success and with_repairs_success and invalid_customer_success
+
+    def test_admin_panel_endpoints(self):
+        """Test all new admin panel endpoints"""
+        print(f"\n🏢 Testing Admin Panel Endpoints for: {self.current_user.get('role')}")
+        
+        # Only test if user has appropriate permissions
+        if self.current_user.get('role') not in ['admin', 'teknisyen']:
+            print("   ⚠️  Skipping admin panel tests (insufficient permissions)")
+            return True
+        
+        # Create a test customer for all endpoint tests
+        customer_data = {
+            "full_name": "Admin Panel Test Customer",
+            "email": "adminpanel@test.com",
+            "phone": "05551234567",
+            "address": "Admin Panel Test Address"
+        }
+        
+        success, customer = self.run_test(
+            "Create customer for admin panel tests",
+            "POST",
+            "customers",
+            200,
+            data=customer_data
+        )
+        
+        if not success:
+            return False
+        
+        customer_id = customer.get('id')
+        
+        # Test all admin panel endpoints
+        detail_success = self.test_customer_detail_endpoint(customer_id)
+        update_success = self.test_customer_update_endpoint(customer_id)
+        search_success = self.test_search_functionality()
+        repairs_success = self.test_customer_repairs_endpoint(customer_id)
+        
+        return detail_success and update_success and search_success and repairs_success
+
     def test_role_based_access(self):
         """Test role-based access control"""
         print(f"\n🔐 Testing role-based access for: {self.current_user.get('role')}")
@@ -292,6 +630,8 @@ class TechnicalServiceAPITester:
         # Test customers access (admin and technician only)
         if self.current_user.get('role') in ['admin', 'teknisyen']:
             customers_success = self.test_customers_crud()
+            # Test new admin panel endpoints
+            admin_panel_success = self.test_admin_panel_endpoints()
         else:
             # Customer role should not have access to create customers
             success, _ = self.run_test(
@@ -301,11 +641,12 @@ class TechnicalServiceAPITester:
                 403  # Expecting forbidden
             )
             customers_success = success  # Success means it correctly returned 403
+            admin_panel_success = True  # Skip admin panel tests for customers
         
         # Test users list (admin only)
         users_success = self.test_users_list()
         
-        return stats_success and customers_success and users_success
+        return stats_success and customers_success and users_success and admin_panel_success
 
 def main():
     print("🚀 Starting Technical Service API Tests")
