@@ -139,16 +139,15 @@ class RepairRequestUpdate(BaseModel):
 
 # Utility functions
 def verify_password(plain_password, hashed_password):
-    # Bcrypt has a 72 byte limit, so we truncate if necessary
-    if len(plain_password.encode('utf-8')) > 72:
-        plain_password = plain_password[:72]
-    return pwd_context.verify(plain_password, hashed_password)
+    """Verify a password against its hash using SHA-256 + salt"""
+    return get_password_hash(plain_password) == hashed_password
 
 def get_password_hash(password):
-    # Bcrypt has a 72 byte limit, so we truncate if necessary
-    if len(password.encode('utf-8')) > 72:
-        password = password[:72]
-    return pwd_context.hash(password)
+    """Hash a password using SHA-256 + salt"""
+    salt = SECRET_KEY.encode('utf-8')
+    return base64.b64encode(
+        hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), salt, 100000)
+    ).decode('utf-8')
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()
