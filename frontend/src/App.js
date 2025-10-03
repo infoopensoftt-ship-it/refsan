@@ -1,11 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import axios from 'axios';
-import LoginPage from './pages/LoginPage';
-import AdminDashboard from './pages/AdminDashboard';
-import TechnicianDashboard from './pages/TechnicianDashboard';
-import CustomerDashboard from './pages/CustomerDashboard';
-import { Toaster } from './components/ui/sonner';
+import React from 'react';
+import HtmlRedirect from './HtmlRedirect';
 import './App.css';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
