@@ -72,13 +72,15 @@ const TechnicianDashboard = () => {
 
   const fetchData = async () => {
     try {
-      const [statsRes, repairsRes] = await Promise.all([
+      const [statsRes, repairsRes, customersRes] = await Promise.all([
         axios.get(`${API}/stats`),
-        axios.get(`${API}/repairs`)
+        axios.get(`${API}/repairs`),
+        axios.get(`${API}/customers`)
       ]);
       
       setStats(statsRes.data);
       setRepairs(repairsRes.data);
+      setCustomers(customersRes.data);
     } catch (error) {
       console.error('Data fetch error:', error);
       toast.error('Veriler yüklenirken hata oluştu');
