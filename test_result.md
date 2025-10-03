@@ -101,3 +101,112 @@
 #====================================================================================================
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
+
+user_problem_statement: "Admin should be able to see customer list and click on each customer to view details and edit their information. Admin should see all service records for that customer. Also need search functionality to search customers and service records by name, phone, device type etc."
+
+backend:
+  - task: "Customer detail endpoint"
+    implemented: false
+    working: "NA"
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Need to create GET /api/customers/{customer_id} endpoint"
+  
+  - task: "Customer update endpoint"
+    implemented: false
+    working: "NA"
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Need to create PUT /api/customers/{customer_id} endpoint"
+  
+  - task: "Search functionality endpoint"
+    implemented: false
+    working: "NA"
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Need to create GET /api/search endpoint with query parameters"
+
+  - task: "Customer repairs endpoint"
+    implemented: false
+    working: "NA"
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Need to create GET /api/customers/{customer_id}/repairs endpoint"
+
+frontend:
+  - task: "Customer detail page"
+    implemented: false
+    working: "NA"
+    file: "frontend/public/admin.html"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Need to add customer detail view and edit functionality to admin.html"
+  
+  - task: "Search functionality UI"
+    implemented: false
+    working: "NA"
+    file: "frontend/public/admin.html"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Need to add search input fields and filtering logic to admin.html"
+
+  - task: "Admin data visibility fix"
+    implemented: false
+    working: false
+    file: "frontend/public/admin.html"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "user"
+        comment: "User reported that admin dashboard lists are not displaying data correctly"
+
+metadata:
+  created_by: "main_agent"
+  version: "1.0"
+  test_sequence: 0
+  run_ui: false
+
+test_plan:
+  current_focus:
+    - "Customer detail endpoint"
+    - "Customer update endpoint"
+    - "Search functionality endpoint"
+    - "Customer detail page"
+    - "Admin data visibility fix"
+  stuck_tasks: []
+  test_all: false
+  test_priority: "high_first"
+
+agent_communication:
+  - agent: "main"
+    message: "Starting implementation of admin panel improvements based on user requests. Will implement backend endpoints first, then update frontend."
