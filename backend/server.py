@@ -338,11 +338,19 @@ async def create_repair_request(
         )
     
     # Teknisyen sadece kendi müşterileri için arıza açabilir
+    # Müşteri kendi adına arıza açabilir
     if current_user.role == UserRole.TECHNICIAN:
         if customer.get("created_by_technician") != current_user.id:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="You can only create repairs for your own customers"
+            )
+    elif current_user.role == UserRole.CUSTOMER:
+        # Müşteri kendi adına arıza açıyor, customer kaydında email kontrolü
+        if customer.get("email") != current_user.email:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="You can only create repairs for yourself"
             )
     
     repair_dict = repair_data.dict()
