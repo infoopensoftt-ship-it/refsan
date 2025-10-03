@@ -210,6 +210,24 @@
                 <h2>🏢 Müşteri Yönetimi</h2>
                 <button class="btn" onclick="openModal('customerModal')">➕ Yeni Müşteri</button>
                 <button class="btn btn-secondary" onclick="loadCustomers()">📋 Müşteri Listesi</button>
+                
+                <!-- Search Section -->
+                <div style="margin: 1rem 0; padding: 1rem; background: #f8fafc; border-radius: 8px;">
+                    <h4>🔍 Arama</h4>
+                    <div style="display: flex; gap: 1rem; margin: 0.5rem 0;">
+                        <input type="text" id="search-input" placeholder="Müşteri adı, telefon, cihaz türü..." 
+                               style="flex: 1; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 4px;">
+                        <select id="search-type" style="padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 4px;">
+                            <option value="">Tümü</option>
+                            <option value="customers">Müşteriler</option>
+                            <option value="repairs">Arızalar</option>
+                        </select>
+                        <button class="btn" onclick="performSearch()">Ara</button>
+                        <button class="btn btn-secondary" onclick="clearSearch()">Temizle</button>
+                    </div>
+                    <div id="search-results" style="display: none;"></div>
+                </div>
+
                 <div id="customer-list"></div>
             </div>
 
