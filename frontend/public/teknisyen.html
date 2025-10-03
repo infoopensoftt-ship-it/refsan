@@ -635,6 +635,120 @@
             }
         }
 
+        // Customer search functions
+        async function searchCustomers() {
+            const query = document.getElementById('customer-search-input').value.trim();
+            
+            if (query.length < 2) {
+                alert('En az 2 karakter girin');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/search?query=${encodeURIComponent(query)}&type=customers`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                
+                if (response.ok) {
+                    const results = await response.json();
+                    displayCustomerSearchResults(results.customers);
+                } else {
+                    alert('Arama başarısız');
+                }
+            } catch (error) {
+                console.error('Search error:', error);
+                alert('Hata: ' + error.message);
+            }
+        }
+
+        function displayCustomerSearchResults(customers) {
+            const resultsDiv = document.getElementById('customer-search-results');
+            resultsDiv.style.display = 'block';
+            
+            if (customers.length === 0) {
+                resultsDiv.innerHTML = '<div style="text-align: center; padding: 1rem; color: #64748b;">Müşteri bulunamadı</div>';
+            } else {
+                let html = `<h4>Bulunan Müşteriler (${customers.length}):</h4>`;
+                customers.forEach(customer => {
+                    html += `
+                        <div class="search-result-item" onclick="openCustomerDetailTech('${customer.id}')">
+                            <div class="search-result-header">${customer.full_name}</div>
+                            <small>📞 ${customer.phone}</small>
+                            ${customer.email ? `<br><small>📧 ${customer.email}</small>` : ''}
+                            ${customer.address ? `<br><small>📍 ${customer.address}</small>` : ''}
+                        </div>
+                    `;
+                });
+                resultsDiv.innerHTML = html;
+            }
+        }
+
+        async function openCustomerDetailTech(customerId) {
+            try {
+                // Load customer details
+                const customerResponse = await fetch(`${API_BASE}/customers/${customerId}`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                
+                const repairsResponse = await fetch(`${API_BASE}/customers/${customerId}/repairs`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                
+                if (customerResponse.ok && repairsResponse.ok) {
+                    const customer = await customerResponse.json();
+                    const repairs = await repairsResponse.json();
+                    
+                    let detailHtml = `
+                        <h3>👤 ${customer.full_name}</h3>
+                        <p><strong>📞 Telefon:</strong> ${customer.phone}</p>
+                        ${customer.email ? `<p><strong>📧 E-posta:</strong> ${customer.email}</p>` : ''}
+                        ${customer.address ? `<p><strong>📍 Adres:</strong> ${customer.address}</p>` : ''}
+                        <hr style="margin: 1rem 0;">
+                        <h4>🔧 Arıza Geçmişi (${repairs.length})</h4>
+                    `;
+                    
+                    if (repairs.length === 0) {
+                        detailHtml += '<p style="color: #64748b; font-style: italic;">Bu müşteriye ait arıza kaydı bulunmamaktadır.</p>';
+                    } else {
+                        repairs.forEach(repair => {
+                            const statusClass = repair.status === 'beklemede' ? 'status-pending' : 
+                                              repair.status === 'isleniyor' ? 'status-in-progress' : 
+                                              repair.status === 'tamamlandi' ? 'status-completed' : 'status-pending';
+                            
+                            detailHtml += `
+                                <div style="background: #f8fafc; padding: 0.75rem; margin: 0.5rem 0; border-radius: 6px; border-left: 4px solid #3b82f6;">
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                        <strong>Arıza #${repair.id.substring(0, 8)}</strong>
+                                        <span class="status-badge ${statusClass}">${repair.status}</span>
+                                    </div>
+                                    <div style="font-size: 0.9em; color: #475569;">
+                                        🔧 ${repair.device_type} - ${repair.brand} ${repair.model}<br>
+                                        📝 ${repair.description}<br>
+                                        📅 ${new Date(repair.created_at).toLocaleDateString('tr-TR')}
+                                        ${repair.cost_estimate ? `<br>💰 Tahmini: ₺${repair.cost_estimate}` : ''}
+                                        ${repair.final_cost ? ` | Final: ₺${repair.final_cost}` : ''}
+                                    </div>
+                                </div>
+                            `;
+                        });
+                    }
+                    
+                    alert(detailHtml.replace(/<[^>]*>/g, '\n').replace(/&nbsp;/g, ' '));
+                    
+                } else {
+                    alert('Müşteri bilgileri yüklenemedi');
+                }
+            } catch (error) {
+                console.error('Error loading customer details:', error);
+                alert('Hata: ' + error.message);
+            }
+        }
+
+        function clearCustomerSearch() {
+            document.getElementById('customer-search-input').value = '';
+            document.getElementById('customer-search-results').style.display = 'none';
+        }
+
         function openModal(modalId) {
             document.getElementById(modalId).style.display = 'block';
         }
