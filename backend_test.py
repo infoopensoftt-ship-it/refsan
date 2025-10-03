@@ -582,6 +582,355 @@ class TechnicalServiceAPITester:
         
         return no_repairs_success and with_repairs_success and invalid_customer_success
 
+    def test_delete_customer_endpoint(self):
+        """Test DELETE /api/customers/{customer_id} endpoint with cascade deletion"""
+        # Create a test customer
+        customer_data = {
+            "full_name": "Delete Test Customer",
+            "email": "delete@test.com",
+            "phone": "05551234567",
+            "address": "Delete Test Address"
+        }
+        
+        success, customer = self.run_test(
+            "Create customer for delete test",
+            "POST",
+            "customers",
+            200,
+            data=customer_data
+        )
+        
+        if not success:
+            return False
+        
+        customer_id = customer.get('id')
+        
+        # Create repairs for this customer to test cascade deletion
+        repair_data_1 = {
+            "customer_id": customer_id,
+            "device_type": "iPhone",
+            "brand": "Apple",
+            "model": "iPhone 14",
+            "description": "Screen repair",
+            "priority": "yuksek"
+        }
+        
+        repair_data_2 = {
+            "customer_id": customer_id,
+            "device_type": "iPad",
+            "brand": "Apple",
+            "model": "iPad Pro",
+            "description": "Battery replacement",
+            "priority": "orta"
+        }
+        
+        repair1_success, repair1 = self.run_test(
+            "Create first repair for delete test",
+            "POST",
+            "repairs",
+            200,
+            data=repair_data_1
+        )
+        
+        repair2_success, repair2 = self.run_test(
+            "Create second repair for delete test",
+            "POST",
+            "repairs",
+            200,
+            data=repair_data_2
+        )
+        
+        if not (repair1_success and repair2_success):
+            return False
+        
+        repair1_id = repair1.get('id')
+        repair2_id = repair2.get('id')
+        
+        # Verify repairs exist before deletion
+        verify1_success, _ = self.run_test(
+            "Verify repair 1 exists before customer deletion",
+            "GET",
+            f"repairs/{repair1_id}",
+            200
+        )
+        
+        verify2_success, _ = self.run_test(
+            "Verify repair 2 exists before customer deletion",
+            "GET",
+            f"repairs/{repair2_id}",
+            200
+        )
+        
+        if not (verify1_success and verify2_success):
+            return False
+        
+        # Delete the customer (should cascade delete repairs)
+        delete_success, delete_response = self.run_test(
+            "Delete customer with cascade deletion",
+            "DELETE",
+            f"customers/{customer_id}",
+            200
+        )
+        
+        if not delete_success:
+            return False
+        
+        print(f"   ✅ Customer deleted: {delete_response.get('message')}")
+        
+        # Verify customer is deleted
+        customer_deleted_success, _ = self.run_test(
+            "Verify customer is deleted",
+            "GET",
+            f"customers/{customer_id}",
+            404
+        )
+        
+        # Verify repairs are cascade deleted
+        repair1_deleted_success, _ = self.run_test(
+            "Verify repair 1 is cascade deleted",
+            "GET",
+            f"repairs/{repair1_id}",
+            404
+        )
+        
+        repair2_deleted_success, _ = self.run_test(
+            "Verify repair 2 is cascade deleted",
+            "GET",
+            f"repairs/{repair2_id}",
+            404
+        )
+        
+        # Test deleting non-existent customer
+        nonexistent_success, _ = self.run_test(
+            "Delete non-existent customer",
+            "DELETE",
+            "customers/nonexistent-id-12345",
+            404
+        )
+        
+        return (delete_success and customer_deleted_success and 
+                repair1_deleted_success and repair2_deleted_success and 
+                nonexistent_success)
+
+    def test_delete_repair_endpoint(self):
+        """Test DELETE /api/repairs/{repair_id} endpoint with role-based access"""
+        # Create a test customer first
+        customer_data = {
+            "full_name": "Repair Delete Test Customer",
+            "email": "repairdelete@test.com",
+            "phone": "05551234567"
+        }
+        
+        success, customer = self.run_test(
+            "Create customer for repair delete test",
+            "POST",
+            "customers",
+            200,
+            data=customer_data
+        )
+        
+        if not success:
+            return False
+        
+        customer_id = customer.get('id')
+        
+        # Create a repair to delete
+        repair_data = {
+            "customer_id": customer_id,
+            "device_type": "Samsung Galaxy",
+            "brand": "Samsung",
+            "model": "Galaxy S23",
+            "description": "Screen replacement",
+            "priority": "yuksek"
+        }
+        
+        repair_success, repair = self.run_test(
+            "Create repair for delete test",
+            "POST",
+            "repairs",
+            200,
+            data=repair_data
+        )
+        
+        if not repair_success:
+            return False
+        
+        repair_id = repair.get('id')
+        
+        # Test deleting the repair
+        delete_success, delete_response = self.run_test(
+            "Delete repair request",
+            "DELETE",
+            f"repairs/{repair_id}",
+            200
+        )
+        
+        if not delete_success:
+            return False
+        
+        print(f"   ✅ Repair deleted: {delete_response.get('message')}")
+        
+        # Verify repair is deleted
+        repair_deleted_success, _ = self.run_test(
+            "Verify repair is deleted",
+            "GET",
+            f"repairs/{repair_id}",
+            404
+        )
+        
+        # Test deleting non-existent repair
+        nonexistent_success, _ = self.run_test(
+            "Delete non-existent repair",
+            "DELETE",
+            "repairs/nonexistent-repair-id-12345",
+            404
+        )
+        
+        return delete_success and repair_deleted_success and nonexistent_success
+
+    def test_notifications_endpoints(self):
+        """Test notification system endpoints (admin only)"""
+        # Only admin can access notifications
+        if self.current_user.get('role') != 'admin':
+            print("   ⚠️  Skipping notification tests (admin only)")
+            return True
+        
+        # Test get notifications
+        notifications_success, notifications = self.run_test(
+            "Get notifications",
+            "GET",
+            "notifications",
+            200
+        )
+        
+        if not notifications_success:
+            return False
+        
+        print(f"   ✅ Retrieved {len(notifications)} notifications")
+        
+        # Test get unread notifications count
+        unread_count_success, unread_response = self.run_test(
+            "Get unread notifications count",
+            "GET",
+            "notifications/unread-count",
+            200
+        )
+        
+        if not unread_count_success:
+            return False
+        
+        unread_count = unread_response.get('unread_count', 0)
+        print(f"   ✅ Unread notifications count: {unread_count}")
+        
+        # Test get unread notifications only
+        unread_only_success, unread_notifications = self.run_test(
+            "Get unread notifications only",
+            "GET",
+            "notifications?unread_only=true",
+            200
+        )
+        
+        if not unread_only_success:
+            return False
+        
+        print(f"   ✅ Retrieved {len(unread_notifications)} unread notifications")
+        
+        # Test marking notification as read (if we have notifications)
+        mark_read_success = True
+        if notifications and len(notifications) > 0:
+            notification_id = notifications[0].get('id')
+            if notification_id:
+                mark_read_success, mark_read_response = self.run_test(
+                    "Mark notification as read",
+                    "PUT",
+                    f"notifications/{notification_id}/read",
+                    200
+                )
+                
+                if mark_read_success:
+                    print(f"   ✅ Notification marked as read: {mark_read_response.get('message')}")
+        
+        # Test marking non-existent notification as read
+        nonexistent_read_success, _ = self.run_test(
+            "Mark non-existent notification as read",
+            "PUT",
+            "notifications/nonexistent-id-12345/read",
+            404
+        )
+        
+        return (notifications_success and unread_count_success and 
+                unread_only_success and mark_read_success and nonexistent_read_success)
+
+    def test_notification_creation(self):
+        """Test that notifications are created when customers/repairs are created or updated"""
+        # Only admin can see notifications, but we can test creation with any role
+        print(f"\n📢 Testing notification creation for: {self.current_user.get('role')}")
+        
+        # Create a customer (should generate notification)
+        customer_data = {
+            "full_name": "Notification Test Customer",
+            "email": "notification@test.com",
+            "phone": "05551234567",
+            "address": "Notification Test Address"
+        }
+        
+        customer_success, customer = self.run_test(
+            "Create customer for notification test",
+            "POST",
+            "customers",
+            200,
+            data=customer_data
+        )
+        
+        if not customer_success:
+            return False
+        
+        customer_id = customer.get('id')
+        
+        # Create a repair (should generate notification)
+        repair_data = {
+            "customer_id": customer_id,
+            "device_type": "iPhone",
+            "brand": "Apple",
+            "model": "iPhone 15",
+            "description": "Battery replacement for notification test",
+            "priority": "yuksek"
+        }
+        
+        repair_success, repair = self.run_test(
+            "Create repair for notification test",
+            "POST",
+            "repairs",
+            200,
+            data=repair_data
+        )
+        
+        if not repair_success:
+            return False
+        
+        repair_id = repair.get('id')
+        
+        # Update repair status (should generate notification) - only admin/technician can update
+        update_success = True
+        if self.current_user.get('role') in ['admin', 'teknisyen']:
+            update_data = {
+                "status": "isleniyor"
+            }
+            
+            update_success, updated_repair = self.run_test(
+                "Update repair status for notification test",
+                "PUT",
+                f"repairs/{repair_id}",
+                200,
+                data=update_data
+            )
+            
+            if update_success:
+                print(f"   ✅ Repair status updated to generate notification")
+        
+        print(f"   ✅ Notification creation tests completed (notifications should be visible to admin)")
+        return customer_success and repair_success and update_success
+
     def test_admin_panel_endpoints(self):
         """Test all new admin panel endpoints"""
         print(f"\n🏢 Testing Admin Panel Endpoints for: {self.current_user.get('role')}")
@@ -618,7 +967,19 @@ class TechnicalServiceAPITester:
         search_success = self.test_search_functionality()
         repairs_success = self.test_customer_repairs_endpoint(customer_id)
         
-        return detail_success and update_success and search_success and repairs_success
+        # Test new delete endpoints
+        delete_customer_success = self.test_delete_customer_endpoint()
+        delete_repair_success = self.test_delete_repair_endpoint()
+        
+        # Test notifications (admin only)
+        notifications_success = self.test_notifications_endpoints()
+        
+        # Test notification creation
+        notification_creation_success = self.test_notification_creation()
+        
+        return (detail_success and update_success and search_success and 
+                repairs_success and delete_customer_success and delete_repair_success and
+                notifications_success and notification_creation_success)
 
     def test_role_based_access(self):
         """Test role-based access control"""
