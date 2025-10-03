@@ -486,6 +486,66 @@ async def get_users(current_user: User = Depends(require_role([UserRole.ADMIN]))
         result.append(User(**user))
     return result
 
+# Technician report endpoint
+@api_router.get("/reports/technician/{technician_id}")
+async def get_technician_report(
+    technician_id: str,
+    current_user: User = Depends(require_role([UserRole.ADMIN]))
+):
+    # Get technician info
+    technician = await db.users.find_one({"id": technician_id, "role": UserRole.TECHNICIAN})
+    if not technician:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Technician not found"
+        )
+    
+    # Get technician's customers
+    customers = await db.customers.find({"created_by_technician": technician_id}).to_list(1000)
+    
+    # Get technician's repairs
+    repairs = await db.repairs.find({
+        "$or": [
+            {"assigned_technician_id": technician_id},
+            {"created_by": technician_id}
+        ]
+    }).to_list(1000)
+    
+    # Calculate totals
+    total_repairs = len(repairs)
+    total_cost = sum(repair.get("final_cost", 0) for repair in repairs if repair.get("final_cost"))
+    total_estimate = sum(repair.get("cost_estimate", 0) for repair in repairs if repair.get("cost_estimate"))
+    
+    # Group by dates
+    repairs_by_date = {}
+    for repair in repairs:
+        if isinstance(repair.get("created_at"), str):
+            date_str = repair["created_at"][:10]  # Get YYYY-MM-DD
+        else:
+            date_str = repair.get("created_at", datetime.now(timezone.utc)).strftime("%Y-%m-%d")
+        
+        if date_str not in repairs_by_date:
+            repairs_by_date[date_str] = []
+        repairs_by_date[date_str].append(repair)
+    
+    return {
+        "technician": {
+            "id": technician["id"],
+            "full_name": technician["full_name"],
+            "email": technician["email"],
+            "phone": technician.get("phone")
+        },
+        "summary": {
+            "total_customers": len(customers),
+            "total_repairs": total_repairs,
+            "total_cost": total_cost,
+            "total_estimate": total_estimate
+        },
+        "customers": customers,
+        "repairs": repairs,
+        "repairs_by_date": repairs_by_date
+    }
+
 # Stats endpoint
 @api_router.get("/stats")
 async def get_stats(current_user: User = Depends(get_current_user)):
