@@ -178,40 +178,49 @@ backend:
         comment: "✅ PASSED: GET /api/customers/{customer_id}/repairs endpoint working correctly. Tested customers with no repairs (returns empty array), customers with multiple repairs, invalid customer IDs (returns 404). Role-based access control working properly."
 
   - task: "Delete customer endpoint"
-    implemented: false
+    implemented: true
     working: "NA"
     file: "backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Need to create DELETE /api/customers/{customer_id} endpoint"
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented DELETE /api/customers/{customer_id} endpoint with cascade delete for all customer repairs"
 
   - task: "Delete repair endpoint"
-    implemented: false
+    implemented: true
     working: "NA"
     file: "backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Need to create DELETE /api/repairs/{repair_id} endpoint"
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented DELETE /api/repairs/{repair_id} endpoint with proper role-based access control"
 
   - task: "Notifications endpoint"
-    implemented: false
+    implemented: true
     working: "NA"
     file: "backend/server.py"
     stuck_count: 0
     priority: "medium"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Need to create notification system for new repairs, customers, and status updates"
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented complete notification system with GET /api/notifications, PUT /api/notifications/{id}/read, GET /api/notifications/unread-count endpoints and auto-notification creation"
 
 frontend:
   - task: "Customer detail page"
