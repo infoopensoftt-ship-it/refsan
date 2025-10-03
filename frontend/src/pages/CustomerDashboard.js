@@ -53,6 +53,79 @@ const CustomerDashboard = () => {
         axios.get(`${API}/stats`),
         axios.get(`${API}/repairs`)
       ]);
+  // Müşteri kendini customer olarak kaydetmek için
+  useEffect(() => {
+    const createSelfAsCustomer = async () => {
+      if (user && user.role === 'musteri') {
+        try {
+          // Check if customer already exists
+          const existingCustomers = await axios.get(`${API}/customers`);
+          const selfCustomer = existingCustomers.data.find(c => c.email === user.email);
+          
+          if (!selfCustomer) {
+            // Create self as customer
+            await axios.post(`${API}/customers`, {
+              full_name: user.full_name,
+              email: user.email,
+              phone: user.phone || '',
+              address: ''
+            });
+          }
+        } catch (error) {
+          console.error('Self customer creation failed:', error);
+        }
+      }
+    };
+    
+    createSelfAsCustomer();
+  }, [user]);
+
+  const handleCreateRepair = async (e) => {
+    e.preventDefault();
+    try {
+      // Find self as customer
+      const customersResponse = await axios.get(`${API}/customers`);
+      const selfCustomer = customersResponse.data.find(c => c.email === user.email);
+      
+      if (!selfCustomer) {
+        toast.error('Müşteri kaydınız bulunamadı');
+        return;
+      }
+
+      const formData = { 
+        ...repairForm, 
+        customer_id: selfCustomer.id 
+      };
+      
+      if (formData.cost_estimate) {
+        formData.cost_estimate = parseFloat(formData.cost_estimate);
+      }
+      
+      await axios.post(`${API}/repairs`, formData);
+      toast.success('Arıza kaydı başarıyla oluşturuldu');
+      setShowRepairForm(false);
+      setRepairForm({
+        customer_id: '',
+        device_type: '',
+        brand: '',
+        model: '',
+        description: '',
+        priority: 'orta',
+        cost_estimate: '',
+        images: []
+      });
+      fetchData();
+    } catch (error) {
+      toast.error('Arıza kaydı oluşturulamadı: ' + (error.response?.data?.detail || error.message));
+    }
+  };
+
+  const handleFilesUploaded = (files) => {
+    setRepairForm(prev => ({
+      ...prev,
+      images: [...prev.images, ...files.map(f => f.url)]
+    }));
+  };
       
       setStats(statsRes.data);
       setRepairs(repairsRes.data);
