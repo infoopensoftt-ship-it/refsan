@@ -283,6 +283,15 @@ const AdminDashboard = () => {
             </TabsList>
             
             <div className="flex space-x-3">
+              <Dialog open={showUserForm} onOpenChange={setShowUserForm}>
+                <DialogTrigger asChild>
+                  <Button className="btn-secondary" data-testid="add-user-btn">
+                    <UserPlus className="w-4 h-4 mr-2" />
+                    Yeni Kullanıcı
+                  </Button>
+                </DialogTrigger>
+              </Dialog>
+              
               <Dialog open={showCustomerForm} onOpenChange={setShowCustomerForm}>
                 <DialogTrigger asChild>
                   <Button className="btn-secondary" data-testid="add-customer-btn">
