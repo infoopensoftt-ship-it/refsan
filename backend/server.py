@@ -11,7 +11,8 @@ from typing import List, Optional
 import uuid
 from datetime import datetime, timedelta, timezone
 import jwt
-from passlib.context import CryptContext
+import hashlib
+import base64
 import shutil
 from enum import Enum
 
