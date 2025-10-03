@@ -53,6 +53,51 @@ const TechnicianDashboard = () => {
     full_name: '',
     email: '',
     phone: '',
+  const handleCreateCustomer = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.post(`${API}/customers`, customerForm);
+      toast.success('Müşteri başarıyla oluşturuldu');
+      setShowCustomerForm(false);
+      setCustomerForm({ full_name: '', email: '', phone: '', address: '' });
+      fetchData();
+    } catch (error) {
+      toast.error('Müşteri oluşturulamadı');
+    }
+  };
+
+  const handleCreateRepair = async (e) => {
+    e.preventDefault();
+    try {
+      const formData = { ...repairForm };
+      if (formData.cost_estimate) {
+        formData.cost_estimate = parseFloat(formData.cost_estimate);
+      }
+      
+      await axios.post(`${API}/repairs`, formData);
+      toast.success('Arıza kaydı başarıyla oluşturuldu');
+      setShowRepairForm(false);
+      setRepairForm({
+        customer_id: '',
+        device_type: '',
+        brand: '',
+        model: '',
+        description: '',
+        priority: 'orta',
+        cost_estimate: ''
+      });
+      fetchData();
+    } catch (error) {
+      toast.error('Arıza kaydı oluşturulamadı');
+    }
+  };
+
+  const handleFilesUploaded = (files) => {
+    setRepairForm(prev => ({
+      ...prev,
+      images: [...prev.images, ...files.map(f => f.url)]
+    }));
+  };
     address: ''
   });
   
