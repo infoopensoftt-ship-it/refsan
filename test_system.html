@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Refsan Türkiye Test</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            padding: 40px; 
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container { 
+            max-width: 600px; 
+            margin: 0 auto; 
+            background: white; 
+            padding: 40px; 
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        h1 { 
+            color: #2c3e50; 
+            text-align: center; 
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 40px;
+            font-size: 18px;
+        }
+        .test-section {
+            margin: 30px 0;
+            padding: 20px;
+            border: 2px solid #3498db;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+        .test-section h3 {
+            margin-top: 0;
+            color: #2980b9;
+        }
+        .status { 
+            padding: 10px; 
+            margin: 10px 0; 
+            border-radius: 5px; 
+            font-weight: bold;
+        }
+        .success { 
+            background: #d4edda; 
+            color: #155724; 
+            border: 1px solid #c3e6cb;
+        }
+        .error { 
+            background: #f8d7da; 
+            color: #721c24; 
+            border: 1px solid #f5c6cb;
+        }
+        .info { 
+            background: #d1ecf1; 
+            color: #0c5460; 
+            border: 1px solid #bee5eb;
+        }
+        button {
+            background: #3498db;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #2980b9;
+        }
+        .demo-section {
+            text-align: center;
+            margin: 30px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Refsan Türkiye</h1>
+        <p class="subtitle">Seramik Makineleri Teknik Servis Sistemi</p>
+        
+        <div class="test-section">
+            <h3>📡 Sistem Durumu</h3>
+            <div id="backend-status" class="status info">Backend bağlantısı test ediliyor...</div>
+            <div id="auth-status" class="status info">Authentication test ediliyor...</div>
+        </div>
+
+        <div class="test-section">
+            <h3>👥 Demo Hesapları</h3>
+            <div class="demo-section">
+                <button onclick="testLogin('admin@demo.com', 'admin123', 'Admin')">
+                    🔑 Admin Girişi
+                </button>
+                <button onclick="testLogin('teknisyen@demo.com', 'teknisyen123', 'Teknisyen')">
+                    🔧 Teknisyen Girişi
+                </button>
+                <button onclick="testLogin('musteri@demo.com', 'musteri123', 'Müşteri')">
+                    👤 Müşteri Girişi
+                </button>
+            </div>
+            <div id="login-result" class="status" style="display: none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>📊 API Testleri</h3>
+            <button onclick="testAPI('/api/stats', 'İstatistikler')">📈 İstatistikler</button>
+            <button onclick="testAPI('/api/customers', 'Müşteriler')">👥 Müşteriler</button>
+            <button onclick="testAPI('/api/repairs', 'Arızalar')">🔧 Arızalar</button>
+            <div id="api-result" class="status" style="display: none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>🆘 Sorun Giderme</h3>
+            <button onclick="window.open('/api/docs', '_blank')">📚 API Dokümantasyonu</button>
+            <button onclick="checkServices()">🔍 Servis Kontrolü</button>
+            <button onclick="location.reload()">🔄 Sayfayı Yenile</button>
+        </div>
+    </div>
+
+    <script>
+        const BACKEND_URL = 'https://fixservice-app.preview.emergentagent.com';
+        let authToken = null;
+
+        // Backend durumu kontrolü
+        async function checkBackend() {
+            try {
+                const response = await fetch(`${BACKEND_URL}/api/stats`);
+                if (response.ok || response.status === 401) {
+                    document.getElementById('backend-status').className = 'status success';
+                    document.getElementById('backend-status').textContent = '✅ Backend çalışıyor';
+                    return true;
+                }
+                throw new Error(`HTTP ${response.status}`);
+            } catch (error) {
+                document.getElementById('backend-status').className = 'status error';
+                document.getElementById('backend-status').textContent = '❌ Backend bağlantı hatası: ' + error.message;
+                return false;
+            }
+        }
+
+        // Login testi
+        async function testLogin(email, password, role) {
+            try {
+                const response = await fetch(`${BACKEND_URL}/api/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    authToken = data.access_token;
+                    
+                    document.getElementById('login-result').style.display = 'block';
+                    document.getElementById('login-result').className = 'status success';
+                    document.getElementById('login-result').textContent = `✅ ${role} girişi başarılı! (${data.user.full_name})`;
+                    
+                    // Auth durumunu güncelle
+                    document.getElementById('auth-status').className = 'status success';
+                    document.getElementById('auth-status').textContent = `✅ ${role} olarak giriş yapıldı`;
+                } else {
+                    const error = await response.json();
+                    throw new Error(error.detail || 'Giriş başarısız');
+                }
+            } catch (error) {
+                document.getElementById('login-result').style.display = 'block';
+                document.getElementById('login-result').className = 'status error';
+                document.getElementById('login-result').textContent = '❌ Giriş hatası: ' + error.message;
+            }
+        }
+
+        // API testi
+        async function testAPI(endpoint, name) {
+            try {
+                const headers = { 'Content-Type': 'application/json' };
+                if (authToken) {
+                    headers['Authorization'] = `Bearer ${authToken}`;
+                }
+
+                const response = await fetch(`${BACKEND_URL}${endpoint}`, { headers });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('api-result').style.display = 'block';
+                    document.getElementById('api-result').className = 'status success';
+                    document.getElementById('api-result').textContent = `✅ ${name} API çalışıyor (${Array.isArray(data) ? data.length + ' kayıt' : 'Veri alındı'})`;
+                } else if (response.status === 401) {
+                    document.getElementById('api-result').style.display = 'block';
+                    document.getElementById('api-result').className = 'status error';
+                    document.getElementById('api-result').textContent = `🔒 ${name} için giriş gerekli (401)`;
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            } catch (error) {
+                document.getElementById('api-result').style.display = 'block';
+                document.getElementById('api-result').className = 'status error';
+                document.getElementById('api-result').textContent = `❌ ${name} API hatası: ${error.message}`;
+            }
+        }
+
+        // Servis kontrolü
+        async function checkServices() {
+            alert('Servis durumları:\n\n' +
+                  '• Backend: ' + (await checkBackend() ? 'Çalışıyor' : 'Problem var') + '\n' +
+                  '• Frontend: Bu sayfa açıldığına göre çalışıyor\n' +
+                  '• Database: Backend üzerinden test edilebilir');
+        }
+
+        // Sayfa yüklendiğinde
+        window.onload = function() {
+            checkBackend();
+            
+            // Auth durumu için varsayılan mesaj
+            document.getElementById('auth-status').textContent = '🔑 Giriş yapmadınız';
+        };
+    </script>
+</body>
+</html>
