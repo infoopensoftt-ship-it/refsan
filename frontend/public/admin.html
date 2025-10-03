@@ -470,6 +470,17 @@
         </div>
     </div>
 
+    <!-- Customer List Modal -->
+    <div id="customerListModal" class="modal">
+        <div class="modal-content" style="max-width: 900px;">
+            <span class="close" onclick="closeModal('customerListModal')">&times;</span>
+            <h2>📋 Müşteri Listesi</h2>
+            <div id="modal-customer-list" style="max-height: 500px; overflow-y: auto;">
+                <div class="loading">Müşteriler yükleniyor...</div>
+            </div>
+        </div>
+    </div>
+
     <!-- Customer Detail Modal -->
     <div id="customerDetailModal" class="modal">
         <div class="modal-content" style="max-width: 800px;">
@@ -511,6 +522,36 @@
                 <div id="customer-repairs-list" class="repair-list" style="max-height: 300px; overflow-y: auto;">
                     <div class="loading">Arızalar yükleniyor...</div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Technician Reports Modal -->
+    <div id="technicianReportsModal" class="modal">
+        <div class="modal-content" style="max-width: 900px;">
+            <span class="close" onclick="closeModal('technicianReportsModal')">&times;</span>
+            <h2>📊 Teknisyen Raporları</h2>
+            <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                <select id="report-technician" style="flex: 1; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 4px;">
+                    <option value="">Teknisyen Seçin:</option>
+                </select>
+                <input type="date" id="report-start-date" style="padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 4px;">
+                <input type="date" id="report-end-date" style="padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 4px;">
+                <button class="btn" onclick="generateTechnicianReport()">📈 Rapor Oluştur</button>
+            </div>
+            <div id="technician-report" style="max-height: 400px; overflow-y: auto;">
+                <div class="loading">Teknisyen seçip rapor oluştur butonuna tıklayın</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Repair Detail Modal -->
+    <div id="repairDetailModal" class="modal">
+        <div class="modal-content" style="max-width: 700px;">
+            <span class="close" onclick="closeModal('repairDetailModal')">&times;</span>
+            <h2 id="repair-detail-title">Arıza Detayı</h2>
+            <div id="repair-detail-content">
+                <div class="loading">Arıza bilgileri yükleniyor...</div>
             </div>
         </div>
     </div>
