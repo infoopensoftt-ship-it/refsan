@@ -129,74 +129,9 @@ const ProtectedRoute = ({ children, allowedRoles = [] }) => {
   return children;
 };
 
-// Main App Component
+// Main App Component - Simplified to redirect to HTML files
 function App() {
-  return (
-    <AuthProvider>
-      <div className="App">
-        <BrowserRouter>
-          <Routes>
-            <Route path="/login" element={<LoginPage />} />
-            
-            <Route 
-              path="/admin" 
-              element={
-                <ProtectedRoute allowedRoles={['admin']}>
-                  <AdminDashboard />
-                </ProtectedRoute>
-              } 
-            />
-            
-            <Route 
-              path="/teknisyen" 
-              element={
-                <ProtectedRoute allowedRoles={['teknisyen']}>
-                  <TechnicianDashboard />
-                </ProtectedRoute>
-              } 
-            />
-            
-            <Route 
-              path="/musteri" 
-              element={
-                <ProtectedRoute allowedRoles={['musteri']}>
-                  <CustomerDashboard />
-                </ProtectedRoute>
-              } 
-            />
-            
-            <Route 
-              path="/" 
-              element={
-                <ProtectedRoute>
-                  <DashboardRouter />
-                </ProtectedRoute>
-              } 
-            />
-            
-            <Route 
-              path="/unauthorized" 
-              element={
-                <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
-                  <div className="text-center">
-                    <h1 className="text-2xl font-bold text-slate-800 mb-4">Yetkisiz Erişim</h1>
-                    <p className="text-slate-600 mb-6">Bu sayfaya erişim yetkiniz bulunmamaktadır.</p>
-                    <button 
-                      onClick={() => window.history.back()}
-                      className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                    >
-                      Geri Dön
-                    </button>
-                  </div>
-                </div>
-              } 
-            />
-          </Routes>
-        </BrowserRouter>
-        <Toaster position="top-right" />
-      </div>
-    </AuthProvider>
-  );
+  return <HtmlRedirect />;
 }
 
 // Dashboard Router based on user role
