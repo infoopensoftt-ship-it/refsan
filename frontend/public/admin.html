@@ -360,17 +360,9 @@
         <!-- Admin Sections -->
         <div class="admin-sections">
             <!-- Teknisyen Raporları -->
-            <div class="section report-section">
+            <div class="section">
                 <h2>📊 Teknisyen Raporları</h2>
-                <div class="form-group">
-                    <label>Teknisyen Seçin:</label>
-                    <select id="technician-select" onchange="loadTechnicianReport()">
-                        <option value="">Seçiniz...</option>
-                    </select>
-                </div>
-                <div id="technician-report" class="loading" style="display: none;">
-                    Rapor yükleniyor...
-                </div>
+                <button class="btn btn-secondary" onclick="openModal('technicianReportsModal')">📊 Teknisyen Raporlarını Görüntüle</button>
             </div>
 
             <!-- Yeni Kullanıcı -->
