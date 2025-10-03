@@ -321,9 +321,12 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Customer detail page"
-    - "Search functionality UI"
-    - "Admin data visibility fix"
+    - "Delete customer endpoint"
+    - "Delete repair endpoint"
+    - "Notifications endpoint"
+    - "Delete functionality UI"
+    - "Notification system UI"
+    - "Technician search functionality"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
