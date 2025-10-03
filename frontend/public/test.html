@@ -248,7 +248,7 @@
                                 window.location.href = 'musteri.html';
                                 break;
                         }
-                    }, 2000);
+                    }, 500); // Reduced from 2000ms to 500ms for better UX
                 } else {
                     const error = await response.json();
                     showResult('❌ ' + (error.detail || 'Giriş başarısız'), false);
