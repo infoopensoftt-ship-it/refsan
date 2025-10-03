@@ -374,14 +374,19 @@ const AdminDashboard = () => {
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="brand">Marka *</Label>
-                        <Input
-                          id="brand"
-                          value={repairForm.brand}
-                          onChange={(e) => setRepairForm({ ...repairForm, brand: e.target.value })}
-                          placeholder="Apple, Samsung..."
-                          required
-                          data-testid="brand-input"
-                        />
+                        <Select value={repairForm.brand} onValueChange={(value) => setRepairForm({ ...repairForm, brand: value })}>
+                          <SelectTrigger data-testid="brand-select">
+                            <SelectValue placeholder="Marka seçin" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Refsan">Refsan</SelectItem>
+                            <SelectItem value="Sacmi">Sacmi</SelectItem>
+                            <SelectItem value="System Ceramics">System Ceramics</SelectItem>
+                            <SelectItem value="LB">LB</SelectItem>
+                            <SelectItem value="Barbieri e Tarozzi">Barbieri e Tarozzi</SelectItem>
+                            <SelectItem value="Diğer">Diğer</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
                     </div>
                     <div className="space-y-2">
