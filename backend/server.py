@@ -295,6 +295,15 @@ async def create_customer(
     customer_mongo_dict["created_at"] = customer_mongo_dict["created_at"].isoformat()
     
     await db.customers.insert_one(customer_mongo_dict)
+    
+    # Create notification for new customer
+    await create_notification(
+        notification_type="new_customer",
+        title="Yeni Müşteri Eklendi",
+        message=f"{customer_obj.full_name} adlı yeni müşteri eklendi",
+        related_id=customer_obj.id
+    )
+    
     return customer_obj
 
 # File upload endpoint
