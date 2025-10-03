@@ -201,7 +201,7 @@ def require_role(required_roles: List[UserRole]):
         return current_user
     return role_checker
 
-async def create_notification(notification_type: str, title: str, message: str, related_id: str):
+async def create_notification(notification_type: str, title: str, message: str, related_id: str, extra_data: dict = None):
     """Helper function to create notifications"""
     notification = Notification(
         type=notification_type,
@@ -212,6 +212,10 @@ async def create_notification(notification_type: str, title: str, message: str, 
     
     notification_dict = notification.dict()
     notification_dict["created_at"] = notification_dict["created_at"].isoformat()
+    
+    # Add extra data if provided
+    if extra_data:
+        notification_dict.update(extra_data)
     
     await db.notifications.insert_one(notification_dict)
     return notification
