@@ -762,6 +762,18 @@
             localStorage.removeItem('user');
             window.location.href = 'test.html';
         }
+
+        // Add enter key support for customer search
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('customer-search-input');
+            if (searchInput) {
+                searchInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        searchCustomers();
+                    }
+                });
+            }
+        });
     </script>
 </body>
 </html>
