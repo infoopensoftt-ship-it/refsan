@@ -540,6 +540,10 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# Serve uploaded files
+upload_dir = Path(ROOT_DIR) / "uploads"
+upload_dir.mkdir(exist_ok=True)
+app.mount("/uploads", StaticFiles(directory=str(upload_dir)), name="uploads")
 @app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()
