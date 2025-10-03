@@ -179,11 +179,11 @@ backend:
 
   - task: "Delete customer endpoint"
     implemented: true
-    working: "NA"
+    working: true
     file: "backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
@@ -191,14 +191,17 @@ backend:
       - working: "NA"
         agent: "main"
         comment: "Implemented DELETE /api/customers/{customer_id} endpoint with cascade delete for all customer repairs"
+      - working: true
+        agent: "testing"
+        comment: "✅ PASSED: DELETE /api/customers/{customer_id} endpoint working perfectly. Tested cascade deletion - when customer is deleted, all associated repairs are automatically deleted. Verified with multiple repairs per customer. Proper 404 handling for non-existent customers. Role-based access control working correctly for admin and technician roles."
 
   - task: "Delete repair endpoint"
     implemented: true
-    working: "NA"
+    working: true
     file: "backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
@@ -206,14 +209,17 @@ backend:
       - working: "NA"
         agent: "main"
         comment: "Implemented DELETE /api/repairs/{repair_id} endpoint with proper role-based access control"
+      - working: true
+        agent: "testing"
+        comment: "✅ PASSED: DELETE /api/repairs/{repair_id} endpoint working correctly. Tested repair deletion with proper role-based access control - admin can delete any repair, technician can only delete repairs they created or are assigned to. Proper 404 handling for non-existent repairs. Deletion confirmed by subsequent GET requests returning 404."
 
   - task: "Notifications endpoint"
     implemented: true
-    working: "NA"
+    working: true
     file: "backend/server.py"
     stuck_count: 0
     priority: "medium"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
@@ -221,6 +227,9 @@ backend:
       - working: "NA"
         agent: "main"
         comment: "Implemented complete notification system with GET /api/notifications, PUT /api/notifications/{id}/read, GET /api/notifications/unread-count endpoints and auto-notification creation"
+      - working: true
+        agent: "testing"
+        comment: "✅ PASSED: Complete notification system working perfectly. GET /api/notifications returns all notifications with proper admin-only access control (403 for non-admin users). PUT /api/notifications/{id}/read successfully marks notifications as read. GET /api/notifications/unread-count returns correct count. Auto-notification creation verified when customers are created, repairs are created, and repair status is updated. All endpoints handle invalid IDs with proper 404 responses."
 
 frontend:
   - task: "Customer detail page"
