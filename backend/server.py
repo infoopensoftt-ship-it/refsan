@@ -823,6 +823,51 @@ async def update_repair_request(
     
     return RepairRequest(**updated_repair)
 
+@api_router.get("/repairs/{repair_id}", response_model=RepairRequest)
+async def get_repair_request(
+    repair_id: str,
+    current_user: User = Depends(get_current_user)
+):
+    repair = await db.repairs.find_one({"id": repair_id})
+    if not repair:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Repair request not found"
+        )
+    
+    # Check permissions based on role
+    if current_user.role == UserRole.TECHNICIAN:
+        # Technician can view repairs they created or are assigned to
+        customer_ids = []
+        customers = await db.customers.find({"created_by_technician": current_user.id}).to_list(1000)
+        customer_ids = [customer["id"] for customer in customers]
+        
+        if (repair.get("created_by") != current_user.id and 
+            repair.get("assigned_technician_id") != current_user.id and
+            repair.get("customer_id") not in customer_ids):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Access denied"
+            )
+    elif current_user.role == UserRole.CUSTOMER:
+        # Customer can only view their own repairs
+        if repair.get("created_by") != current_user.id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Access denied"
+            )
+    # Admin can view all repairs (no additional check needed)
+    
+    # Parse dates
+    if isinstance(repair.get("created_at"), str):
+        repair["created_at"] = datetime.fromisoformat(repair["created_at"])
+    if isinstance(repair.get("updated_at"), str):
+        repair["updated_at"] = datetime.fromisoformat(repair["updated_at"])
+    if repair.get("completed_at") and isinstance(repair["completed_at"], str):
+        repair["completed_at"] = datetime.fromisoformat(repair["completed_at"])
+    
+    return RepairRequest(**repair)
+
 @api_router.delete("/repairs/{repair_id}")
 async def delete_repair_request(
     repair_id: str,
