@@ -187,6 +187,18 @@
             <button class="btn btn-secondary" onclick="loadMyRepairs()">📝 İşlerim</button>
         </div>
 
+        <!-- Customer Search Section -->
+        <div class="section" style="margin-bottom: 2rem;">
+            <h2>🔍 Müşteri Ara</h2>
+            <div style="display: flex; gap: 1rem; margin: 1rem 0;">
+                <input type="text" id="customer-search-input" placeholder="Müşteri adı, telefon..." 
+                       style="flex: 1; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 4px;">
+                <button class="btn" onclick="searchCustomers()">Ara</button>
+                <button class="btn btn-secondary" onclick="clearCustomerSearch()">Temizle</button>
+            </div>
+            <div id="customer-search-results" style="display: none;"></div>
+        </div>
+
         <!-- Technician Sections -->
         <div class="tech-sections">
             <!-- Atanan İşler -->
