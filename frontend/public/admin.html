@@ -882,7 +882,10 @@
                 if (response.ok) {
                     alert('✅ Müşteri bilgileri güncellendi!');
                     closeModal('customerDetailModal');
-                    loadCustomers(); // Refresh the customer list
+                    // Reload customer list if modal is open
+                    if (document.getElementById('customerListModal').style.display === 'block') {
+                        loadCustomersInModal();
+                    }
                     loadStats(); // Refresh stats
                 } else {
                     const error = await response.json();
