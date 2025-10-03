@@ -200,7 +200,23 @@
             <h1>🔧 Refsan Türkiye Admin</h1>
             <small id="user-info">Yükleniyor...</small>
         </div>
-        <button class="logout-btn" onclick="logout()">🚪 Çıkış Yap</button>
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <button class="notification-btn" onclick="toggleNotifications()" id="notification-btn">
+                🔔 <span id="notification-count" style="display: none;">0</span>
+            </button>
+            <button class="logout-btn" onclick="logout()">🚪 Çıkış Yap</button>
+        </div>
+    </div>
+
+    <!-- Notifications Panel -->
+    <div id="notifications-panel" class="notifications-panel" style="display: none;">
+        <div class="notifications-header">
+            <h3>🔔 Bildirimler</h3>
+            <button onclick="closeNotifications()" class="close-btn">×</button>
+        </div>
+        <div id="notifications-list" class="notifications-list">
+            <div class="loading">Bildirimler yükleniyor...</div>
+        </div>
     </div>
 
     <div class="container">
