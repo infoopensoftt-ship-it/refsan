@@ -1323,6 +1323,28 @@ class TechnicalServiceAPITester:
                 repairs_success and delete_customer_success and delete_repair_success and
                 notifications_success and notification_creation_success)
 
+    def test_new_backend_endpoints(self):
+        """Test all newly added backend endpoints from the review request"""
+        print(f"\n🆕 Testing New Backend Endpoints for: {self.current_user.get('role')}")
+        
+        # Test repair cancellation endpoint
+        cancel_success = self.test_repair_cancellation_endpoint()
+        
+        # Test clear all notifications endpoint (admin only)
+        clear_notifications_success = self.test_clear_all_notifications_endpoint()
+        
+        # Test file upload endpoints
+        file_upload_success = self.test_file_upload_endpoints()
+        
+        # Test enhanced repair creation with files
+        enhanced_repair_success = self.test_enhanced_repair_creation_with_files()
+        
+        # Test role-based repair cancellation
+        role_based_cancel_success = self.test_role_based_repair_cancellation()
+        
+        return (cancel_success and clear_notifications_success and file_upload_success and 
+                enhanced_repair_success and role_based_cancel_success)
+
     def test_role_based_access(self):
         """Test role-based access control"""
         print(f"\n🔐 Testing role-based access for: {self.current_user.get('role')}")
