@@ -1767,7 +1767,7 @@
             }
 
             try {
-                const response = await fetch(`${API_BASE}/system/reset`, {
+                const response = await fetch(`${API_BASE}/admin/system/reset`, {
                     method: 'DELETE',
                     headers: { 'Authorization': `Bearer ${authToken}` }
                 });
