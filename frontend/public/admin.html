@@ -404,6 +404,39 @@
                 <button class="btn btn-secondary" onclick="loadRepairs()">📋 Arıza Listesi</button>
                 <div id="repair-list" class="repair-list"></div>
             </div>
+
+            <!-- Sistem Yönetimi -->
+            <div class="section">
+                <h2>⚙️ Sistem Yönetimi</h2>
+                <div id="system-stats">
+                    <div class="stat-box">
+                        <h3 id="total-repairs">0</h3>
+                        <p>Toplam Arıza</p>
+                    </div>
+                    <div class="stat-box">
+                        <h3 id="total-customers">0</h3>
+                        <p>Toplam Müşteri</p>
+                    </div>
+                    <div class="stat-box">
+                        <h3 id="total-technicians">0</h3>
+                        <p>Teknisyen</p>
+                    </div>
+                </div>
+                
+                <!-- System Management Buttons -->
+                <div style="margin-top: 2rem; padding: 1rem; background: #fef2f2; border-radius: 8px; border-left: 4px solid #ef4444;">
+                    <h4 style="color: #dc2626; margin-bottom: 1rem;">🔴 Tehlikeli İşlemler</h4>
+                    <div style="display: flex; flex-wrap: wrap; gap: 1rem;">
+                        <button class="btn" style="background: #f59e0b;" onclick="deleteAllRepairs()">🗑️ Tüm Arıza Kayıtlarını Sil</button>
+                        <button class="btn" style="background: #f59e0b;" onclick="deleteAllCustomers()">🗑️ Tüm Müşterileri Sil</button>
+                        <button class="btn" style="background: #ef4444;" onclick="resetSystem()">🔄 Sistemi Sıfırla</button>
+                        <button class="btn" style="background: #059669;" onclick="createDemoData()">📋 Demo Veriler Oluştur</button>
+                    </div>
+                    <small style="color: #7f1d1d; font-size: 0.8em;">
+                        ⚠️ Bu işlemler geri alınamaz! Kullanmadan önce emin olun.
+                    </small>
+                </div>
+            </div>
         </div>
     </div>
 
