@@ -1257,7 +1257,7 @@ async def create_demo_data(
             "brand": "Refsan",
             "model": "RS-800",
             "description": "Sır püskürtme memelerinde tıkanma. Homojen sırlama yapılamıyor. Temizlik ve ayar gerekli.",
-            "status": RepairStatus.URGENT,
+            "status": RepairStatus.PENDING,
             "priority": Priority.URGENT,
             "cost_estimate": 2800.0,
             "created_by": current_user.id,
