@@ -336,6 +336,66 @@ backend:
         agent: "testing"
         comment: "✅ PASSED: Enhanced notification system working perfectly. Notifications now contain extra_data fields: repair_id, customer_name, device_info for frontend linking. New repair notifications include all device details. Status update notifications include new_status field. Repair cancellation creates 'repair_cancelled' type notifications. Updated Notification model to include optional enhanced fields. All notification types properly store and retrieve enhanced data for improved frontend integration."
 
+  - task: "Delete all repairs endpoint"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented DELETE /api/admin/repairs/delete-all endpoint for admin to delete all repair records"
+      - working: true
+        agent: "testing"
+        comment: "✅ PASSED: DELETE /api/admin/repairs/delete-all endpoint working perfectly. Admin can successfully delete all repair records. Proper role-based access control enforced (403 for non-admin users). Returns count of deleted records in response message. Fixed route conflict by moving to /api/admin/ prefix."
+
+  - task: "Delete all customers endpoint"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented DELETE /api/admin/customers/delete-all endpoint for admin to delete all customers and cascade delete repairs"
+      - working: true
+        agent: "testing"
+        comment: "✅ PASSED: DELETE /api/admin/customers/delete-all endpoint working perfectly. Admin can successfully delete all customers and their associated repairs (cascade deletion). Proper role-based access control enforced (403 for non-admin users). Returns count of deleted customers and repairs in response message."
+
+  - task: "System reset endpoint"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented DELETE /api/admin/system/reset endpoint for admin to reset entire system except admin users"
+      - working: true
+        agent: "testing"
+        comment: "✅ PASSED: DELETE /api/admin/system/reset endpoint working perfectly. Admin can successfully reset entire system - deletes all repairs, customers, notifications, and non-admin users while preserving admin accounts. Proper role-based access control enforced (403 for non-admin users). Returns detailed count of deleted records."
+
+  - task: "Demo data creation endpoint"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented POST /api/admin/demo/create-data endpoint for admin to create Refsan Türkiye ceramic machinery demo data"
+      - working: true
+        agent: "testing"
+        comment: "✅ PASSED: POST /api/admin/demo/create-data endpoint working perfectly. Admin can successfully create comprehensive demo data with 5 ceramic industry customers (Ankara Seramik, İstanbul Çini, Ege Karo, Bursa Porselen, Kütahya Çini) and 5 Refsan brand ceramic machinery repairs (Seramik Fırını, Çini Presi, Karo Kesim, Porselen Kalıplama, Çini Sırlama). Proper role-based access control enforced. Fixed RepairPriority enum references. Demo data validation passed with proper ceramic industry content."
+
 frontend:
   - task: "Customer detail page"
     implemented: true
