@@ -1695,35 +1695,35 @@ class TechnicalServiceAPITester:
         if self.current_user.get('role') != 'admin':
             # Test that technician/customer cannot access system management endpoints
             
-            # Test DELETE /api/repairs/delete-all (should return 403)
+            # Test DELETE /api/admin/repairs/delete-all (should return 403)
             delete_repairs_forbidden, _ = self.run_test(
                 f"{self.current_user.get('role')} access delete all repairs (should fail)",
                 "DELETE",
-                "repairs/delete-all",
+                "admin/repairs/delete-all",
                 403
             )
             
-            # Test DELETE /api/customers/delete-all (should return 403)
+            # Test DELETE /api/admin/customers/delete-all (should return 403)
             delete_customers_forbidden, _ = self.run_test(
                 f"{self.current_user.get('role')} access delete all customers (should fail)",
                 "DELETE",
-                "customers/delete-all",
+                "admin/customers/delete-all",
                 403
             )
             
-            # Test DELETE /api/system/reset (should return 403)
+            # Test DELETE /api/admin/system/reset (should return 403)
             system_reset_forbidden, _ = self.run_test(
                 f"{self.current_user.get('role')} access system reset (should fail)",
                 "DELETE",
-                "system/reset",
+                "admin/system/reset",
                 403
             )
             
-            # Test POST /api/demo/create-data (should return 403)
+            # Test POST /api/admin/demo/create-data (should return 403)
             demo_data_forbidden, _ = self.run_test(
                 f"{self.current_user.get('role')} access demo data creation (should fail)",
                 "POST",
-                "demo/create-data",
+                "admin/demo/create-data",
                 403
             )
             
