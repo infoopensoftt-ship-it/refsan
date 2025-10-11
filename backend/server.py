@@ -1096,14 +1096,14 @@ async def clear_all_notifications(
     result = await db.notifications.delete_many({})
     return {"message": f"{result.deleted_count} notifications cleared"}
 
-@api_router.delete("/repairs/delete-all")
+@api_router.delete("/admin/repairs/delete-all")
 async def delete_all_repairs(
     current_user: User = Depends(require_role([UserRole.ADMIN]))
 ):
     result = await db.repairs.delete_many({})
     return {"message": f"{result.deleted_count} repair records deleted"}
 
-@api_router.delete("/customers/delete-all")
+@api_router.delete("/admin/customers/delete-all")
 async def delete_all_customers(
     current_user: User = Depends(require_role([UserRole.ADMIN]))
 ):
