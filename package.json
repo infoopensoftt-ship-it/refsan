@@ -7,7 +7,15 @@
     "build": "echo 'Build completed'",
     "start": "echo 'App started'"
   },
-  "keywords": ["refsan", "teknik servis", "mobile app"],
+  "keywords": [
+    "refsan",
+    "teknik servis",
+    "mobile app"
+  ],
   "author": "Refsan Türkiye",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "@capacitor/android": "^7.4.3",
+    "@capacitor/core": "^7.4.3"
+  }
 }
