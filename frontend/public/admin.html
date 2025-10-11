@@ -1489,6 +1489,37 @@
         async function createRepair(event) {
             event.preventDefault();
             
+            let uploadedFiles = [];
+            
+            // Upload files first if any
+            const fileInput = document.getElementById('admin-repair-files');
+            if (fileInput.files.length > 0) {
+                try {
+                    const formData = new FormData();
+                    for (let file of fileInput.files) {
+                        formData.append('files', file);
+                    }
+                    
+                    const uploadResponse = await fetch(`${API_BASE}/upload-multiple`, {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${authToken}` },
+                        body: formData
+                    });
+                    
+                    if (uploadResponse.ok) {
+                        const uploadResult = await uploadResponse.json();
+                        uploadedFiles = uploadResult.uploaded_files.map(f => f.file_url);
+                    } else {
+                        const error = await uploadResponse.json();
+                        alert('❌ Dosya yükleme hatası: ' + error.detail);
+                        return;
+                    }
+                } catch (error) {
+                    alert('❌ Dosya yükleme hatası: ' + error.message);
+                    return;
+                }
+            }
+            
             const repairData = {
                 customer_id: document.getElementById('repair-customer').value,
                 device_type: document.getElementById('repair-device-type').value,
@@ -1497,7 +1528,8 @@
                 description: document.getElementById('repair-description').value,
                 priority: document.getElementById('repair-priority').value,
                 cost_estimate: document.getElementById('repair-cost-estimate').value || null,
-                assigned_technician_id: document.getElementById('repair-technician').value || null
+                assigned_technician_id: document.getElementById('repair-technician').value || null,
+                images: uploadedFiles
             };
 
             try {
@@ -1514,6 +1546,7 @@
                     alert('✅ Arıza kaydı başarıyla oluşturuldu!');
                     closeModal('repairModal');
                     event.target.reset();
+                    document.getElementById('admin-file-preview').innerHTML = '';
                     loadStats();
                     loadRepairs();
                 } else {
