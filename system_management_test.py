@@ -178,10 +178,10 @@ class SystemManagementTester:
             }
             
             endpoints_to_test = [
-                ("repairs/delete-all", "DELETE"),
-                ("customers/delete-all", "DELETE"),
-                ("system/reset", "DELETE"),
-                ("demo/create-data", "POST")
+                ("admin/repairs/delete-all", "DELETE"),
+                ("admin/customers/delete-all", "DELETE"),
+                ("admin/system/reset", "DELETE"),
+                ("admin/demo/create-data", "POST")
             ]
             
             all_forbidden = True
