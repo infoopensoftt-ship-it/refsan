@@ -64,6 +64,52 @@
             margin-bottom: 30px;
             font-size: 1.2em;
         }
+
+        /* Mobile Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+                min-height: 100vh;
+            }
+            .form-container {
+                padding: 1.5rem;
+                margin: 0;
+                width: 100%;
+                max-width: none;
+                border-radius: 0;
+            }
+            .logo {
+                width: 60px;
+            }
+            .logo-text h1 {
+                font-size: 1.5em;
+            }
+            .logo-text .subtitle {
+                font-size: 0.9em;
+            }
+            .demo-buttons {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+            .demo-btn {
+                padding: 0.75rem;
+                font-size: 0.9em;
+            }
+            .form-section input, .form-section button {
+                font-size: 16px; /* Prevents zoom on iOS */
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo-container {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+            .logo-text {
+                text-align: center;
+            }
+        }
         .form-section {
             background: #f7fafc;
             padding: 20px;
