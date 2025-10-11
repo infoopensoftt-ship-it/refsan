@@ -1192,7 +1192,7 @@ async def create_demo_data(
             "model": "RF-2500",
             "description": "Fırın sıcaklık kontrolü arızalı. 1200°C'ye çıkarken ani düşüş yaşanıyor. Termostat değişimi gerekebilir.",
             "status": RepairStatus.PENDING,
-            "priority": RepairPriority.HIGH,
+            "priority": Priority.HIGH,
             "cost_estimate": 15000.0,
             "created_by": current_user.id,
             "created_at": datetime.now(timezone.utc).isoformat(),
