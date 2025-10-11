@@ -1447,6 +1447,44 @@
             }
         }
 
+        async function createRepair(event) {
+            event.preventDefault();
+            
+            const repairData = {
+                customer_id: document.getElementById('repair-customer').value,
+                device_type: document.getElementById('repair-device-type').value,
+                brand: document.getElementById('repair-brand').value,
+                model: document.getElementById('repair-model').value || null,
+                description: document.getElementById('repair-description').value,
+                priority: document.getElementById('repair-priority').value,
+                cost_estimate: document.getElementById('repair-cost-estimate').value || null,
+                assigned_technician_id: document.getElementById('repair-technician').value || null
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/repairs`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}` 
+                    },
+                    body: JSON.stringify(repairData)
+                });
+
+                if (response.ok) {
+                    alert('✅ Arıza kaydı başarıyla oluşturuldu!');
+                    closeModal('repairModal');
+                    event.target.reset();
+                    loadStats();
+                    loadRepairs();
+                } else {
+                    const error = await response.json();
+                    alert('❌ ' + (error.detail || 'Arıza kaydı oluşturulamadı'));
+                }
+            } catch (error) {
+                alert('❌ Hata: ' + error.message);
+            }
+        }
         function openModal(modalId) {
             document.getElementById(modalId).style.display = 'block';
             
