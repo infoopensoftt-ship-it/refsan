@@ -1258,7 +1258,7 @@ async def create_demo_data(
             "model": "RS-800",
             "description": "Sır püskürtme memelerinde tıkanma. Homojen sırlama yapılamıyor. Temizlik ve ayar gerekli.",
             "status": RepairStatus.URGENT,
-            "priority": RepairPriority.URGENT,
+            "priority": Priority.URGENT,
             "cost_estimate": 2800.0,
             "created_by": current_user.id,
             "created_at": datetime.now(timezone.utc).isoformat(),
