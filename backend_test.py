@@ -1750,7 +1750,7 @@ class TechnicalServiceAPITester:
         create_demo_success, demo_response = self.run_test(
             "Create demo data for validation",
             "POST",
-            "demo/create-data",
+            "admin/demo/create-data",
             200
         )
         
