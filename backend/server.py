@@ -1096,6 +1096,40 @@ async def clear_all_notifications(
     result = await db.notifications.delete_many({})
     return {"message": f"{result.deleted_count} notifications cleared"}
 
+@api_router.delete("/repairs/delete-all")
+async def delete_all_repairs(
+    current_user: User = Depends(require_role([UserRole.ADMIN]))
+):
+    result = await db.repairs.delete_many({})
+    return {"message": f"{result.deleted_count} repair records deleted"}
+
+@api_router.delete("/customers/delete-all")
+async def delete_all_customers(
+    current_user: User = Depends(require_role([UserRole.ADMIN]))
+):
+    # First delete all repairs (cascade delete)
+    repairs_result = await db.repairs.delete_many({})
+    # Then delete all customers
+    customers_result = await db.customers.delete_many({})
+    return {
+        "message": f"{customers_result.deleted_count} customers and {repairs_result.deleted_count} repair records deleted"
+    }
+
+@api_router.delete("/system/reset")
+async def reset_system(
+    current_user: User = Depends(require_role([UserRole.ADMIN]))
+):
+    # Delete all data except admin users
+    repairs_result = await db.repairs.delete_many({})
+    customers_result = await db.customers.delete_many({})
+    notifications_result = await db.notifications.delete_many({})
+    # Keep admin users, delete others
+    users_result = await db.users.delete_many({"role": {"$ne": "admin"}})
+    
+    return {
+        "message": f"System reset complete: {repairs_result.deleted_count} repairs, {customers_result.deleted_count} customers, {notifications_result.deleted_count} notifications, {users_result.deleted_count} non-admin users deleted"
+    }
+
 # Include the router in the main app
 app.include_router(api_router)
 
