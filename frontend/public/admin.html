@@ -53,6 +53,31 @@
         .stat-card:hover { transform: translateY(-5px); }
         .stat-card h3 { color: #64748b; font-size: 0.9em; margin-bottom: 0.5rem; }
         .stat-card .number { font-size: 2em; font-weight: bold; }
+        
+        #system-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        .stat-box {
+            background: #f8fafc;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+        }
+        .stat-box h3 {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+        }
+        .stat-box p {
+            font-size: 0.9em;
+            color: #64748b;
+            margin: 0;
+        }
         .admin-sections {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
