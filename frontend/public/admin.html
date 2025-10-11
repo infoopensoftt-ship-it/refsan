@@ -1357,6 +1357,45 @@
             document.getElementById('repair-detail-title').textContent = `Arıza #${repair.id.substring(0, 8)} - ${repair.customer_name}`;
         }
 
+        // Admin file preview functionality
+        function updateAdminFilePreview() {
+            const fileInput = document.getElementById('admin-repair-files');
+            const previewDiv = document.getElementById('admin-file-preview');
+            
+            if (!fileInput.files.length) {
+                previewDiv.innerHTML = '';
+                return;
+            }
+            
+            let html = '<div style="font-size: 0.9em; color: #374151; margin-top: 0.5rem;"><strong>Seçilen Dosyalar:</strong></div>';
+            
+            Array.from(fileInput.files).forEach((file, index) => {
+                const fileSize = (file.size / 1024 / 1024).toFixed(2);
+                html += `
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.25rem 0; border-bottom: 1px solid #e5e7eb;">
+                        <span style="font-size: 0.8em;">${file.name} (${fileSize} MB)</span>
+                        <button type="button" onclick="removeAdminFile(${index})" style="color: #ef4444; background: none; border: none; cursor: pointer;">✕</button>
+                    </div>
+                `;
+            });
+            
+            previewDiv.innerHTML = html;
+        }
+
+        function removeAdminFile(index) {
+            const fileInput = document.getElementById('admin-repair-files');
+            const dt = new DataTransfer();
+            
+            Array.from(fileInput.files).forEach((file, i) => {
+                if (i !== index) {
+                    dt.items.add(file);
+                }
+            });
+            
+            fileInput.files = dt.files;
+            updateAdminFilePreview();
+        }
+
         // Add enter key support for search
         document.addEventListener('DOMContentLoaded', function() {
             const searchInput = document.getElementById('search-input');
