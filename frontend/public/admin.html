@@ -1658,6 +1658,125 @@
             localStorage.removeItem('user');
             window.location.href = 'test.html';
         }
+
+        // System Management Functions
+        async function deleteAllRepairs() {
+            if (!confirm('⚠️ TÜM ARIZA KAYITLARINI SİLMEK İSTEDİĞİNİZDEN EMİN MİSİNİZ?\n\nBu işlem:\n- Tüm arıza kayıtlarını silecek\n- Tüm dosyaları silecek\n- Bu işlem GERİ ALINAMAZ!\n\nDevam etmek için "Evet" yazın:')) {
+                return;
+            }
+            
+            const confirmation = prompt('Onaylamak için "EVET" yazın (büyük harflerle):');
+            if (confirmation !== 'EVET') {
+                alert('İşlem iptal edildi.');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/admin/delete-all-repairs`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+
+                if (response.ok) {
+                    alert('✅ Tüm arıza kayıtları başarıyla silindi!');
+                    loadStats();
+                    loadRepairs();
+                } else {
+                    const error = await response.json();
+                    alert('❌ ' + (error.detail || 'Silme işlemi başarısız'));
+                }
+            } catch (error) {
+                alert('❌ Hata: ' + error.message);
+            }
+        }
+
+        async function deleteAllCustomers() {
+            if (!confirm('⚠️ TÜM MÜŞTERİLERİ SİLMEK İSTEDİĞİNİZDEN EMİN MİSİNİZ?\n\nBu işlem:\n- Tüm müşterileri silecek\n- Müşterilere ait tüm arıza kayıtlarını silecek\n- Bu işlem GERİ ALINAMAZ!\n\nDevam etmek için "Evet" yazın:')) {
+                return;
+            }
+            
+            const confirmation = prompt('Onaylamak için "EVET" yazın (büyük harflerle):');
+            if (confirmation !== 'EVET') {
+                alert('İşlem iptal edildi.');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/admin/delete-all-customers`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+
+                if (response.ok) {
+                    alert('✅ Tüm müşteriler başarıyla silindi!');
+                    loadStats();
+                    loadCustomersInModal();
+                } else {
+                    const error = await response.json();
+                    alert('❌ ' + (error.detail || 'Silme işlemi başarısız'));
+                }
+            } catch (error) {
+                alert('❌ Hata: ' + error.message);
+            }
+        }
+
+        async function resetSystem() {
+            if (!confirm('⚠️ SİSTEMİ TAMAMEN SIFIRLAMAK İSTEDİĞİNİZDEN EMİN MİSİNİZ?\n\nBu işlem:\n- Tüm müşterileri silecek\n- Tüm arıza kayıtlarını silecek\n- Tüm bildirimleri silecek\n- Tüm dosyaları silecek\n- Sadece admin kullanıcıları kalacak\n- Bu işlem GERİ ALINAMAZ!\n\nDevam etmek için "Evet" yazın:')) {
+                return;
+            }
+            
+            const confirmation = prompt('Onaylamak için "SISTEM SIFIRLA" yazın (büyük harflerle):');
+            if (confirmation !== 'SISTEM SIFIRLA') {
+                alert('İşlem iptal edildi.');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/admin/reset-system`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+
+                if (response.ok) {
+                    alert('✅ Sistem başarıyla sıfırlandı!');
+                    loadStats();
+                    loadRepairs();
+                    loadCustomersInModal();
+                    loadNotificationCount();
+                } else {
+                    const error = await response.json();
+                    alert('❌ ' + (error.detail || 'Sıfırlama işlemi başarısız'));
+                }
+            } catch (error) {
+                alert('❌ Hata: ' + error.message);
+            }
+        }
+
+        async function createDemoData() {
+            if (!confirm('Demo veriler oluşturulsun mu?\n\nBu işlem:\n- Örnek müşteriler ekleyecek\n- Örnek arıza kayıtları oluşturacak\n- Mevcut veriler korunacak')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/admin/create-demo-data`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    alert(`✅ Demo veriler başarıyla oluşturuldu!\n\n${result.customers_created} müşteri\n${result.repairs_created} arıza kaydı eklendi.`);
+                    loadStats();
+                    loadRepairs();
+                    loadCustomersInModal();
+                } else {
+                    const error = await response.json();
+                    alert('❌ ' + (error.detail || 'Demo veri oluşturma başarısız'));
+                }
+            } catch (error) {
+                alert('❌ Hata: ' + error.message);
+            }
+        }
     </script>
 </body>
 </html>
