@@ -1130,6 +1130,152 @@ async def reset_system(
         "message": f"System reset complete: {repairs_result.deleted_count} repairs, {customers_result.deleted_count} customers, {notifications_result.deleted_count} notifications, {users_result.deleted_count} non-admin users deleted"
     }
 
+@api_router.post("/demo/create-data")
+async def create_demo_data(
+    current_user: User = Depends(require_role([UserRole.ADMIN]))
+):
+    # Refsan Türkiye demo data - ceramic machinery company
+    demo_customers = [
+        {
+            "id": str(uuid.uuid4()),
+            "full_name": "Ankara Seramik A.Ş.",
+            "email": "info@ankaraseramik.com",
+            "phone": "0312 456 7890",
+            "address": "Ostim OSB, Ankara",
+            "created_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "full_name": "İstanbul Çini Fabrikası",
+            "email": "uretim@istanbulcini.com",
+            "phone": "0216 345 6789",
+            "address": "Kartal Sanayi Sitesi, İstanbul",
+            "created_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "full_name": "Ege Karo Ltd. Şti.",
+            "email": "siparis@egekaro.com",
+            "phone": "0232 567 8901",
+            "address": "Kemalpaşa OSB, İzmir",
+            "created_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "full_name": "Bursa Porselen San.",
+            "email": "fabrika@bursaporselen.com",
+            "phone": "0224 678 9012",
+            "address": "Nilüfer Sanayi Bölgesi, Bursa",
+            "created_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "full_name": "Kütahya Çini Atölyesi",
+            "email": "atolye@kutahyacini.com",
+            "phone": "0274 789 0123",
+            "address": "Merkez, Kütahya",
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+    ]
+    
+    # Insert demo customers
+    await db.customers.insert_many(demo_customers)
+    
+    # Create demo repair requests for ceramic machinery
+    demo_repairs = [
+        {
+            "id": str(uuid.uuid4()),
+            "customer_id": demo_customers[0]["id"],
+            "customer_name": demo_customers[0]["full_name"],
+            "device_type": "Seramik Fırını",
+            "brand": "Refsan",
+            "model": "RF-2500",
+            "description": "Fırın sıcaklık kontrolü arızalı. 1200°C'ye çıkarken ani düşüş yaşanıyor. Termostat değişimi gerekebilir.",
+            "status": RepairStatus.PENDING,
+            "priority": RepairPriority.HIGH,
+            "cost_estimate": 15000.0,
+            "created_by": current_user.id,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat(),
+            "images": []
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "customer_id": demo_customers[1]["id"],
+            "customer_name": demo_customers[1]["full_name"],
+            "device_type": "Çini Presi",
+            "brand": "Refsan",
+            "model": "RP-150",
+            "description": "Hidrolik sistem basınç kaybı yaşıyor. Çini kalıpları tam olarak şekillendirilemiyor. Conta değişimi gerekli.",
+            "status": RepairStatus.IN_PROGRESS,
+            "priority": RepairPriority.MEDIUM,
+            "cost_estimate": 8500.0,
+            "created_by": current_user.id,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat(),
+            "images": []
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "customer_id": demo_customers[2]["id"],
+            "customer_name": demo_customers[2]["full_name"],
+            "device_type": "Karo Kesim Makinesi",
+            "brand": "Refsan",
+            "model": "RK-300",
+            "description": "Kesim diskinin titreşim yapması. Kesim kalitesi düşmüş. Motor yatakları kontrol edilmeli.",
+            "status": RepairStatus.COMPLETED,
+            "priority": RepairPriority.MEDIUM,
+            "cost_estimate": 5200.0,
+            "final_cost": 4800.0,
+            "created_by": current_user.id,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat(),
+            "completed_at": datetime.now(timezone.utc).isoformat(),
+            "images": []
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "customer_id": demo_customers[3]["id"],
+            "customer_name": demo_customers[3]["full_name"],
+            "device_type": "Porselen Kalıplama Makinesi",
+            "brand": "Refsan",
+            "model": "PK-500",
+            "description": "Kalıplama işlemi sırasında hava kabarcığı oluşumu. Vakum sistemi kontrol edilmeli.",
+            "status": RepairStatus.PENDING,
+            "priority": RepairPriority.LOW,
+            "cost_estimate": 3200.0,
+            "created_by": current_user.id,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat(),
+            "images": []
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "customer_id": demo_customers[4]["id"],
+            "customer_name": demo_customers[4]["full_name"],
+            "device_type": "Çini Sırlama Makinesi",
+            "brand": "Refsan",
+            "model": "RS-800",
+            "description": "Sır püskürtme memelerinde tıkanma. Homojen sırlama yapılamıyor. Temizlik ve ayar gerekli.",
+            "status": RepairStatus.URGENT,
+            "priority": RepairPriority.URGENT,
+            "cost_estimate": 2800.0,
+            "created_by": current_user.id,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat(),
+            "images": []
+        }
+    ]
+    
+    # Insert demo repair requests
+    await db.repairs.insert_many(demo_repairs)
+    
+    return {
+        "customers_created": len(demo_customers),
+        "repairs_created": len(demo_repairs),
+        "message": "Refsan Türkiye demo data created successfully"
+    }
+
 # Include the router in the main app
 app.include_router(api_router)
 
