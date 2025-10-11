@@ -513,8 +513,10 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Repair detail endpoint with role-based access"
-    - "Enhanced notification system with extra_data"
+    - "Delete all repairs endpoint"
+    - "Delete all customers endpoint"
+    - "System reset endpoint"
+    - "Demo data creation endpoint"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
