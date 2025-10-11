@@ -1633,11 +1633,11 @@ class TechnicalServiceAPITester:
         
         print(f"   ✅ Created {len(test_customers)} customers and {len(test_repairs)} repairs for testing")
         
-        # Test 1: DELETE /api/repairs/delete-all
+        # Test 1: DELETE /api/admin/repairs/delete-all
         delete_all_repairs_success, delete_repairs_response = self.run_test(
             "Delete all repair records (admin only)",
             "DELETE",
-            "repairs/delete-all",
+            "admin/repairs/delete-all",
             200
         )
         
@@ -1645,11 +1645,11 @@ class TechnicalServiceAPITester:
             message = delete_repairs_response.get('message', '')
             print(f"   ✅ Delete all repairs: {message}")
         
-        # Test 2: DELETE /api/customers/delete-all  
+        # Test 2: DELETE /api/admin/customers/delete-all  
         delete_all_customers_success, delete_customers_response = self.run_test(
             "Delete all customers and their repairs (admin only)",
             "DELETE",
-            "customers/delete-all",
+            "admin/customers/delete-all",
             200
         )
         
@@ -1657,11 +1657,11 @@ class TechnicalServiceAPITester:
             message = delete_customers_response.get('message', '')
             print(f"   ✅ Delete all customers: {message}")
         
-        # Test 3: DELETE /api/system/reset
+        # Test 3: DELETE /api/admin/system/reset
         system_reset_success, reset_response = self.run_test(
             "Reset entire system except admin users (admin only)",
             "DELETE",
-            "system/reset",
+            "admin/system/reset",
             200
         )
         
@@ -1669,11 +1669,11 @@ class TechnicalServiceAPITester:
             message = reset_response.get('message', '')
             print(f"   ✅ System reset: {message}")
         
-        # Test 4: POST /api/demo/create-data
+        # Test 4: POST /api/admin/demo/create-data
         create_demo_success, demo_response = self.run_test(
             "Create Refsan Türkiye demo data (admin only)",
             "POST",
-            "demo/create-data",
+            "admin/demo/create-data",
             200
         )
         
