@@ -723,11 +723,21 @@
                 });
                 const stats = await response.json();
                 
+                // Update main stats
                 document.getElementById('total-repairs').textContent = stats.total_repairs || 0;
                 document.getElementById('pending-repairs').textContent = stats.pending_repairs || 0;
                 document.getElementById('completed-repairs').textContent = stats.completed_repairs || 0;
                 document.getElementById('total-customers').textContent = stats.total_customers || 0;
                 document.getElementById('total-technicians').textContent = stats.total_technicians || 0;
+                
+                // Update system management stats
+                const systemTotalRepairs = document.getElementById('system-total-repairs');
+                const systemTotalCustomers = document.getElementById('system-total-customers');
+                const systemTotalTechnicians = document.getElementById('system-total-technicians');
+                
+                if (systemTotalRepairs) systemTotalRepairs.textContent = stats.total_repairs || 0;
+                if (systemTotalCustomers) systemTotalCustomers.textContent = stats.total_customers || 0;
+                if (systemTotalTechnicians) systemTotalTechnicians.textContent = stats.total_technicians || 0;
             } catch (error) {
                 console.error('Stats load error:', error);
             }
