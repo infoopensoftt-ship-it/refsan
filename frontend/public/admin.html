@@ -1568,6 +1568,12 @@
             } else if (modalId === 'repairModal') {
                 loadCustomersForRepair();
                 loadTechniciansForRepair();
+                
+                // Add file input change listener for admin repair modal
+                const adminFileInput = document.getElementById('admin-repair-files');
+                if (adminFileInput) {
+                    adminFileInput.addEventListener('change', updateAdminFilePreview);
+                }
             }
         }
 
