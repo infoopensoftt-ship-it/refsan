@@ -1242,7 +1242,7 @@ async def create_demo_data(
             "model": "PK-500",
             "description": "Kalıplama işlemi sırasında hava kabarcığı oluşumu. Vakum sistemi kontrol edilmeli.",
             "status": RepairStatus.PENDING,
-            "priority": RepairPriority.LOW,
+            "priority": Priority.LOW,
             "cost_estimate": 3200.0,
             "created_by": current_user.id,
             "created_at": datetime.now(timezone.utc).isoformat(),
