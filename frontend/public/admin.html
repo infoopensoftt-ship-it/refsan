@@ -704,6 +704,37 @@
                 console.error('Technicians load error:', error);
             }
         }
+        async function loadCustomersForRepair() {
+            try {
+                const response = await fetch(`${API_BASE}/customers`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                const customers = await response.json();
+                
+                const select = document.getElementById('repair-customer');
+                select.innerHTML = '<option value="">Müşteri Seçiniz</option>' + 
+                    customers.map(customer => `<option value="${customer.id}">${customer.full_name} - ${customer.phone}</option>`).join('');
+            } catch (error) {
+                console.error('Customers load error:', error);
+            }
+        }
+
+        async function loadTechniciansForRepair() {
+            try {
+                const response = await fetch(`${API_BASE}/users`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                const users = await response.json();
+                
+                const technicians = users.filter(u => u.role === 'teknisyen');
+                
+                const select = document.getElementById('repair-technician');
+                select.innerHTML = '<option value="">Teknisyen Seçiniz (İsteğe Bağlı)</option>' + 
+                    technicians.map(tech => `<option value="${tech.id}">${tech.full_name}</option>`).join('');
+            } catch (error) {
+                console.error('Technicians load error:', error);
+            }
+        }
 
         async function loadTechnicianReport() {
             const techId = document.getElementById('technician-select').value;
