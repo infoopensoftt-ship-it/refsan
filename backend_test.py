@@ -1575,6 +1575,261 @@ class TechnicalServiceAPITester:
         
         return structure_valid
 
+    def test_system_management_endpoints(self):
+        """Test new system management endpoints for admin panel"""
+        print(f"\n🔧 Testing System Management Endpoints for: {self.current_user.get('role')}")
+        
+        # Only admin can access system management endpoints
+        if self.current_user.get('role') != 'admin':
+            print("   ⚠️  Skipping system management tests (admin only)")
+            return True
+        
+        # First create some test data to delete
+        print("   📝 Creating test data for system management tests...")
+        
+        # Create test customers
+        test_customers = []
+        for i in range(3):
+            customer_data = {
+                "full_name": f"System Test Customer {i+1}",
+                "email": f"systemtest{i+1}@test.com",
+                "phone": f"055512345{i+1}0",
+                "address": f"System Test Address {i+1}"
+            }
+            
+            success, customer = self.run_test(
+                f"Create test customer {i+1} for system management",
+                "POST",
+                "customers",
+                200,
+                data=customer_data
+            )
+            
+            if success:
+                test_customers.append(customer)
+        
+        # Create test repairs
+        test_repairs = []
+        for i, customer in enumerate(test_customers):
+            repair_data = {
+                "customer_id": customer.get('id'),
+                "device_type": f"Test Device {i+1}",
+                "brand": "Test Brand",
+                "model": f"Model {i+1}",
+                "description": f"Test repair description {i+1}",
+                "priority": "orta"
+            }
+            
+            success, repair = self.run_test(
+                f"Create test repair {i+1} for system management",
+                "POST",
+                "repairs",
+                200,
+                data=repair_data
+            )
+            
+            if success:
+                test_repairs.append(repair)
+        
+        print(f"   ✅ Created {len(test_customers)} customers and {len(test_repairs)} repairs for testing")
+        
+        # Test 1: DELETE /api/repairs/delete-all
+        delete_all_repairs_success, delete_repairs_response = self.run_test(
+            "Delete all repair records (admin only)",
+            "DELETE",
+            "repairs/delete-all",
+            200
+        )
+        
+        if delete_all_repairs_success:
+            message = delete_repairs_response.get('message', '')
+            print(f"   ✅ Delete all repairs: {message}")
+        
+        # Test 2: DELETE /api/customers/delete-all  
+        delete_all_customers_success, delete_customers_response = self.run_test(
+            "Delete all customers and their repairs (admin only)",
+            "DELETE",
+            "customers/delete-all",
+            200
+        )
+        
+        if delete_all_customers_success:
+            message = delete_customers_response.get('message', '')
+            print(f"   ✅ Delete all customers: {message}")
+        
+        # Test 3: DELETE /api/system/reset
+        system_reset_success, reset_response = self.run_test(
+            "Reset entire system except admin users (admin only)",
+            "DELETE",
+            "system/reset",
+            200
+        )
+        
+        if system_reset_success:
+            message = reset_response.get('message', '')
+            print(f"   ✅ System reset: {message}")
+        
+        # Test 4: POST /api/demo/create-data
+        create_demo_success, demo_response = self.run_test(
+            "Create Refsan Türkiye demo data (admin only)",
+            "POST",
+            "demo/create-data",
+            200
+        )
+        
+        if create_demo_success:
+            customers_created = demo_response.get('customers_created', 0)
+            repairs_created = demo_response.get('repairs_created', 0)
+            message = demo_response.get('message', '')
+            print(f"   ✅ Demo data created: {customers_created} customers, {repairs_created} repairs")
+            print(f"   📝 {message}")
+        
+        return (delete_all_repairs_success and delete_all_customers_success and 
+                system_reset_success and create_demo_success)
+
+    def test_system_management_role_access_control(self):
+        """Test role-based access control for system management endpoints"""
+        print(f"\n🔐 Testing System Management Role Access Control for: {self.current_user.get('role')}")
+        
+        # Test access control for non-admin users
+        if self.current_user.get('role') != 'admin':
+            # Test that technician/customer cannot access system management endpoints
+            
+            # Test DELETE /api/repairs/delete-all (should return 403)
+            delete_repairs_forbidden, _ = self.run_test(
+                f"{self.current_user.get('role')} access delete all repairs (should fail)",
+                "DELETE",
+                "repairs/delete-all",
+                403
+            )
+            
+            # Test DELETE /api/customers/delete-all (should return 403)
+            delete_customers_forbidden, _ = self.run_test(
+                f"{self.current_user.get('role')} access delete all customers (should fail)",
+                "DELETE",
+                "customers/delete-all",
+                403
+            )
+            
+            # Test DELETE /api/system/reset (should return 403)
+            system_reset_forbidden, _ = self.run_test(
+                f"{self.current_user.get('role')} access system reset (should fail)",
+                "DELETE",
+                "system/reset",
+                403
+            )
+            
+            # Test POST /api/demo/create-data (should return 403)
+            demo_data_forbidden, _ = self.run_test(
+                f"{self.current_user.get('role')} access demo data creation (should fail)",
+                "POST",
+                "demo/create-data",
+                403
+            )
+            
+            if (delete_repairs_forbidden and delete_customers_forbidden and 
+                system_reset_forbidden and demo_data_forbidden):
+                print(f"   ✅ {self.current_user.get('role')} correctly denied access to all system management endpoints")
+            
+            return (delete_repairs_forbidden and delete_customers_forbidden and 
+                    system_reset_forbidden and demo_data_forbidden)
+        else:
+            print("   ℹ️  Admin role - access control tested in main system management test")
+            return True
+
+    def test_demo_data_validation(self):
+        """Test that demo data contains proper Refsan ceramic machinery examples"""
+        print(f"\n🏭 Testing Demo Data Validation for: {self.current_user.get('role')}")
+        
+        # Only admin can create and verify demo data
+        if self.current_user.get('role') != 'admin':
+            print("   ⚠️  Skipping demo data validation (admin only)")
+            return True
+        
+        # Create demo data
+        create_demo_success, demo_response = self.run_test(
+            "Create demo data for validation",
+            "POST",
+            "demo/create-data",
+            200
+        )
+        
+        if not create_demo_success:
+            return False
+        
+        # Verify demo data was created
+        customers_created = demo_response.get('customers_created', 0)
+        repairs_created = demo_response.get('repairs_created', 0)
+        
+        if customers_created < 5 or repairs_created < 5:
+            print(f"   ❌ Insufficient demo data created: {customers_created} customers, {repairs_created} repairs")
+            return False
+        
+        # Get customers to verify ceramic industry names
+        customers_success, customers = self.run_test(
+            "Get customers to verify demo data",
+            "GET",
+            "customers",
+            200
+        )
+        
+        if not customers_success:
+            return False
+        
+        # Check for ceramic industry customer names
+        ceramic_keywords = ['seramik', 'çini', 'karo', 'porselen']
+        ceramic_customers = 0
+        
+        for customer in customers:
+            customer_name = customer.get('full_name', '').lower()
+            if any(keyword in customer_name for keyword in ceramic_keywords):
+                ceramic_customers += 1
+        
+        print(f"   📊 Found {ceramic_customers} customers with ceramic industry names")
+        
+        # Get repairs to verify Refsan brand machinery
+        repairs_success, repairs = self.run_test(
+            "Get repairs to verify demo data",
+            "GET",
+            "repairs",
+            200
+        )
+        
+        if not repairs_success:
+            return False
+        
+        # Check for Refsan brand and ceramic machinery
+        refsan_repairs = 0
+        ceramic_devices = 0
+        ceramic_device_types = ['seramik', 'çini', 'karo', 'porselen', 'fırın', 'pres', 'kesim', 'kalıplama', 'sırlama']
+        
+        for repair in repairs:
+            brand = repair.get('brand', '').lower()
+            device_type = repair.get('device_type', '').lower()
+            
+            if 'refsan' in brand:
+                refsan_repairs += 1
+            
+            if any(device_type in device_type for device_type in ceramic_device_types):
+                ceramic_devices += 1
+        
+        print(f"   📊 Found {refsan_repairs} Refsan brand repairs")
+        print(f"   📊 Found {ceramic_devices} ceramic machinery repairs")
+        
+        # Validation criteria
+        validation_success = (
+            ceramic_customers >= 3 and  # At least 3 ceramic industry customers
+            refsan_repairs >= 3 and     # At least 3 Refsan brand repairs
+            ceramic_devices >= 3        # At least 3 ceramic machinery repairs
+        )
+        
+        if validation_success:
+            print(f"   ✅ Demo data validation passed - contains proper Refsan ceramic machinery examples")
+        else:
+            print(f"   ❌ Demo data validation failed - insufficient ceramic industry content")
+        
+        return validation_success
+
     def test_new_backend_endpoints(self):
         """Test all newly added backend endpoints from the review request"""
         print(f"\n🆕 Testing New Backend Endpoints for: {self.current_user.get('role')}")
@@ -1603,10 +1858,21 @@ class TechnicalServiceAPITester:
         # Test role-based repair cancellation
         role_based_cancel_success = self.test_role_based_repair_cancellation()
         
+        # Test NEW system management endpoints
+        system_management_success = self.test_system_management_endpoints()
+        
+        # Test role-based access control for system management
+        system_access_control_success = self.test_system_management_role_access_control()
+        
+        # Test demo data validation
+        demo_validation_success = self.test_demo_data_validation()
+        
         return (repair_detail_success and enhanced_notification_success and 
                 notification_structure_success and cancel_success and 
                 clear_notifications_success and file_upload_success and 
-                enhanced_repair_success and role_based_cancel_success)
+                enhanced_repair_success and role_based_cancel_success and
+                system_management_success and system_access_control_success and
+                demo_validation_success)
 
     def test_role_based_access(self):
         """Test role-based access control"""
