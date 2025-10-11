@@ -1,0 +1,13 @@
+{
+  "name": "refsan-servis-app",
+  "version": "1.0.0",
+  "description": "Refsan Türkiye Teknik Servis Mobil Uygulaması",
+  "main": "index.js",
+  "scripts": {
+    "build": "echo 'Build completed'",
+    "start": "echo 'App started'"
+  },
+  "keywords": ["refsan", "teknik servis", "mobile app"],
+  "author": "Refsan Türkiye",
+  "license": "ISC"
+}
