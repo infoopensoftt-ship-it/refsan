@@ -502,12 +502,28 @@
             if (adminBtnText) {
                 adminBtnText.addEventListener('click', function(e) {
                     e.preventDefault();
-                    console.log('🔧 Admin demo button clicked via text search');
+                    console.log('🔧 Admin demo button clicked');
                     quickLogin('admin@demo.com', 'admin123');
                 });
-                console.log('✅ Admin demo button event listener added via text search');
-            } else {
-                console.log('❌ Admin button not found');
+                console.log('✅ Admin demo button event listener added');
+            }
+            
+            if (techBtnText) {
+                techBtnText.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    console.log('🔧 Technician demo button clicked');
+                    quickLogin('teknisyen@demo.com', 'teknik123');
+                });
+                console.log('✅ Technician demo button event listener added');
+            }
+            
+            if (customerBtnText) {
+                customerBtnText.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    console.log('🔧 Customer demo button clicked');
+                    quickLogin('musteri@demo.com', 'musteri123');
+                });
+                console.log('✅ Customer demo button event listener added');
             }
         });
     </script>
