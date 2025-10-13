@@ -334,7 +334,8 @@
                         'Content-Type': 'application/json',
                         'Accept': 'application/json'
                     },
-                    body: JSON.stringify({ email, password })
+                    body: JSON.stringify({ email, password }),
+                    mode: 'cors'
                 });
 
                 console.log('Response status:', response.status);
