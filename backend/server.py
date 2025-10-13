@@ -1475,11 +1475,6 @@ async def get_low_stock_items(
     ]
     return low_stock
 
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
-
 # Serve uploaded files
 upload_dir = Path(ROOT_DIR) / "uploads"
 upload_dir.mkdir(exist_ok=True)
