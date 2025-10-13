@@ -155,6 +155,41 @@ class Notification(BaseModel):
     device_info: Optional[str] = None
     new_status: Optional[str] = None
 
+
+class StockCategory(str, Enum):
+    SPARE_PART = "yedek_parca"
+    CHEMICAL = "kimyasal"
+    MATERIAL = "malzeme"
+    TOOL = "alet"
+
+class StockItem(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str
+    category: StockCategory
+    quantity: float
+    unit: str  # adet, kg, litre, metre
+    min_quantity: float  # Minimum stok seviyesi
+    supplier: Optional[str] = None
+    price: Optional[float] = None
+    description: Optional[str] = None
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class StockItemCreate(BaseModel):
+    name: str
+    category: StockCategory
+    quantity: float
+    unit: str
+    min_quantity: float
+    supplier: Optional[str] = None
+    price: Optional[float] = None
+    description: Optional[str] = None
+
+class StockUpdate(BaseModel):
+    quantity: float
+    operation: str  # "add" or "subtract"
+    note: Optional[str] = None
+
 # Utility functions
 def verify_password(plain_password, hashed_password):
     """Verify a password against its hash using SHA-256 + salt"""
