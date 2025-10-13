@@ -476,6 +476,33 @@
         // Test JavaScript execution
         console.log('🔧 Refsan JavaScript loaded successfully!');
         console.log('API_BASE should be:', window.location.origin + '/api');
+        
+        // Add event listeners after page loads
+        window.addEventListener('load', function() {
+            console.log('🔥 Setting up event listeners...');
+            
+            // Login button event listener
+            const loginBtn = document.querySelector('button[onclick="login()"]');
+            if (loginBtn) {
+                loginBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    console.log('🔧 Login button clicked via event listener');
+                    login();
+                });
+                console.log('✅ Login button event listener added');
+            }
+            
+            // Demo buttons event listeners
+            const adminBtn = document.querySelector('button.admin');
+            if (adminBtn) {
+                adminBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    console.log('🔧 Admin demo button clicked');
+                    quickLogin('admin@demo.com', 'admin123');
+                });
+                console.log('✅ Admin demo button event listener added');
+            }
+        });
     </script>
 </body>
 </html>
