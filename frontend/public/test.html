@@ -493,11 +493,11 @@
             }
             
             // Demo buttons event listeners  
-            const adminBtn = document.querySelector('button:contains("Admin")');
-            const adminBtnAlt = document.querySelector('.admin');
             const adminBtnText = Array.from(document.querySelectorAll('button')).find(btn => btn.textContent.includes('Admin'));
+            const techBtnText = Array.from(document.querySelectorAll('button')).find(btn => btn.textContent.includes('Teknisyen'));
+            const customerBtnText = Array.from(document.querySelectorAll('button')).find(btn => btn.textContent.includes('Müşteri'));
             
-            console.log('🔍 Admin button search:', {adminBtn, adminBtnAlt, adminBtnText});
+            console.log('🔍 Demo buttons found:', {adminBtnText, techBtnText, customerBtnText});
             
             if (adminBtnText) {
                 adminBtnText.addEventListener('click', function(e) {
