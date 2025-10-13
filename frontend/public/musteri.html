@@ -362,33 +362,9 @@
         };
 
         async function ensureCustomerExists() {
-            try {
-                // Try to create customer record (will fail if already exists, which is OK)
-                const response = await fetch(`${API_BASE}/customers`, {
-                    method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${authToken}` 
-                    },
-                    body: JSON.stringify({
-                        full_name: currentUser.full_name,
-                        email: currentUser.email,
-                        phone: currentUser.phone || '',
-                        address: ''
-                    })
-                });
-                
-                if (response.ok) {
-                    console.log('Customer record created successfully');
-                } else if (response.status === 400) {
-                    // Customer already exists, which is fine
-                    console.log('Customer record already exists');
-                } else {
-                    console.error('Failed to create customer record:', response.status);
-                }
-            } catch (error) {
-                console.error('Customer creation error:', error);
-            }
+            // Customer record will be auto-created when needed via /api/customers/me
+            // No need to pre-create it
+            return true;
         }
 
         async function loadStats() {
