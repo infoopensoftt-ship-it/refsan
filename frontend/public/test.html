@@ -308,11 +308,19 @@
             }, 5000);
         }
 
-        function quickLogin(email, password) {
-            document.getElementById('login-email').value = email;
-            document.getElementById('login-password').value = password;
-            showTab('login');
-            setTimeout(login, 500);
+        async function quickLogin(email, password) {
+            try {
+                console.log('Quick login attempted for:', email);
+                document.getElementById('login-email').value = email;
+                document.getElementById('login-password').value = password;
+                showTab('login');
+                
+                // Call login function
+                setTimeout(login, 500);
+            } catch (error) {
+                console.error('Quick login error:', error);
+                showResult('❌ Hızlı giriş hatası: ' + error.message, false);
+            }
         }
 
         async function login() {
