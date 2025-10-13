@@ -673,16 +673,34 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>Cihaz Türü *</label>
-                        <input type="text" id="repair-device-type" required placeholder="Örn: Buzdolabı, Çamaşır Makinesi">
+                        <label>Makine Türü *</label>
+                        <select id="repair-device-type" required>
+                            <option value="">Makine Türü Seçiniz</option>
+                            <option value="Pres Makinesi">🏭 Pres Makinesi</option>
+                            <option value="Sırlama Makinesi">🎨 Sırlama Makinesi</option>
+                            <option value="Fırın">🔥 Fırın</option>
+                            <option value="Kurutma Fırını">💨 Kurutma Fırını</option>
+                            <option value="Paketleme Makinesi">📦 Paketleme Makinesi</option>
+                            <option value="Konveyör Sistemi">↔️ Konveyör Sistemi</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label>Marka *</label>
-                        <input type="text" id="repair-brand" required placeholder="Örn: Bosch, Arçelik">
+                        <select id="repair-brand" required>
+                            <option value="">Marka Seçiniz</option>
+                            <option value="Sacmi">Sacmi</option>
+                            <option value="System">System</option>
+                            <option value="LB">LB</option>
+                            <option value="Siti B&T">Siti B&T</option>
+                            <option value="Ancora">Ancora</option>
+                            <option value="Keda">Keda</option>
+                            <option value="BMR">BMR</option>
+                            <option value="Diğer">Diğer</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label>Model</label>
-                        <input type="text" id="repair-model" placeholder="Model bilgisi">
+                        <input type="text" id="repair-model" placeholder="Örn: PH3200, RS-1000, SP-250">
                     </div>
                     <div class="form-group">
                         <label>Öncelik *</label>
