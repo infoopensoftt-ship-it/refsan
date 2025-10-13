@@ -7,7 +7,7 @@ Aplikasyonunuz şu anda PWA olarak yapılandırıldı. **APK'ya gerek kalmadan**
 ### 📲 Telefona Kurulum (APK Gibi):
 
 1. **Android Chrome'da:**
-   - `https://repair-manager-10.preview.emergentagent.com` adresini açın
+   - `https://techfix-portal-3.preview.emergentagent.com` adresini açın
    - Sağ üst köşedeki menüye (⋮) tıklayın
    - **"Ana ekrana ekle"** seçeneğini seçin
    - **"Ekle"** butonuna basın

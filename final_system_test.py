@@ -8,7 +8,7 @@ def test_system_management_endpoints():
     print("🚀 Final System Management Endpoints Test")
     print("=" * 60)
     
-    base_url = "https://repair-manager-10.preview.emergentagent.com/api"
+    base_url = "https://techfix-portal-3.preview.emergentagent.com/api"
     
     # Login as admin
     login_data = {'email': 'admin@demo.com', 'password': 'admin123'}
