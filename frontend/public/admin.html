@@ -462,6 +462,19 @@
                 <div id="repair-list" class="repair-list"></div>
             </div>
 
+
+            <!-- Stok Yönetimi -->
+            <div class="section">
+                <h2>📦 Stok Yönetimi</h2>
+                <button class="btn" onclick="openModal('stockModal')">➕ Yeni Ürün Ekle</button>
+                <button class="btn btn-secondary" onclick="loadStock()">🔄 Stokları Yenile</button>
+                <button class="btn btn-secondary" onclick="showLowStock()">⚠️ Düşük Stoklar</button>
+                
+                <div id="stock-list" style="margin-top: 20px;">
+                    <!-- Stock items will be loaded here -->
+                </div>
+            </div>
+
             <!-- Sistem Yönetimi -->
             <div class="section">
                 <h2>⚙️ Sistem Yönetimi</h2>
