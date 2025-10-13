@@ -722,6 +722,69 @@
         </div>
     </div>
 
+    <!-- Stock Modal -->
+    <div id="stockModal" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <span class="close" onclick="closeModal('stockModal')">&times;</span>
+            <h2>📦 Stok Ürünü Ekle/Düzenle</h2>
+            <form onsubmit="saveStockItem(event)">
+                <input type="hidden" id="stock-id">
+                <div class="form-group">
+                    <label>Ürün Adı *</label>
+                    <input type="text" id="stock-name" required placeholder="Örn: Seramik Paste">
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label>Kategori *</label>
+                        <select id="stock-category" required>
+                            <option value="">Seçiniz</option>
+                            <option value="yedek_parca">Yedek Parça</option>
+                            <option value="kimyasal">Kimyasal</option>
+                            <option value="malzeme">Malzeme</option>
+                            <option value="alet">Alet/Ekipman</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Birim *</label>
+                        <select id="stock-unit" required>
+                            <option value="adet">Adet</option>
+                            <option value="kg">Kilogram (kg)</option>
+                            <option value="litre">Litre</option>
+                            <option value="metre">Metre</option>
+                            <option value="kutu">Kutu</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label>Miktar *</label>
+                        <input type="number" id="stock-quantity" required min="0" step="0.01" placeholder="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Minimum Stok *</label>
+                        <input type="number" id="stock-min-quantity" required min="0" step="0.01" placeholder="0">
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label>Tedarikçi</label>
+                        <input type="text" id="stock-supplier" placeholder="Tedarikçi adı">
+                    </div>
+                    <div class="form-group">
+                        <label>Birim Fiyat (₺)</label>
+                        <input type="number" id="stock-price" min="0" step="0.01" placeholder="0.00">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Açıklama</label>
+                    <textarea id="stock-description" rows="2" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 6px;" placeholder="Ek notlar..."></textarea>
+                </div>
+                <button type="submit" class="btn">💾 Kaydet</button>
+            </form>
+        </div>
+    </div>
+
+
     <script>
         const API_BASE = window.location.origin + '/api';
         let authToken = localStorage.getItem('token');
