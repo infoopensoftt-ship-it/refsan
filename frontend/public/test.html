@@ -261,6 +261,12 @@
     <script>
         const API_BASE = window.location.origin + '/api';
         
+        // Make functions global
+        window.login = login;
+        window.quickLogin = quickLogin;
+        window.showTab = showTab;
+        window.showResult = showResult;
+        
         function showTab(tabName) {
             // Hide all tabs
             document.querySelectorAll('.tab-content').forEach(tab => {
