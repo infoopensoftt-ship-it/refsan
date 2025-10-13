@@ -303,14 +303,43 @@
             }
 
             try {
+                console.log('Attempting login for:', email);
+                console.log('API_BASE:', API_BASE);
+                
                 const response = await fetch(`${API_BASE}/auth/login`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
                     body: JSON.stringify({ email, password })
                 });
 
-                if (response.ok) {
-                    const data = await response.json();
+                console.log('Response status:', response.status);
+                console.log('Response headers:', response.headers);
+                
+                if (!response.ok) {
+                    console.error('HTTP error:', response.status, response.statusText);
+                    const errorText = await response.text();
+                    console.error('Error response:', errorText);
+                    showResult('❌ Giriş hatası: ' + response.status + ' - ' + errorText, false);
+                    return;
+                }
+                
+                const contentType = response.headers.get('content-type');
+                console.log('Content-Type:', contentType);
+                
+                if (!contentType || !contentType.includes('application/json')) {
+                    const responseText = await response.text();
+                    console.error('Non-JSON response:', responseText);
+                    showResult('❌ Sunucu yanıtı JSON formatında değil: ' + responseText.substring(0, 100), false);
+                    return;
+                }
+                
+                const data = await response.json();
+                console.log('Response data:', data);
+                
+                if (data.access_token && data.user) {
                     showResult(`✅ ${data.user.full_name} olarak giriş yapıldı! (${data.user.role})`);
                     
                     // Store token
@@ -330,12 +359,12 @@
                                 window.location.href = 'musteri.html';
                                 break;
                         }
-                    }, 500); // Reduced from 2000ms to 500ms for better UX
+                    }, 500);
                 } else {
-                    const error = await response.json();
-                    showResult('❌ ' + (error.detail || 'Giriş başarısız'), false);
+                    showResult('❌ Giriş başarısız: Geçersiz yanıt formatı', false);
                 }
             } catch (error) {
+                console.error('Login error:', error);
                 showResult('❌ Bağlantı hatası: ' + error.message, false);
             }
         }
