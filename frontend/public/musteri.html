@@ -545,18 +545,18 @@
         async function createRepair(event) {
             event.preventDefault();
             
-            // Find customer record
             try {
-                const customersResponse = await fetch(`${API_BASE}/customers`, {
+                // Get own customer record (auto-creates if not exists)
+                const customerResponse = await fetch(`${API_BASE}/customers/me`, {
                     headers: { 'Authorization': `Bearer ${authToken}` }
                 });
-                const customers = await customersResponse.json();
-                const selfCustomer = customers.find(c => c.email === currentUser.email);
                 
-                if (!selfCustomer) {
-                    alert('❌ Müşteri kaydınız bulunamadı. Lütfen tekrar giriş yapın.');
+                if (!customerResponse.ok) {
+                    alert('❌ Müşteri kaydı alınamadı. Lütfen tekrar giriş yapın.');
                     return;
                 }
+                
+                const selfCustomer = await customerResponse.json();
 
                 const repairData = {
                     customer_id: selfCustomer.id,
