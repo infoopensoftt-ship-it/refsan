@@ -1357,6 +1357,120 @@ app.add_middleware(
 
 # Configure logging
 logging.basicConfig(
+
+
+# ==================== STOCK MANAGEMENT ====================
+
+@api_router.get("/stock", response_model=List[StockItem])
+async def get_stock_items(
+    current_user: User = Depends(require_role([UserRole.ADMIN]))
+):
+    """Get all stock items (Admin only)"""
+    stock_items = await db.stock.find().to_list(1000)
+    result = []
+    for item in stock_items:
+        if isinstance(item.get("created_at"), str):
+            item["created_at"] = datetime.fromisoformat(item["created_at"])
+        if isinstance(item.get("updated_at"), str):
+            item["updated_at"] = datetime.fromisoformat(item["updated_at"])
+        result.append(StockItem(**item))
+    return result
+
+@api_router.post("/stock", response_model=StockItem)
+async def create_stock_item(
+    stock_data: StockItemCreate,
+    current_user: User = Depends(require_role([UserRole.ADMIN]))
+):
+    """Create new stock item (Admin only)"""
+    stock_item = StockItem(**stock_data.dict())
+    
+    # Prepare for MongoDB
+    stock_dict = stock_item.dict()
+    stock_dict["created_at"] = stock_dict["created_at"].isoformat()
+    stock_dict["updated_at"] = stock_dict["updated_at"].isoformat()
+    
+    await db.stock.insert_one(stock_dict)
+    return stock_item
+
+@api_router.put("/stock/{stock_id}", response_model=StockItem)
+async def update_stock_item(
+    stock_id: str,
+    stock_data: StockItemCreate,
+    current_user: User = Depends(require_role([UserRole.ADMIN]))
+):
+    """Update stock item (Admin only)"""
+    existing_item = await db.stock.find_one({"id": stock_id})
+    if not existing_item:
+        raise HTTPException(status_code=404, detail="Stock item not found")
+    
+    # Update fields
+    update_dict = stock_data.dict()
+    update_dict["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    await db.stock.update_one({"id": stock_id}, {"$set": update_dict})
+    
+    # Fetch updated item
+    updated_item = await db.stock.find_one({"id": stock_id})
+    if isinstance(updated_item.get("created_at"), str):
+        updated_item["created_at"] = datetime.fromisoformat(updated_item["created_at"])
+    if isinstance(updated_item.get("updated_at"), str):
+        updated_item["updated_at"] = datetime.fromisoformat(updated_item["updated_at"])
+    
+    return StockItem(**updated_item)
+
+@api_router.post("/stock/{stock_id}/quantity")
+async def update_stock_quantity(
+    stock_id: str,
+    stock_update: StockUpdate,
+    current_user: User = Depends(require_role([UserRole.ADMIN]))
+):
+    """Update stock quantity (add or subtract) (Admin only)"""
+    existing_item = await db.stock.find_one({"id": stock_id})
+    if not existing_item:
+        raise HTTPException(status_code=404, detail="Stock item not found")
+    
+    current_quantity = existing_item["quantity"]
+    
+    if stock_update.operation == "add":
+        new_quantity = current_quantity + stock_update.quantity
+    elif stock_update.operation == "subtract":
+        new_quantity = current_quantity - stock_update.quantity
+        if new_quantity < 0:
+            raise HTTPException(status_code=400, detail="Insufficient stock")
+    else:
+        raise HTTPException(status_code=400, detail="Invalid operation")
+    
+    await db.stock.update_one(
+        {"id": stock_id},
+        {"$set": {"quantity": new_quantity, "updated_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    
+    return {"success": True, "new_quantity": new_quantity}
+
+@api_router.delete("/stock/{stock_id}")
+async def delete_stock_item(
+    stock_id: str,
+    current_user: User = Depends(require_role([UserRole.ADMIN]))
+):
+    """Delete stock item (Admin only)"""
+    result = await db.stock.delete_one({"id": stock_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Stock item not found")
+    return {"success": True}
+
+@api_router.get("/stock/low-stock")
+async def get_low_stock_items(
+    current_user: User = Depends(require_role([UserRole.ADMIN]))
+):
+    """Get items below minimum stock level"""
+    stock_items = await db.stock.find().to_list(1000)
+    low_stock = [
+        StockItem(**item) 
+        for item in stock_items 
+        if item["quantity"] <= item["min_quantity"]
+    ]
+    return low_stock
+
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
