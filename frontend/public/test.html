@@ -492,15 +492,22 @@
                 console.log('✅ Login button event listener added');
             }
             
-            // Demo buttons event listeners
-            const adminBtn = document.querySelector('button.admin');
-            if (adminBtn) {
-                adminBtn.addEventListener('click', function(e) {
+            // Demo buttons event listeners  
+            const adminBtn = document.querySelector('button:contains("Admin")');
+            const adminBtnAlt = document.querySelector('.admin');
+            const adminBtnText = Array.from(document.querySelectorAll('button')).find(btn => btn.textContent.includes('Admin'));
+            
+            console.log('🔍 Admin button search:', {adminBtn, adminBtnAlt, adminBtnText});
+            
+            if (adminBtnText) {
+                adminBtnText.addEventListener('click', function(e) {
                     e.preventDefault();
-                    console.log('🔧 Admin demo button clicked');
+                    console.log('🔧 Admin demo button clicked via text search');
                     quickLogin('admin@demo.com', 'admin123');
                 });
-                console.log('✅ Admin demo button event listener added');
+                console.log('✅ Admin demo button event listener added via text search');
+            } else {
+                console.log('❌ Admin button not found');
             }
         });
     </script>
