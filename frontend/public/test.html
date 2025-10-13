@@ -275,6 +275,28 @@
             event.target.classList.add('active');
         }
 
+        // Demo login function for demo buttons
+        async function demoLogin(role) {
+            const credentials = {
+                admin: { email: 'admin@demo.com', password: 'admin123' },
+                teknisyen: { email: 'teknisyen@demo.com', password: 'teknisyen123' },
+                musteri: { email: 'musteri@demo.com', password: 'musteri123' }
+            };
+
+            const cred = credentials[role];
+            if (!cred) {
+                alert('❌ Geçersiz rol: ' + role);
+                return;
+            }
+
+            // Fill the form
+            document.getElementById('email').value = cred.email;
+            document.getElementById('password').value = cred.password;
+            
+            // Call login function
+            await login();
+        }
+
         function showResult(message, isSuccess = true) {
             const result = document.getElementById('result');
             result.textContent = message;
