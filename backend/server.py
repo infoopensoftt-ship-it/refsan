@@ -437,6 +437,39 @@ async def get_customers(
         result.append(Customer(**customer))
     return result
 
+
+@api_router.get("/customers/me", response_model=Customer)
+async def get_my_customer_record(
+    current_user: User = Depends(get_current_user)
+):
+    """Get or create customer record for logged-in customer user"""
+    # Find customer by email
+    customer = await db.customers.find_one({"email": current_user.email})
+    
+    if not customer:
+        # Auto-create customer record for customer users
+        if current_user.role == UserRole.CUSTOMER:
+            new_customer = Customer(
+                full_name=current_user.full_name,
+                email=current_user.email,
+                phone=current_user.phone or "",
+                address="",
+                created_by_technician=None
+            )
+            customer_dict = new_customer.dict()
+            customer_dict["created_at"] = customer_dict["created_at"].isoformat()
+            await db.customers.insert_one(customer_dict)
+            return new_customer
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Customer record not found"
+            )
+    
+    if isinstance(customer.get("created_at"), str):
+        customer["created_at"] = datetime.fromisoformat(customer["created_at"])
+    return Customer(**customer)
+
 @api_router.get("/customers/{customer_id}", response_model=Customer)
 async def get_customer(
     customer_id: str,
