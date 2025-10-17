@@ -1210,7 +1210,8 @@ async def get_stats(current_user: User = Depends(get_current_user)):
         total_technicians = await db.users.count_documents({"role": UserRole.TECHNICIAN})
         
         # Calculate total payments (completed repairs with final_cost)
-        total_payment = 0.0
+        total_paid_amount = 0.0
+        total_unpaid_amount = 0.0
         paid_count = 0
         unpaid_count = 0
         
@@ -1218,9 +1219,10 @@ async def get_stats(current_user: User = Depends(get_current_user)):
         async for repair in repairs_cursor:
             if repair.get("final_cost") and repair.get("final_cost") > 0:
                 if repair.get("payment_status") == "odendi":
-                    total_payment += repair["final_cost"]
+                    total_paid_amount += repair["final_cost"]
                     paid_count += 1
                 else:
+                    total_unpaid_amount += repair["final_cost"]
                     unpaid_count += 1
         
         return {
@@ -1229,7 +1231,8 @@ async def get_stats(current_user: User = Depends(get_current_user)):
             "completed_repairs": completed_repairs,
             "total_customers": total_customers,
             "total_technicians": total_technicians,
-            "total_payment": total_payment,
+            "total_paid_amount": total_paid_amount,
+            "total_unpaid_amount": total_unpaid_amount,
             "paid_repairs": paid_count,
             "unpaid_repairs": unpaid_count
         }
