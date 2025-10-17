@@ -453,14 +453,25 @@
             console.log('🔥 Setting up event listeners...');
             
             // Login button event listener
-            const loginBtn = document.querySelector('button[onclick="login()"]');
+            const loginBtn = document.getElementById('login-btn');
             if (loginBtn) {
                 loginBtn.addEventListener('click', function(e) {
                     e.preventDefault();
-                    console.log('🔧 Login button clicked via event listener');
+                    console.log('🔧 Login button clicked');
                     login();
                 });
                 console.log('✅ Login button event listener added');
+            }
+            
+            // Register button event listener
+            const registerBtn = document.getElementById('register-btn');
+            if (registerBtn) {
+                registerBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    console.log('🔧 Register button clicked');
+                    register();
+                });
+                console.log('✅ Register button event listener added');
             }
         });
     </script>
