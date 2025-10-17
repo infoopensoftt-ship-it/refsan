@@ -560,8 +560,14 @@ metadata:
   run_ui: false
 
 test_plan:
-  current_focus: []
-  stuck_tasks: []
+  current_focus:
+    - "Stat cards functionality"
+    - "Repair status buttons functionality"
+    - "Repair status update with popup and auto-move"
+  stuck_tasks:
+    - "Stat cards functionality"
+    - "Repair status buttons functionality"
+    - "Repair status update with popup and auto-move"
   test_all: false
   test_priority: "high_first"
 
