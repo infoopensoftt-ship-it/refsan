@@ -1648,41 +1648,49 @@
             content.innerHTML = `
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
                     <div>
-                        <strong>👤 Müşteri:</strong> ${repair.customer_name}<br>
-                        <strong>🔧 Cihaz:</strong> ${repair.device_type}<br>
-                        <strong>🏢 Marka/Model:</strong> ${repair.brand} ${repair.model}<br>
-                        <strong>📅 Oluşturma:</strong> ${new Date(repair.created_at).toLocaleDateString('tr-TR')}
+                        <strong>Müşteri:</strong> ${repair.customer_name}<br>
+                        <strong>Telefon:</strong> ${repair.customer_phone || 'Belirtilmemiş'}<br>
+                        <strong>Cihaz:</strong> ${repair.device_type}<br>
+                        <strong>Marka/Model:</strong> ${repair.brand} ${repair.model}
                     </div>
                     <div>
                         <span class="status-badge ${statusClass}">${repair.status}</span>
                         <span class="status-badge ${priorityClass}">${repair.priority}</span><br><br>
-                        ${repair.cost_estimate ? `<strong>💰 Tahmini Maliyet:</strong> ₺${repair.cost_estimate}<br>` : ''}
-                        ${repair.final_cost ? `<strong>💵 Final Maliyet:</strong> ₺${repair.final_cost}<br>` : ''}
-                        ${repair.assigned_technician_name ? `<strong>👨‍🔧 Teknisyen:</strong> ${repair.assigned_technician_name}<br>` : ''}
+                        <strong>Oluşturma:</strong> ${new Date(repair.created_at).toLocaleDateString('tr-TR')}<br>
+                        ${repair.cost_estimate ? `<strong>Tahmini Maliyet:</strong> ₺${repair.cost_estimate}<br>` : ''}
+                        ${repair.final_cost ? `<strong>Final Maliyet:</strong> ₺${repair.final_cost}<br>` : ''}
+                        ${repair.assigned_technician_name ? `<strong>Teknisyen:</strong> ${repair.assigned_technician_name}<br>` : ''}
                     </div>
                 </div>
                 <div style="margin-bottom: 1rem;">
-                    <strong>📝 Arıza Açıklaması:</strong><br>
+                    <strong>Arıza Açıklaması:</strong><br>
                     <div style="background: #f8fafc; padding: 0.75rem; border-radius: 6px; margin-top: 0.5rem;">
                         ${repair.description}
                     </div>
                 </div>
                 ${repair.images && repair.images.length > 0 ? `
                     <div style="margin-bottom: 1rem;">
-                        <strong>📎 Ekli Dosyalar (${repair.images.length}):</strong><br>
+                        <strong>Ekli Dosyalar (${repair.images.length}):</strong><br>
                         <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem;">
                             ${repair.images.map((img, index) => `
                                 <a href="${img}" target="_blank" class="btn btn-secondary" style="font-size: 0.8em; padding: 0.25rem 0.5rem;">
-                                    📄 Dosya ${index + 1}
+                                    Dosya ${index + 1}
                                 </a>
                             `).join('')}
                         </div>
                     </div>
                 ` : ''}
-                <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
-                    ${repair.status !== 'iptal' && repair.status !== 'tamamlandi' ? 
-                        `<button class="btn" style="background: #f59e0b;" onclick="cancelRepair('${repair.id}', '${repair.customer_name}'); closeModal('repairDetailModal');">❌ İptal Et</button>` : ''}
-                    <button class="delete-btn" onclick="if(confirm('Bu arıza kaydını silmek istediğinizden emin misiniz?')) { deleteRepair('${repair.id}', '${repair.customer_name}'); closeModal('repairDetailModal'); }">🗑️ Sil</button>
+                <div style="display: flex; gap: 0.5rem; margin-top: 1rem; flex-wrap: wrap;">
+                    ${repair.status === 'beklemede' ? 
+                        `<button class="btn" style="background: #10b981; padding: 8px 16px;" onclick="updateRepairStatus('${repair.id}', 'onaylandi'); closeModal('repairDetailModal');">✓ Onayla</button>
+                         <button class="btn" style="background: #ef4444; padding: 8px 16px;" onclick="updateRepairStatus('${repair.id}', 'reddedildi'); closeModal('repairDetailModal');">✗ Reddet</button>` : ''}
+                    ${repair.status === 'onaylandi' || repair.status === 'beklemede' ? 
+                        `<button class="btn" style="background: #3b82f6; padding: 8px 16px;" onclick="updateRepairStatus('${repair.id}', 'isleniyor'); closeModal('repairDetailModal');">⚙ İşleme Al</button>` : ''}
+                    ${repair.status === 'isleniyor' ? 
+                        `<button class="btn" style="background: #059669; padding: 8px 16px;" onclick="updateRepairStatus('${repair.id}', 'tamamlandi'); closeModal('repairDetailModal');">✓ Tamamla</button>` : ''}
+                    ${repair.status !== 'iptal' && repair.status !== 'tamamlandi' && repair.status !== 'reddedildi' ? 
+                        `<button class="btn" style="background: #f59e0b; padding: 8px 16px;" onclick="updateRepairStatus('${repair.id}', 'iptal'); closeModal('repairDetailModal');">⊘ İptal Et</button>` : ''}
+                    <button class="delete-btn" style="padding: 8px 16px;" onclick="if(confirm('Bu arıza kaydını silmek istediğinizden emin misiniz?')) { deleteRepair('${repair.id}', '${repair.customer_name}'); closeModal('repairDetailModal'); }">Sil</button>
                 </div>
             `;
             
