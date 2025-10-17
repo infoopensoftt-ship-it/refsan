@@ -1088,12 +1088,12 @@
                         <div>
                             <strong>${user.full_name}</strong> 
                             <span style="padding: 2px 8px; background: ${user.role === 'admin' ? '#f97316' : user.role === 'teknisyen' ? '#3b82f6' : '#10b981'}; color: white; border-radius: 4px; font-size: 0.8em; margin-left: 8px;">
-                                ${user.role === 'admin' ? '👑 Admin' : user.role === 'teknisyen' ? '🔧 Teknisyen' : '👤 Müşteri'}
+                                ${user.role === 'admin' ? 'Admin' : user.role === 'teknisyen' ? 'Teknisyen' : 'Müşteri'}
                             </span>
                             <br>
-                            <small>📧 ${user.email}</small>
-                            ${user.phone ? `<br><small>📞 ${user.phone}</small>` : ''}
-                            <br><small>📅 ${new Date(user.created_at).toLocaleDateString('tr-TR')}</small>
+                            <small>${user.email}</small>
+                            ${user.phone ? `<br><small>${user.phone}</small>` : ''}
+                            <br><small>${new Date(user.created_at).toLocaleDateString('tr-TR')}</small>
                         </div>
                         <button class="btn btn-small" onclick="editUserRole('${user.id}', '${user.email}', '${user.role}')" style="padding: 8px 15px;">
                             ✏️ Rol Değiştir
