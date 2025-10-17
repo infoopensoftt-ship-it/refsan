@@ -365,15 +365,47 @@
         .sidebar {
             position: fixed;
             left: 0;
-            top: 60px;
+            top: 120px;
             width: 250px;
-            height: calc(100vh - 60px);
+            height: calc(100vh - 120px);
             background: white;
             box-shadow: 2px 0 10px rgba(0,0,0,0.1);
             padding: 1rem 0;
             overflow-y: auto;
             z-index: 999;
             border-right: 3px solid #f97316;
+            transition: transform 0.3s ease;
+        }
+        
+        .sidebar.hidden {
+            transform: translateX(-250px);
+        }
+        
+        .sidebar-toggle {
+            position: fixed;
+            left: 250px;
+            top: 130px;
+            background: #f97316;
+            color: white;
+            border: none;
+            width: 30px;
+            height: 40px;
+            cursor: pointer;
+            z-index: 1000;
+            border-radius: 0 8px 8px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: left 0.3s ease;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+        }
+        
+        .sidebar-toggle.hidden {
+            left: 0;
+        }
+        
+        .sidebar-toggle:hover {
+            background: #ea580c;
         }
         
         .sidebar::-webkit-scrollbar {
@@ -421,6 +453,10 @@
             transition: margin-left 0.3s;
         }
         
+        .main-content.expanded {
+            margin-left: 0;
+        }
+        
         .content-section {
             display: none;
         }
@@ -432,6 +468,14 @@
         @media (max-width: 768px) {
             .sidebar {
                 width: 200px;
+                top: 100px;
+                height: calc(100vh - 100px);
+            }
+            .sidebar-toggle {
+                left: 200px;
+            }
+            .sidebar-toggle.hidden {
+                left: 0;
             }
             .main-content {
                 margin-left: 200px;
