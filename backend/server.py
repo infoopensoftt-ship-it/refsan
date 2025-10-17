@@ -850,6 +850,12 @@ async def get_repair_requests(current_user: User = Depends(get_current_user)):
     repairs = await db.repairs.find(query).to_list(1000)
     result = []
     for repair in repairs:
+        # Get customer info for phone
+        if repair.get("customer_id"):
+            customer = await db.customers.find_one({"id": repair["customer_id"]})
+            if customer:
+                repair["customer_phone"] = customer.get("phone", "")
+        
         if isinstance(repair.get("created_at"), str):
             repair["created_at"] = datetime.fromisoformat(repair["created_at"])
         if isinstance(repair.get("updated_at"), str):
