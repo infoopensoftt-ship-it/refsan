@@ -1008,6 +1008,28 @@ async def get_users(current_user: User = Depends(require_role([UserRole.ADMIN]))
         result.append(User(**user))
     return result
 
+
+@api_router.put("/users/{user_id}/role")
+async def update_user_role(
+    user_id: str,
+    role: UserRole,
+    current_user: User = Depends(require_role([UserRole.ADMIN]))
+):
+    """Update user role (Admin only)"""
+    # Find user
+    existing_user = await db.users.find_one({"id": user_id})
+    if not existing_user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Update role
+    await db.users.update_one(
+        {"id": user_id},
+        {"$set": {"role": role}}
+    )
+    
+    return {"success": True, "message": f"User role updated to {role}"}
+
+
 # Technician report endpoint
 @api_router.get("/reports/technician/{technician_id}")
 async def get_technician_report(
