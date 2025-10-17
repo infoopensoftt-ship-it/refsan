@@ -2072,6 +2072,10 @@
             }
         };
 
+        window.scrollToTop = function() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
         window.clearDateFilter = function() {
             document.getElementById('repair-date-filter').value = '';
             loadRepairs();
