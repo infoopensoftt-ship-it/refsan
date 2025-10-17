@@ -1984,6 +1984,9 @@
                     return;
                 }
                 
+                // Store repairs globally for detail view
+                window.currentRepairs = repairs;
+                
                 listDiv.innerHTML = repairs.map(repair => {
                     const statusClass = `status-${repair.status.replace('ç', 'c').replace('ı', 'i')}`;
                     const priorityClass = `priority-${repair.priority}`;
