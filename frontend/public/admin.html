@@ -1989,7 +1989,7 @@
                     const priorityClass = `priority-${repair.priority}`;
                     
                     return `
-                        <div class="list-item">
+                        <div class="list-item" onclick="openRepairDetail('${repair.id}')" style="cursor: pointer;">
                             <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
                                 <strong>${repair.customer_name}</strong>
                                 <small>${new Date(repair.created_at).toLocaleDateString('tr-TR')}</small>
@@ -2006,7 +2006,7 @@
                                 ${repair.assigned_technician_name ? `<br>Teknisyen: ${repair.assigned_technician_name}` : '<br>Teknisyen atanmadı'}
                                 ${repair.images && repair.images.length > 0 ? `<br>${repair.images.length} dosya eklendi` : ''}
                             </div>
-                            <div style="margin-top: 0.75rem; display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                            <div style="margin-top: 0.75rem; display: flex; flex-wrap: wrap; gap: 0.5rem;" onclick="event.stopPropagation()">
                                 ${repair.status === 'beklemede' ? 
                                     `<button class="btn" style="padding: 6px 12px; font-size: 0.85em; background: #10b981;" onclick="updateRepairStatus('${repair.id}', 'onaylandi')">✓ Onayla</button>
                                      <button class="btn" style="padding: 6px 12px; font-size: 0.85em; background: #ef4444;" onclick="updateRepairStatus('${repair.id}', 'reddedildi')">✗ Reddet</button>` : ''}
