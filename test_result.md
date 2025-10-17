@@ -507,9 +507,9 @@ frontend:
 
   - task: "Repair status update with popup and auto-move"
     implemented: true
-    working: true
+    working: false
     file: "frontend/public/admin.html"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
     needs_retesting: false
     status_history:
@@ -519,6 +519,39 @@ frontend:
       - working: true
         agent: "testing"
         comment: "✅ PASS: Code analysis confirms all requested changes implemented correctly in updateRepairStatus function (lines 1826-1865): 1) SMS mention removed from confirmation dialog (line 1835) 2) Success popup shows 'Arıza durumu güncellendi: [status]' and 'Müşteriye bildirim gönderildi' (line 1847) 3) Automatic refresh of repair list and stats after update (lines 1850-1851) 4) Modal auto-close implemented (lines 1854-1857). Login system working, admin panel loads correctly with stats. Unable to perform live testing due to lack of repair data in system, but code implementation matches all requirements exactly."
+      - working: false
+        agent: "testing"
+        comment: "❌ CRITICAL ISSUE FOUND: Stat cards and repair status buttons are NOT working due to JavaScript function scoping issues. Functions openModal, closeModal, and loadRepairs are defined as regular functions but called from HTML onclick handlers, causing 'function is not defined' errors. Admin panel loads with stats (1 total, 1 pending, 0 approved, 0 completed) but clicking stat cards fails with 'filterRepairsByStatus is not defined' error. Repair detail modal doesn't open when clicking repair items. Functions updateRepairStatus and filterRepairsByStatus are correctly defined in window scope, but openModal/closeModal are not."
+
+  - task: "Stat cards functionality"
+    implemented: true
+    working: false
+    file: "frontend/public/admin.html"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "user"
+        comment: "User reports that stat cards (Total, Bekleyen, Onaylanan, Tamamlanan) are not responding to clicks"
+      - working: false
+        agent: "testing"
+        comment: "❌ CONFIRMED: Stat cards are not working. JavaScript error 'filterRepairsByStatus is not defined' occurs when clicking stat cards. The function is defined as window.filterRepairsByStatus but there appears to be a scoping issue preventing it from being accessible to onclick handlers. Admin panel loads correctly with stats showing (1 total repair, 1 pending, 0 approved, 0 completed) but filtering functionality is broken."
+
+  - task: "Repair status buttons functionality"
+    implemented: true
+    working: false
+    file: "frontend/public/admin.html"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "user"
+        comment: "User reports that status buttons in repair modal (Onayla, Reddet, İşleme Al, etc.) are not working when clicked"
+      - working: false
+        agent: "testing"
+        comment: "❌ CONFIRMED: Repair status buttons are not working because repair detail modal doesn't open. When clicking on repair items, the modal remains hidden (display: none) due to JavaScript errors. Functions openModal and closeModal are defined as regular functions instead of window.openModal/window.closeModal, causing 'function is not defined' errors when called from HTML onclick handlers. This prevents the repair detail modal from opening, making status buttons inaccessible."
 
 metadata:
   created_by: "main_agent"
