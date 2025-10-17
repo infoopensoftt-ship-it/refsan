@@ -2196,7 +2196,16 @@
 
                 if (response.ok) {
                     alert('✅ Tüm müşteriler başarıyla silindi!');
-
+                    loadStats();
+                    loadCustomersInModal();
+                } else {
+                    const error = await response.json();
+                    alert('❌ ' + (error.detail || 'Silme işlemi başarısız'));
+                }
+            } catch (error) {
+                alert('❌ Hata: ' + error.message);
+            }
+        }
 
         // ==================== STOCK MANAGEMENT ====================
         
