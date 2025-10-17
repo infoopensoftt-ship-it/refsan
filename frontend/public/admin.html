@@ -818,6 +818,48 @@
             }
 
             try {
+                // First check if we have user in localStorage
+                const storedUser = localStorage.getItem('user');
+                if (storedUser) {
+                    try {
+                        currentUser = JSON.parse(storedUser);
+                        console.log('Loaded user from localStorage:', currentUser);
+                        
+                        // Check role
+                        if (currentUser.role !== 'admin') {
+                            alert('Admin yetkisi gerekli!');
+                            window.location.href = 'test.html';
+                            return;
+                        }
+                        
+                        // User is valid from localStorage, continue with page load
+                        document.getElementById('user-info').textContent = `Hoş geldin, ${currentUser.full_name}`;
+                        loadStats();
+                        loadTechnicians();
+                        loadNotificationCount();
+                        loadStock();
+                        
+                        // Verify token in background (optional)
+                        fetch(`${API_BASE}/auth/me`, {
+                            headers: { 'Authorization': `Bearer ${authToken}` }
+                        }).then(response => {
+                            if (!response.ok) {
+                                console.warn('Token verification failed in background');
+                            }
+                        }).catch(err => {
+                            console.warn('Background token verification error:', err);
+                        });
+                        
+                        // Auto-refresh notifications every 30 seconds
+                        setInterval(loadNotificationCount, 30000);
+                        return;
+                        
+                    } catch (parseError) {
+                        console.error('Error parsing stored user:', parseError);
+                    }
+                }
+                
+                // If no localStorage user, verify with API
                 console.log('Verifying token with /api/auth/me...');
                 const response = await fetch(`${API_BASE}/auth/me`, {
                     headers: { 'Authorization': `Bearer ${authToken}` }
@@ -828,6 +870,10 @@
                 if (response.ok) {
                     currentUser = await response.json();
                     console.log('Current user:', currentUser);
+                    
+                    // Save to localStorage for next time
+                    localStorage.setItem('user', JSON.stringify(currentUser));
+                    
                     if (currentUser.role !== 'admin') {
                         alert('Admin yetkisi gerekli!');
                         window.location.href = 'test.html';
@@ -837,7 +883,7 @@
                     loadStats();
                     loadTechnicians();
                     loadNotificationCount();
-                    loadStock();  // Load stock on page load
+                    loadStock();
                     
                     // Auto-refresh notifications every 30 seconds
                     setInterval(loadNotificationCount, 30000);
