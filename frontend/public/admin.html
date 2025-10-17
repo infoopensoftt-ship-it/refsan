@@ -2247,6 +2247,112 @@
                 toggleBtn.innerHTML = '◀';
             }
         };
+        
+        // Open payment details modal
+        window.openPaymentDetailsModal = async function(type) {
+            try {
+                const modal = document.getElementById('paymentDetailsModal');
+                const title = document.getElementById('payment-modal-title');
+                const content = document.getElementById('payment-details-content');
+                
+                // Set title
+                if (type === 'paid') {
+                    title.textContent = '💰 Ödenen İşlemler';
+                } else {
+                    title.textContent = '⏳ Bekleyen Ödemeler';
+                }
+                
+                // Show loading
+                content.innerHTML = '<div class="loading">Yükleniyor...</div>';
+                openModal('paymentDetailsModal');
+                
+                // Fetch all repairs
+                const response = await fetch(`${API_BASE}/repairs`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                const repairs = await response.json();
+                
+                // Filter repairs with final_cost
+                const filteredRepairs = repairs.filter(r => {
+                    if (!r.final_cost || r.final_cost <= 0) return false;
+                    if (type === 'paid') {
+                        return r.payment_status === 'odendi';
+                    } else {
+                        return r.payment_status !== 'odendi';
+                    }
+                });
+                
+                if (filteredRepairs.length === 0) {
+                    content.innerHTML = `
+                        <div style="text-align: center; padding: 2rem; color: #64748b;">
+                            <p>Henüz ${type === 'paid' ? 'ödenen' : 'bekleyen'} ödeme bulunmuyor.</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Calculate total
+                const total = filteredRepairs.reduce((sum, r) => sum + r.final_cost, 0);
+                
+                // Build table
+                let html = `
+                    <table style="width: 100%; border-collapse: collapse; margin-top: 1rem;">
+                        <thead>
+                            <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
+                                <th style="padding: 0.75rem; text-align: left;">Müşteri</th>
+                                <th style="padding: 0.75rem; text-align: left;">Cihaz</th>
+                                <th style="padding: 0.75rem; text-align: left;">Arıza</th>
+                                <th style="padding: 0.75rem; text-align: center;">Tutar</th>
+                                <th style="padding: 0.75rem; text-align: center;">Durum</th>
+                                <th style="padding: 0.75rem; text-align: center;">Tarih</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                
+                for (const repair of filteredRepairs) {
+                    const statusBadge = type === 'paid' 
+                        ? '<span style="background: #10b981; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.85em;">Ödendi</span>'
+                        : '<span style="background: #ef4444; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.85em;">Bekliyor</span>';
+                    
+                    const date = new Date(repair.created_at).toLocaleDateString('tr-TR');
+                    
+                    html += `
+                        <tr style="border-bottom: 1px solid #e2e8f0;">
+                            <td style="padding: 0.75rem;">${repair.customer_name || '-'}</td>
+                            <td style="padding: 0.75rem;">${repair.device_type || '-'}</td>
+                            <td style="padding: 0.75rem; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${repair.description || '-'}</td>
+                            <td style="padding: 0.75rem; text-align: center; font-weight: 600; color: #f97316;">₺${repair.final_cost.toLocaleString('tr-TR', {minimumFractionDigits: 2})}</td>
+                            <td style="padding: 0.75rem; text-align: center;">${statusBadge}</td>
+                            <td style="padding: 0.75rem; text-align: center; font-size: 0.9em; color: #64748b;">${date}</td>
+                        </tr>
+                    `;
+                }
+                
+                html += `
+                        </tbody>
+                        <tfoot>
+                            <tr style="background: #f8fafc; border-top: 2px solid #e2e8f0;">
+                                <td colspan="3" style="padding: 1rem; text-align: right; font-weight: 700;">Toplam:</td>
+                                <td style="padding: 1rem; text-align: center; font-weight: 700; color: #f97316; font-size: 1.1em;">₺${total.toLocaleString('tr-TR', {minimumFractionDigits: 2})}</td>
+                                <td colspan="2" style="padding: 1rem; text-align: center; color: #64748b;">${filteredRepairs.length} İşlem</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                `;
+                
+                content.innerHTML = html;
+                
+            } catch (error) {
+                console.error('Payment details error:', error);
+                const content = document.getElementById('payment-details-content');
+                content.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: #ef4444;">
+                        <p>❌ Ödeme detayları yüklenirken hata oluştu.</p>
+                    </div>
+                `;
+            }
+        };
 
         window.clearDateFilter = function() {
             document.getElementById('repair-date-filter').value = '';
