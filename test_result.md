@@ -409,6 +409,18 @@ backend:
         comment: "❌ CRITICAL: User creation fails with HTTP 405 Method Not Allowed error. When submitting user creation form in admin panel, POST request to /api/users returns 405 error. This indicates either: 1) POST method not allowed on /api/users endpoint 2) Endpoint doesn't exist 3) Route configuration issue. Frontend form submits correctly with proper data (name, email, password, role, phone) but backend rejects the request. This prevents admin from creating new users through the admin panel interface."
 
 frontend:
+  - task: "Repair item onclick handlers"
+    implemented: false
+    working: false
+    file: "frontend/public/admin.html"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "❌ CRITICAL: Repair items are missing onclick handlers, preventing repair detail modal from opening. Investigation shows repair items display correctly (5 items found) but have onclick attribute = None. This makes repair status buttons completely inaccessible because the modal cannot be opened. The loadRepairs function needs to be updated to add onclick handlers like onclick='openRepairDetail(repair_id)' to each repair item. All modal and status update functionality is correctly implemented but unreachable due to missing click handlers."
+
   - task: "Customer detail page"
     implemented: true
     working: true
