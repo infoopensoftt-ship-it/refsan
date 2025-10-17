@@ -201,7 +201,7 @@
                 <small id="user-info">Yükleniyor...</small>
             </div>
         </div>
-        <button class="logout-btn" onclick="logout()">🚪 Çıkış Yap</button>
+        <button class="logout-btn" onclick="logout()">Çıkış Yap</button>
     </div>
 
     <div class="container">
@@ -228,7 +228,7 @@
 
         <!-- My Repairs -->
         <div class="section">
-            <h2>📋 Arıza Başvurularım</h2>
+            <h2>Arıza Başvurularım</h2>
             <div id="repair-list" class="repair-list">
                 <div class="empty-state">
                     <div style="font-size: 48px; margin-bottom: 1rem;">⏳</div>
@@ -242,7 +242,7 @@
     <div id="repairModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('repairModal')">&times;</span>
-            <h2>🔧 Yeni Arıza Başvurusu</h2>
+            <h2>Yeni Arıza Başvurusu</h2>
             <p style="color: #64748b; margin-bottom: 1.5rem;">Seramik makinenizle ilgili arıza bilgilerini detaylı bir şekilde belirtin.</p>
             
             <form onsubmit="createRepair(event)">
@@ -309,7 +309,7 @@
                 
                 <div style="background: #f0f9ff; padding: 1rem; border-radius: 6px; margin: 1rem 0;">
                     <p style="font-size: 0.9em; color: #0c4a6e;">
-                        <strong>📋 Not:</strong> Başvurunuz alındıktan sonra teknik ekibimiz size en kısa sürede dönüş yapacaktır. 
+                        <strong>Not:</strong> Başvurunuz alındıktan sonra teknik ekibimiz size en kısa sürede dönüş yapacaktır. 
                         Acil durumlar için ayrıca telefon ile iletişime geçebilirsiniz.
                     </p>
                 </div>
@@ -469,8 +469,8 @@
                         </div>
                         
                         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.5rem; font-size: 0.9em; color: #64748b;">
-                            <div>📅 ${new Date(repair.created_at).toLocaleDateString('tr-TR')}</div>
-                            ${repair.assigned_technician_name ? `<div>🔧 ${repair.assigned_technician_name}</div>` : '<div>👤 Teknisyen atanmadı</div>'}
+                            <div>${new Date(repair.created_at).toLocaleDateString('tr-TR')}</div>
+                            ${repair.assigned_technician_name ? `<div>${repair.assigned_technician_name}</div>` : '<div>Teknisyen atanmadı</div>'}
                             ${repair.cost_estimate ? `<div>💰 Tahmini: ₺${repair.cost_estimate}</div>` : ''}
                             ${repair.final_cost ? `<div>💳 Tutar: ₺${repair.final_cost}</div>` : ''}
                         </div>
@@ -519,12 +519,12 @@
                     
                     ${repair.assigned_technician_name ? `
                         <div style="background: #dbeafe; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
-                            <h4 style="color: #1e40af; margin-bottom: 0.5rem;">👨‍🔧 Atanan Teknisyen</h4>
+                            <h4 style="color: #1e40af; margin-bottom: 0.5rem;">👨‍Atanan Teknisyen</h4>
                             <p>${repair.assigned_technician_name}</p>
                         </div>
                     ` : `
                         <div style="background: #fef3c7; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
-                            <h4 style="color: #92400e; margin-bottom: 0.5rem;">⏳ Teknisyen Ataması</h4>
+                            <h4 style="color: #92400e; margin-bottom: 0.5rem;">Teknisyen Ataması</h4>
                             <p>Henüz teknisyen atanmamış, en kısa sürede atanacaktır.</p>
                         </div>
                     `}
@@ -539,7 +539,7 @@
                     ` : ''}
                     
                     <div style="background: #f3f4f6; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
-                        <h4 style="color: #374151; margin-bottom: 0.5rem;">📅 Tarih Bilgileri</h4>
+                        <h4 style="color: #374151; margin-bottom: 0.5rem;">Tarih Bilgileri</h4>
                         <p><strong>Başvuru Tarihi:</strong> ${new Date(repair.created_at).toLocaleString('tr-TR')}</p>
                         ${repair.completed_at ? `<p><strong>Tamamlanma Tarihi:</strong> ${new Date(repair.completed_at).toLocaleString('tr-TR')}</p>` : ''}
                     </div>

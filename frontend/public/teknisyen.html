@@ -203,7 +203,7 @@
                 <small id="user-info">Yükleniyor...</small>
             </div>
         </div>
-        <button class="logout-btn" onclick="logout()">🚪 Çıkış Yap</button>
+        <button class="logout-btn" onclick="logout()">Çıkış Yap</button>
     </div>
 
     <div class="container">
@@ -225,9 +225,9 @@
 
         <!-- Action Buttons -->
         <div style="margin-bottom: 2rem; text-align: center;">
-            <button class="btn" onclick="openModal('customerModal')">👤 Yeni Müşteri</button>
-            <button class="btn" onclick="openModal('repairModal')">🔧 Yeni Arıza</button>
-            <button class="btn btn-secondary" onclick="loadMyCustomers()">📋 Müşterilerim</button>
+            <button class="btn" onclick="openModal('customerModal')">Yeni Müşteri</button>
+            <button class="btn" onclick="openModal('repairModal')">Yeni Arıza</button>
+            <button class="btn btn-secondary" onclick="loadMyCustomers()">Müşterilerim</button>
             <button class="btn btn-secondary" onclick="loadMyRepairs()">📝 İşlerim</button>
         </div>
 
@@ -508,9 +508,9 @@
             listDiv.innerHTML = customers.map(customer => `
                 <div class="list-item">
                     <strong>${customer.full_name}</strong><br>
-                    <small>📞 ${customer.phone}</small><br>
-                    ${customer.email ? `<small>📧 ${customer.email}</small><br>` : ''}
-                    ${customer.address ? `<small>📍 ${customer.address}</small>` : ''}
+                    <small>${customer.phone}</small><br>
+                    ${customer.email ? `<small>${customer.email}</small><br>` : ''}
+                    ${customer.address ? `<small>${customer.address}</small>` : ''}
                 </div>
             `).join('');
         }
@@ -568,7 +568,7 @@
                             <span class="status-badge ${priorityClass}">${repair.priority}</span>
                         </div>
                         <div style="font-size: 0.9em; color: #475569;">
-                            🔧 ${repair.device_type} - ${repair.brand} ${repair.model}<br>
+                            ${repair.device_type} - ${repair.brand} ${repair.model}<br>
                             📝 ${repair.description}<br>
                             ${repair.cost_estimate ? `💰 Tahmini: ₺${repair.cost_estimate}` : ''}
                             ${repair.final_cost ? ` | Final: ₺${repair.final_cost}` : ''}
@@ -765,9 +765,9 @@
                     html += `
                         <div class="search-result-item" onclick="openCustomerDetailTech('${customer.id}')">
                             <div class="search-result-header">${customer.full_name}</div>
-                            <small>📞 ${customer.phone}</small>
-                            ${customer.email ? `<br><small>📧 ${customer.email}</small>` : ''}
-                            ${customer.address ? `<br><small>📍 ${customer.address}</small>` : ''}
+                            <small>${customer.phone}</small>
+                            ${customer.email ? `<br><small>${customer.email}</small>` : ''}
+                            ${customer.address ? `<br><small>${customer.address}</small>` : ''}
                         </div>
                     `;
                 });
@@ -791,12 +791,12 @@
                     const repairs = await repairsResponse.json();
                     
                     let detailHtml = `
-                        <h3>👤 ${customer.full_name}</h3>
-                        <p><strong>📞 Telefon:</strong> ${customer.phone}</p>
-                        ${customer.email ? `<p><strong>📧 E-posta:</strong> ${customer.email}</p>` : ''}
-                        ${customer.address ? `<p><strong>📍 Adres:</strong> ${customer.address}</p>` : ''}
+                        <h3>${customer.full_name}</h3>
+                        <p><strong>Telefon:</strong> ${customer.phone}</p>
+                        ${customer.email ? `<p><strong>E-posta:</strong> ${customer.email}</p>` : ''}
+                        ${customer.address ? `<p><strong>Adres:</strong> ${customer.address}</p>` : ''}
                         <hr style="margin: 1rem 0;">
-                        <h4>🔧 Arıza Geçmişi (${repairs.length})</h4>
+                        <h4>Arıza Geçmişi (${repairs.length})</h4>
                     `;
                     
                     if (repairs.length === 0) {
@@ -814,9 +814,9 @@
                                         <span class="status-badge ${statusClass}">${repair.status}</span>
                                     </div>
                                     <div style="font-size: 0.9em; color: #475569;">
-                                        🔧 ${repair.device_type} - ${repair.brand} ${repair.model}<br>
+                                        ${repair.device_type} - ${repair.brand} ${repair.model}<br>
                                         📝 ${repair.description}<br>
-                                        📅 ${new Date(repair.created_at).toLocaleDateString('tr-TR')}
+                                        ${new Date(repair.created_at).toLocaleDateString('tr-TR')}
                                         ${repair.cost_estimate ? `<br>💰 Tahmini: ₺${repair.cost_estimate}` : ''}
                                         ${repair.final_cost ? ` | Final: ₺${repair.final_cost}` : ''}
                                     </div>
