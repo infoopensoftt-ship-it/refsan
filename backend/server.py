@@ -1043,6 +1043,61 @@ async def cancel_repair_request(
     
     return RepairRequest(**updated_repair)
 
+
+
+@api_router.put("/repairs/{repair_id}/status")
+async def update_repair_status(
+    repair_id: str,
+    status: RepairStatus,
+    current_user: User = Depends(require_role([UserRole.ADMIN]))
+):
+    """Update repair status (Admin only) and send SMS notification"""
+    # Find repair
+    repair = await db.repairs.find_one({"id": repair_id})
+    if not repair:
+        raise HTTPException(status_code=404, detail="Repair not found")
+    
+    # Get customer info
+    customer = await db.customers.find_one({"id": repair["customer_id"]})
+    
+    # Update status
+    await db.repairs.update_one(
+        {"id": repair_id},
+        {"$set": {
+            "status": status,
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    
+    # Send SMS notification to customer
+    if customer and customer.get("phone"):
+        status_messages = {
+            RepairStatus.APPROVED: "Arıza kaydınız onaylandı ve işleme alındı.",
+            RepairStatus.IN_PROGRESS: "Arıza kaydınız işleniyor.",
+            RepairStatus.COMPLETED: "Arıza kaydınız tamamlandı.",
+            RepairStatus.CANCELLED: "Arıza kaydınız iptal edildi.",
+            RepairStatus.REJECTED: "Arıza kaydınız reddedildi."
+        }
+        
+        sms_message = f"Refsan Technical: {customer['full_name']}, {status_messages.get(status, 'Arıza durumu güncellendi.')} Arıza No: {repair_id[:8]}"
+        
+        # Send SMS
+        sms_result = await send_sms(customer["phone"], sms_message)
+        logger.info(f"SMS result for repair {repair_id}: {sms_result}")
+    
+    # Create notification for admin
+    await db.notifications.insert_one({
+        "id": str(uuid.uuid4()),
+        "user_id": current_user.id,
+        "repair_id": repair_id,
+        "title": f"Arıza Durumu Güncellendi",
+        "message": f"{customer['full_name'] if customer else 'Müşteri'} - Durum: {status}",
+        "is_read": False,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    })
+    
+    return {"success": True, "status": status, "sms_sent": customer and customer.get("phone") is not None}
+
 # Users management (Admin only)
 @api_router.get("/users", response_model=List[User])
 async def get_users(current_user: User = Depends(require_role([UserRole.ADMIN]))):
