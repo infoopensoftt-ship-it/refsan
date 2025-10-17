@@ -502,7 +502,7 @@
                         <button class="btn" style="background: #f59e0b;" onclick="deleteAllRepairs()">🗑️ Tüm Arıza Kayıtlarını Sil</button>
                         <button class="btn" style="background: #f59e0b;" onclick="deleteAllCustomers()">🗑️ Tüm Müşterileri Sil</button>
                         <button class="btn" style="background: #ef4444;" onclick="resetSystem()">🔄 Sistemi Sıfırla</button>
-                        <button class="btn" style="background: #059669;" onclick="createDemoData()">📋 Demo Veriler Oluştur</button>
+                        <button class="btn" style="background: #059669;" onclick="createDemoData()">Demo Veriler Oluştur</button>
                     </div>
                     <small style="color: #7f1d1d; font-size: 0.8em;">
                         ⚠️ Bu işlemler geri alınamaz! Kullanmadan önce emin olun.
@@ -579,7 +579,7 @@
     <div id="customerListModal" class="modal">
         <div class="modal-content" style="max-width: 900px;">
             <span class="close" onclick="closeModal('customerListModal')">&times;</span>
-            <h2>📋 Müşteri Listesi</h2>
+            <h2>Müşteri Listesi</h2>
             <div id="modal-customer-list" style="max-height: 500px; overflow-y: auto;">
                 <div class="loading">Müşteriler yükleniyor...</div>
             </div>
@@ -623,7 +623,7 @@
 
             <!-- Customer Repairs Section -->
             <div>
-                <h3>🔧 Müşteri Arızaları</h3>
+                <h3>Müşteri Arızaları</h3>
                 <div id="customer-repairs-list" class="repair-list" style="max-height: 300px; overflow-y: auto;">
                     <div class="loading">Arızalar yükleniyor...</div>
                 </div>
@@ -635,14 +635,14 @@
     <div id="technicianReportsModal" class="modal">
         <div class="modal-content" style="max-width: 900px;">
             <span class="close" onclick="closeModal('technicianReportsModal')">&times;</span>
-            <h2>📊 Teknisyen Raporları</h2>
+            <h2>Teknisyen Raporları</h2>
             <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
                 <select id="report-technician" style="flex: 1; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 4px;">
                     <option value="">Teknisyen Seçin:</option>
                 </select>
                 <input type="date" id="report-start-date" style="padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 4px;">
                 <input type="date" id="report-end-date" style="padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 4px;">
-                <button class="btn" onclick="generateTechnicianReport()">📈 Rapor Oluştur</button>
+                <button class="btn" onclick="generateTechnicianReport()">Rapor Oluştur</button>
             </div>
             <div id="technician-report" style="max-height: 400px; overflow-y: auto;">
                 <div class="loading">Teknisyen seçip rapor oluştur butonuna tıklayın</div>
@@ -665,7 +665,7 @@
     <div id="repairModal" class="modal">
         <div class="modal-content" style="max-width: 700px;">
             <span class="close" onclick="closeModal('repairModal')">&times;</span>
-            <h2>🔧 Yeni Arıza Kaydı</h2>
+            <h2>Yeni Arıza Kaydı</h2>
             <form onsubmit="createRepair(event)">
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                     <div class="form-group" style="grid-column: 1 / -1;">
@@ -746,7 +746,7 @@
     <div id="stockModal" class="modal">
         <div class="modal-content" style="max-width: 600px;">
             <span class="close" onclick="closeModal('stockModal')">&times;</span>
-            <h2>📦 Stok Ürünü Ekle/Düzenle</h2>
+            <h2>Stok Ürünü Ekle/Düzenle</h2>
             <form onsubmit="saveStockItem(event)">
                 <input type="hidden" id="stock-id">
                 <div class="form-group">
