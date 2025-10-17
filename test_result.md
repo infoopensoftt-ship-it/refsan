@@ -505,6 +505,18 @@ frontend:
         agent: "testing"
         comment: "✅ WORKING: Technician search functionality is fully working. Successfully logged in as technician and accessed teknisyen.html. Customer search section is present with search input (placeholder: 'Müşteri adı, telefon...'), search button ('Ara'), and clear button ('Temizle'). Panel shows assigned repairs and customer list with search functionality."
 
+  - task: "Repair status update with popup and auto-move"
+    implemented: true
+    working: "NA"
+    file: "frontend/public/admin.html"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Updated updateRepairStatus function to: 1) Remove SMS notification mention from confirmation 2) Show popup with 'Müşteriye bildirim gönderildi' message (simulating SMS sent) 3) Automatically refresh repair list and stats to move repair to correct section 4) Close modal after status update. SMS functionality temporarily disabled as requested by user."
+
 metadata:
   created_by: "main_agent"
   version: "1.0"
