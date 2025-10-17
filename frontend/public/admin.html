@@ -1864,6 +1864,70 @@
                 const filteredRepairs = allRepairs.filter(repair => {
                     const repairDate = new Date(repair.created_at).toISOString().split('T')[0];
                     return repairDate === selectedDate;
+
+
+        // Filter repairs by status from stat cards
+        window.filterRepairsByStatus = async function(status) {
+            try {
+                // Scroll to repair section
+                const repairSection = document.querySelector('.section:has(#repair-list)');
+                if (repairSection) {
+                    repairSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+                
+                await new Promise(resolve => setTimeout(resolve, 500)); // Wait for scroll
+                
+                const response = await fetch(`${API_BASE}/repairs`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                const allRepairs = await response.json();
+                
+                let filtered;
+                if (status === 'all') {
+                    filtered = allRepairs;
+                } else {
+                    filtered = allRepairs.filter(r => r.status === status);
+                }
+                
+                loadRepairs(filtered);
+                
+                // Update filter UI feedback
+                const statusNames = {
+                    'all': 'Tüm Arızalar',
+                    'beklemede': 'Bekleyen Arızalar',
+                    'onaylandi': 'Onaylanan Arızalar',
+                    'isleniyor': 'İşlenen Arızalar',
+                    'tamamlandi': 'Tamamlanan Arızalar'
+                };
+                
+                const repairList = document.getElementById('repair-list');
+                if (filtered.length === 0) {
+                    repairList.innerHTML = `<p style="text-align: center; color: #64748b; padding: 2rem; background: #f8fafc; border-radius: 8px;">
+                        <strong>${statusNames[status]}</strong> için kayıt bulunamadı
+                    </p>`;
+                } else {
+                    // Show filter info at top
+                    const filterInfo = document.createElement('div');
+                    filterInfo.style.cssText = 'background: linear-gradient(135deg, #f97316, #ea580c); color: white; padding: 10px 15px; border-radius: 8px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;';
+                    filterInfo.innerHTML = `
+                        <span><strong>${statusNames[status]}</strong> (${filtered.length} kayıt)</span>
+                        <button onclick="clearDateFilter()" style="background: white; color: #f97316; border: none; padding: 5px 15px; border-radius: 5px; cursor: pointer; font-weight: 500;">Tümünü Göster</button>
+                    `;
+                    repairList.insertBefore(filterInfo, repairList.firstChild);
+                }
+            } catch (error) {
+                alert('❌ Hata: ' + error.message);
+            }
+        };
+
+        // Scroll to a section
+        window.scrollToSection = function(sectionId) {
+            const section = document.getElementById(sectionId) || document.querySelector(`.section:has(#${sectionId})`);
+            if (section) {
+                section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        };
+
                 });
                 
                 if (filteredRepairs.length === 0) {
