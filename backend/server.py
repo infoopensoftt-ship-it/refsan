@@ -46,6 +46,7 @@ class UserRole(str, Enum):
 
 class RepairStatus(str, Enum):
     PENDING = "beklemede"
+    APPROVED = "onaylandi"
     IN_PROGRESS = "isleniyor"
     COMPLETED = "tamamlandi"
     CANCELLED = "iptal"
