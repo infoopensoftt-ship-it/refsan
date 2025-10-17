@@ -396,6 +396,18 @@ backend:
         agent: "testing"
         comment: "✅ PASSED: POST /api/admin/demo/create-data endpoint working perfectly. Admin can successfully create comprehensive demo data with 5 ceramic industry customers (Ankara Seramik, İstanbul Çini, Ege Karo, Bursa Porselen, Kütahya Çini) and 5 Refsan brand ceramic machinery repairs (Seramik Fırını, Çini Presi, Karo Kesim, Porselen Kalıplama, Çini Sırlama). Proper role-based access control enforced. Fixed RepairPriority enum references. Demo data validation passed with proper ceramic industry content."
 
+  - task: "User creation endpoint method error"
+    implemented: true
+    working: false
+    file: "backend/server.py"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "❌ CRITICAL: User creation fails with HTTP 405 Method Not Allowed error. When submitting user creation form in admin panel, POST request to /api/users returns 405 error. This indicates either: 1) POST method not allowed on /api/users endpoint 2) Endpoint doesn't exist 3) Route configuration issue. Frontend form submits correctly with proper data (name, email, password, role, phone) but backend rejects the request. This prevents admin from creating new users through the admin panel interface."
+
 frontend:
   - task: "Customer detail page"
     implemented: true
