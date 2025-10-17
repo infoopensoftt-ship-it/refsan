@@ -548,17 +548,18 @@
             </div>
         </div>
 
-        <!-- Admin Sections -->
-        <div class="admin-sections">
-            <!-- Teknisyen Raporları -->
-            <div class="section">
-                <h2>Teknisyen Raporları</h2>
-                <button class="btn btn-secondary" onclick="openModal('technicianReportsModal')">Raporları Görüntüle</button>
-            </div>
+        <!-- Teknisyen Raporları (Dashboard'da) -->
+        <div class="section" style="margin-top: 2rem;">
+            <h2>Teknisyen Raporları</h2>
+            <button class="btn btn-secondary" onclick="openModal('technicianReportsModal')">Raporları Görüntüle</button>
+        </div>
+        </div>
+        <!-- End of Dashboard Section -->
 
-            <!-- Yeni Kullanıcı -->
-            <div class="section" id="user-management">
-                <h2>Kullanıcı Yönetimi</h2>
+        <!-- Repair Management Section -->
+        <div id="repair-management-content" class="content-section">
+            <div class="section">
+                <h2>Arıza Yönetimi</h2>
                 <button class="btn" onclick="openModal('userModal')">Yeni Kullanıcı</button>
                 <button class="btn btn-secondary" onclick="loadUsers()">Kullanıcı Listesi</button>
                 <div id="user-list" class="user-list"></div>
