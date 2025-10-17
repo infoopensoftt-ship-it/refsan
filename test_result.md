@@ -533,7 +533,7 @@ frontend:
     implemented: true
     working: false
     file: "frontend/public/admin.html"
-    stuck_count: 2
+    stuck_count: 3
     priority: "high"
     needs_retesting: false
     status_history:
@@ -546,6 +546,9 @@ frontend:
       - working: false
         agent: "testing"
         comment: "❌ PERSISTENT ISSUE: After fixing JavaScript syntax errors, stat cards still show 'filterRepairsByStatus is not defined' error when clicked. The function is defined as window.filterRepairsByStatus in the code but is not being recognized at runtime. Admin panel loads successfully with 6 stat cards visible and clickable, but the filtering functionality fails due to function not being available in window scope. This indicates a deeper issue with the JavaScript execution context or script loading order."
+      - working: false
+        agent: "testing"
+        comment: "❌ CANNOT TEST DUE TO LOGIN FAILURE: Extensive testing confirms that window.filterRepairsByStatus function is properly defined in admin.html code (line 1919). However, cannot perform live testing of stat cards functionality because the login system in test.html is completely broken. Login button clicks generate no network requests, and even with valid API tokens, admin.html redirects back to test.html. The stat cards code appears correct but requires functional authentication to test properly. Root cause: Login system failure preventing access to admin panel."
 
   - task: "Repair status buttons functionality"
     implemented: true
