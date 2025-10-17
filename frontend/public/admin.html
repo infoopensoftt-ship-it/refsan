@@ -1821,7 +1821,29 @@
                 phone: document.getElementById('user-phone').value
             };
 
+            try {
+                const response = await fetch(`${API_BASE}/users`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify(userData)
+                });
 
+                if (response.ok) {
+                    alert('✅ Kullanıcı başarıyla oluşturuldu');
+                    closeModal('userModal');
+                    document.getElementById('user-form').reset();
+                    loadStats(); // Refresh stats
+                } else {
+                    const error = await response.json();
+                    alert('❌ ' + (error.detail || 'Kullanıcı oluşturulamadı'));
+                }
+            } catch (error) {
+                alert('❌ Hata: ' + error.message);
+            }
+        }
 
         window.updateRepairStatus = async function(repairId, newStatus) {
             const statusNames = {
