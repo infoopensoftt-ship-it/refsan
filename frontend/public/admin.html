@@ -1865,7 +1865,17 @@
                 const filteredRepairs = allRepairs.filter(repair => {
                     const repairDate = new Date(repair.created_at).toISOString().split('T')[0];
                     return repairDate === selectedDate;
-
+                });
+                
+                if (filteredRepairs.length === 0) {
+                    alert(`${selectedDate} tarihinde arıza kaydı bulunamadı`);
+                }
+                
+                loadRepairs(filteredRepairs);
+            } catch (error) {
+                alert('❌ Hata: ' + error.message);
+            }
+        };
 
         // Filter repairs by status from stat cards
         window.filterRepairsByStatus = async function(status) {
