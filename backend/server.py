@@ -191,6 +191,51 @@ class StockUpdate(BaseModel):
     operation: str  # "add" or "subtract"
     note: Optional[str] = None
 
+
+
+# SMS Configuration
+SMS_API_KEY = os.environ.get('SMS_API_KEY', '')
+SMS_API_URL = os.environ.get('SMS_API_URL', 'https://api.netgsm.com.tr/sms/send/get')  # Default Netgsm
+SMS_SENDER = os.environ.get('SMS_SENDER', 'REFSAN')
+
+async def send_sms(phone: str, message: str):
+    """Send SMS to customer - supports both real API and mock mode"""
+    try:
+        if not SMS_API_KEY or SMS_API_KEY == 'MOCK':
+            # Mock mode - just log the SMS
+            logger.info(f"📱 [MOCK SMS] To: {phone}, Message: {message}")
+            return {"success": True, "message": "SMS sent (mock mode)", "mock": True}
+        
+        # Real SMS API call (Netgsm format)
+        import requests
+        
+        # Clean phone number (remove spaces, dashes, etc.)
+        clean_phone = ''.join(filter(str.isdigit, phone))
+        if not clean_phone.startswith('90'):
+            clean_phone = '90' + clean_phone
+        
+        # Netgsm API parameters
+        params = {
+            'usercode': os.environ.get('SMS_USERNAME', ''),
+            'password': SMS_API_KEY,
+            'gsmno': clean_phone,
+            'message': message,
+            'msgheader': SMS_SENDER
+        }
+        
+        response = requests.get(SMS_API_URL, params=params, timeout=10)
+        
+        if response.status_code == 200 and response.text.startswith('00'):
+            logger.info(f"✅ SMS sent to {phone}")
+            return {"success": True, "message": "SMS sent successfully"}
+        else:
+            logger.error(f"❌ SMS failed: {response.text}")
+            return {"success": False, "message": f"SMS failed: {response.text}"}
+            
+    except Exception as e:
+        logger.error(f"SMS error: {str(e)}")
+        return {"success": False, "message": f"SMS error: {str(e)}"}
+
 # Utility functions
 def verify_password(plain_password, hashed_password):
     """Verify a password against its hash using SHA-256 + salt"""
