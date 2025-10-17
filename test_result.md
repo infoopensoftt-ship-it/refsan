@@ -612,13 +612,16 @@ metadata:
 
 test_plan:
   current_focus:
+    - "Repair item onclick handlers"
+    - "User creation endpoint method error"
     - "Stat cards functionality"
     - "Repair status buttons functionality"
-    - "Repair status update with popup and auto-move"
   stuck_tasks:
     - "Stat cards functionality"
     - "Repair status buttons functionality"
     - "Repair status update with popup and auto-move"
+    - "Repair item onclick handlers"
+    - "User creation endpoint method error"
   test_all: false
   test_priority: "high_first"
 
