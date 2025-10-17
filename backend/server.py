@@ -144,10 +144,10 @@ class RepairRequestUpdate(BaseModel):
 
 class Notification(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    type: str  # "new_repair", "new_customer", "repair_status_update", "repair_cancelled"
+    type: Optional[str] = None  # "new_repair", "new_customer", "repair_status_update", "repair_cancelled"
     title: str
     message: str
-    related_id: str  # ID of the related customer or repair
+    related_id: Optional[str] = None  # ID of the related customer or repair
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     read: bool = False
     # Enhanced fields for frontend linking
