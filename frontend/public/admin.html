@@ -1748,7 +1748,7 @@
             }
         });
 
-        async function loadRepairs(filteredRepairs = null) {
+        window.loadRepairs = async function(filteredRepairs = null) {
             try {
                 let repairs;
                 if (filteredRepairs) {
