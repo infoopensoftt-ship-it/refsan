@@ -2127,6 +2127,38 @@
         window.scrollToTop = function() {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         };
+        
+        // Show specific section and hide others
+        window.showSection = function(sectionName) {
+            // Hide all content sections
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => section.classList.remove('active'));
+            
+            // Remove active class from all nav buttons
+            const navButtons = document.querySelectorAll('.nav-btn');
+            navButtons.forEach(btn => btn.classList.remove('active'));
+            
+            // Show the selected section
+            let targetSection;
+            if (sectionName === 'dashboard') {
+                targetSection = document.getElementById('dashboard');
+            } else {
+                targetSection = document.getElementById(sectionName + '-content');
+            }
+            
+            if (targetSection) {
+                targetSection.classList.add('active');
+            }
+            
+            // Set active class on clicked nav button
+            const clickedButton = event ? event.currentTarget : document.querySelector(`.nav-btn[onclick*="${sectionName}"]`);
+            if (clickedButton) {
+                clickedButton.classList.add('active');
+            }
+            
+            // Scroll to top of main content
+            document.querySelector('.main-content').scrollTo({ top: 0, behavior: 'smooth' });
+        };
 
         window.clearDateFilter = function() {
             document.getElementById('repair-date-filter').value = '';
