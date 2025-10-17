@@ -397,23 +397,27 @@
     <div class="container">
         <!-- Stats -->
         <div class="stats-grid">
-            <div class="stat-card">
+            <div class="stat-card" onclick="filterRepairsByStatus('all')" style="cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
                 <h3>Toplam Arıza</h3>
                 <div class="number" id="total-repairs">-</div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card" onclick="filterRepairsByStatus('beklemede')" style="cursor: pointer; transition: transform 0.2s; background: linear-gradient(135deg, #fbbf24, #f59e0b);" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
                 <h3>Bekleyen</h3>
                 <div class="number" id="pending-repairs">-</div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card" onclick="filterRepairsByStatus('onaylandi')" style="cursor: pointer; transition: transform 0.2s; background: linear-gradient(135deg, #3b82f6, #2563eb);" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
+                <h3>Onaylanan</h3>
+                <div class="number" id="approved-repairs">-</div>
+            </div>
+            <div class="stat-card" onclick="filterRepairsByStatus('tamamlandi')" style="cursor: pointer; transition: transform 0.2s; background: linear-gradient(135deg, #10b981, #059669);" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
                 <h3>Tamamlanan</h3>
                 <div class="number" id="completed-repairs">-</div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card" onclick="openModal('customerListModal'); loadCustomersInModal();" style="cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
                 <h3>Müşteriler</h3>
                 <div class="number" id="total-customers">-</div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card" onclick="scrollToSection('user-management')" style="cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
                 <h3>Teknisyenler</h3>
                 <div class="number" id="total-technicians">-</div>
             </div>
