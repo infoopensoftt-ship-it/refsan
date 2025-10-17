@@ -2030,6 +2030,63 @@
             }
         }
 
+        // Open repair detail modal
+        window.openRepairDetail = function(repairId) {
+            const repair = window.currentRepairs?.find(r => r.id === repairId);
+            if (!repair) {
+                alert('Arıza detayı bulunamadı');
+                return;
+            }
+            
+            // Populate modal with repair details
+            document.getElementById('repair-detail-content').innerHTML = `
+                <div style="padding: 1rem;">
+                    <h3 style="color: #f97316; margin-bottom: 1rem;">${repair.device_type} - ${repair.brand} ${repair.model}</h3>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+                        <div>
+                            <strong>Müşteri:</strong><br>
+                            ${repair.customer_name || '-'}
+                        </div>
+                        <div>
+                            <strong>Telefon:</strong><br>
+                            ${repair.customer_phone || '-'}
+                        </div>
+                        <div>
+                            <strong>Tarih:</strong><br>
+                            ${new Date(repair.created_at).toLocaleDateString('tr-TR')}
+                        </div>
+                        <div>
+                            <strong>Durum:</strong><br>
+                            <span class="status-badge status-${repair.status}">${repair.status}</span>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 1rem;">
+                        <strong>Arıza Açıklaması:</strong><br>
+                        <p style="background: #f8fafc; padding: 0.75rem; border-radius: 4px; margin-top: 0.5rem;">
+                            ${repair.description || '-'}
+                        </p>
+                    </div>
+                    
+                    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                        ${repair.status === 'beklemede' ? `
+                            <button class="btn" style="background: #10b981;" onclick="updateRepairStatus('${repair.id}', 'onaylandi')">✓ Onayla</button>
+                            <button class="btn" style="background: #ef4444;" onclick="updateRepairStatus('${repair.id}', 'reddedildi')">✗ Reddet</button>
+                        ` : ''}
+                        ${repair.status === 'onaylandi' ? `
+                            <button class="btn" style="background: #3b82f6;" onclick="updateRepairStatus('${repair.id}', 'isleniyor')">⚙ İşleme Al</button>
+                        ` : ''}
+                        ${repair.status === 'isleniyor' ? `
+                            <button class="btn" style="background: #059669;" onclick="updateRepairStatus('${repair.id}', 'tamamlandi')">✓ Tamamla</button>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+            
+            openModal('repairDetailModal');
+        };
+
         async function createUser(event) {
             event.preventDefault();
             
