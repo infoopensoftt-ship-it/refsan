@@ -1832,7 +1832,7 @@
                 'iptal': 'İptal Edildi'
             };
             
-            if (!confirm(`Arızayı "${statusNames[newStatus]}" olarak işaretlemek istediğinize emin misiniz?\n\nMüşteriye SMS bildirimi gönderilecektir.`)) {
+            if (!confirm(`Arızayı "${statusNames[newStatus]}" olarak işaretlemek istediğinize emin misiniz?`)) {
                 return;
             }
             
@@ -1843,10 +1843,18 @@
                 });
                 
                 if (response.ok) {
-                    const result = await response.json();
-                    alert(`✅ Arıza durumu güncellendi: ${statusNames[newStatus]}\n${result.sms_sent ? '📱 SMS bildirimi gönderildi' : '⚠️ SMS gönderilemedi (telefon numarası yok)'}`);
-                    loadRepairs(); // Refresh list
-                    loadStats(); // Update stat cards
+                    // Show success popup
+                    alert(`✅ Arıza durumu güncellendi: ${statusNames[newStatus]}\n📱 Müşteriye bildirim gönderildi`);
+                    
+                    // Refresh the repair list and stats to move repair to correct section
+                    await loadRepairs(); 
+                    await loadStats();
+                    
+                    // Close modal if open
+                    const modal = document.getElementById('repairDetailModal');
+                    if (modal && modal.style.display === 'block') {
+                        closeModal('repairDetailModal');
+                    }
                 } else {
                     const error = await response.json();
                     alert('❌ ' + (error.detail || 'Durum güncellenemedi'));
