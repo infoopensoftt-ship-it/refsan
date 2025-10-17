@@ -9,7 +9,7 @@ import json
 import sys
 
 class FocusedAPITester:
-    def __init__(self, base_url="https://techfix-portal-3.preview.emergentagent.com"):
+    def __init__(self, base_url="https://refsan-repairs.preview.emergentagent.com"):
         self.base_url = base_url
         self.api_url = f"{base_url}/api"
         self.tests_run = 0
