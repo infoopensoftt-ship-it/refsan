@@ -915,7 +915,7 @@
             }
         };
 
-        async function loadStats() {
+        window.loadStats = async function() {
             try {
                 const response = await fetch(`${API_BASE}/stats`, {
                     headers: { 'Authorization': `Bearer ${authToken}` }
