@@ -2424,17 +2424,6 @@
             }
         }
 
-                    loadStats();
-                    loadCustomersInModal();
-                } else {
-                    const error = await response.json();
-                    alert('❌ ' + (error.detail || 'Silme işlemi başarısız'));
-                }
-            } catch (error) {
-                alert('❌ Hata: ' + error.message);
-            }
-        }
-
         async function resetSystem() {
             if (!confirm('⚠️ SİSTEMİ TAMAMEN SIFIRLAMAK İSTEDİĞİNİZDEN EMİN MİSİNİZ?\n\nBu işlem:\n- Tüm müşterileri silecek\n- Tüm arıza kayıtlarını silecek\n- Tüm bildirimleri silecek\n- Tüm dosyaları silecek\n- Sadece admin kullanıcıları kalacak\n- Bu işlem GERİ ALINAMAZ!\n\nDevam etmek için "Evet" yazın:')) {
                 return;
