@@ -463,7 +463,16 @@
             <div class="section">
                 <h2>Arıza Yönetimi</h2>
                 <button class="btn" onclick="openModal('repairModal')">Yeni Arıza Kaydı</button>
-                <button class="btn btn-secondary" onclick="loadRepairs()">Arıza Listesi</button>
+                <button class="btn btn-secondary" onclick="loadRepairs()">Tüm Arızalar</button>
+                
+                <!-- Takvim Filtresi -->
+                <div style="margin: 1rem 0; padding: 1rem; background: #f8fafc; border-radius: 8px;">
+                    <label style="font-weight: 500; margin-right: 10px;">Tarih Filtresi:</label>
+                    <input type="date" id="repair-date-filter" style="padding: 8px; border: 1px solid #d1d5db; border-radius: 6px; margin-right: 10px;">
+                    <button class="btn btn-small" onclick="filterRepairsByDate()">Filtrele</button>
+                    <button class="btn btn-small btn-secondary" onclick="clearDateFilter()">Tümünü Göster</button>
+                </div>
+                
                 <div id="repair-list" class="repair-list"></div>
             </div>
 
