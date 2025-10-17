@@ -340,12 +340,34 @@
             }
 
             try {
+                // First check localStorage
+                const storedUser = localStorage.getItem('user');
+                if (storedUser) {
+                    try {
+                        currentUser = JSON.parse(storedUser);
+                        if (currentUser.role !== 'musteri') {
+                            alert('Müşteri yetkisi gerekli!');
+                            window.location.href = 'test.html';
+                            return;
+                        }
+                        document.getElementById('user-info').textContent = `Hoş geldin, ${currentUser.full_name}`;
+                        await ensureCustomerExists();
+                        await loadStats();
+                        await loadMyRepairs();
+                        return;
+                    } catch (e) {
+                        console.error('Error parsing user:', e);
+                    }
+                }
+                
+                // Fallback to API verification
                 const response = await fetch(`${API_BASE}/auth/me`, {
                     headers: { 'Authorization': `Bearer ${authToken}` }
                 });
 
                 if (response.ok) {
                     currentUser = await response.json();
+                    localStorage.setItem('user', JSON.stringify(currentUser));
                     if (currentUser.role !== 'musteri') {
                         alert('Müşteri yetkisi gerekli!');
                         window.location.href = 'test.html';
@@ -360,6 +382,8 @@
                 }
             } catch (error) {
                 alert('Giriş doğrulanamadı!');
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
                 window.location.href = 'test.html';
             }
         };
