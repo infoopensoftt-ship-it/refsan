@@ -1982,31 +1982,6 @@
             loadRepairs();
         }
 
-            try {
-                const response = await fetch(`${API_BASE}/auth/register`, {
-                    method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${authToken}` 
-                    },
-                    body: JSON.stringify(userData)
-                });
-
-                if (response.ok) {
-                    alert('✅ Kullanıcı başarıyla oluşturuldu!');
-                    closeModal('userModal');
-                    event.target.reset();
-                    loadStats();
-                    loadTechnicians();
-                } else {
-                    const error = await response.json();
-                    alert('❌ ' + (error.detail || 'Kullanıcı oluşturulamadı'));
-                }
-            } catch (error) {
-                alert('❌ Hata: ' + error.message);
-            }
-        }
-
         async function createCustomer(event) {
             event.preventDefault();
             
