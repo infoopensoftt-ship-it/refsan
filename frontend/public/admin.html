@@ -922,9 +922,17 @@
                 });
                 const stats = await response.json();
                 
+                // Get all repairs to count approved ones
+                const repairsResponse = await fetch(`${API_BASE}/repairs`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                const allRepairs = await repairsResponse.json();
+                const approvedCount = allRepairs.filter(r => r.status === 'onaylandi').length;
+                
                 // Update main stats
                 document.getElementById('total-repairs').textContent = stats.total_repairs || 0;
                 document.getElementById('pending-repairs').textContent = stats.pending_repairs || 0;
+                document.getElementById('approved-repairs').textContent = approvedCount;
                 document.getElementById('completed-repairs').textContent = stats.completed_repairs || 0;
                 document.getElementById('total-customers').textContent = stats.total_customers || 0;
                 document.getElementById('total-technicians').textContent = stats.total_technicians || 0;
