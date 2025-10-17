@@ -1114,6 +1114,55 @@
                 const listDiv = document.getElementById('modal-customer-list');
                 listDiv.innerHTML = customers.map(customer => `
                     <div class="list-item">
+
+
+        async function editUserRole(userId, email, currentRole) {
+            const roles = {
+                'musteri': '👤 Müşteri',
+                'teknisyen': '🔧 Teknisyen',
+                'admin': '👑 Admin'
+            };
+            
+            let message = `${email} kullanıcısının rolünü seçin:\n\nŞu anki rol: ${roles[currentRole]}\n\n`;
+            message += '1: Müşteri\n2: Teknisyen\n3: Admin';
+            
+            const choice = prompt(message, currentRole === 'musteri' ? '1' : currentRole === 'teknisyen' ? '2' : '3');
+            
+            if (!choice) return;
+            
+            let newRole;
+            switch(choice) {
+                case '1': newRole = 'musteri'; break;
+                case '2': newRole = 'teknisyen'; break;
+                case '3': newRole = 'admin'; break;
+                default: 
+                    alert('Geçersiz seçim!');
+                    return;
+            }
+            
+            if (newRole === currentRole) {
+                alert('Rol değiştirilmedi (aynı rol seçildi)');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/users/${userId}/role?role=${newRole}`, {
+                    method: 'PUT',
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                
+                if (response.ok) {
+                    alert(`✅ Kullanıcı rolü güncellendi: ${roles[newRole]}`);
+                    loadUsers(); // Refresh list
+                } else {
+                    const error = await response.json();
+                    alert('❌ ' + (error.detail || 'Rol güncellenemedi'));
+                }
+            } catch (error) {
+                alert('❌ Hata: ' + error.message);
+            }
+        }
+
                         <div class="clickable-customer" onclick="openCustomerDetail('${customer.id}')" style="cursor: pointer;">
                             <strong>${customer.full_name}</strong><br>
                             <small>📞 ${customer.phone}</small>
