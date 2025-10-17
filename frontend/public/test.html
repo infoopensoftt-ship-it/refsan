@@ -394,10 +394,9 @@
             const full_name = document.getElementById('reg-name').value;
             const email = document.getElementById('reg-email').value;
             const phone = document.getElementById('reg-phone').value;
-            const role = document.getElementById('reg-role').value;
             const password = document.getElementById('reg-password').value;
 
-            if (!full_name || !email || !role || !password) {
+            if (!full_name || !email || !password) {
                 showResult('Zorunlu alanları doldurun!', false);
                 return;
             }
@@ -406,18 +405,23 @@
                 const response = await fetch(`${API_BASE}/auth/register`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ full_name, email, phone, role, password })
+                    body: JSON.stringify({ 
+                        full_name, 
+                        email, 
+                        phone, 
+                        role: 'musteri',  // Default role
+                        password 
+                    })
                 });
 
                 if (response.ok) {
                     const data = await response.json();
-                    showResult(`✅ Kayıt başarılı! ${data.full_name} (${data.role}) hesabı oluşturuldu. Şimdi giriş yapabilirsiniz.`);
+                    showResult(`✅ Kayıt başarılı! Yönetici hesabınızı onaylayacaktır. Email: ${email}`);
                     
                     // Clear form and switch to login
                     document.getElementById('reg-name').value = '';
                     document.getElementById('reg-email').value = '';
                     document.getElementById('reg-phone').value = '';
-                    document.getElementById('reg-role').value = '';
                     document.getElementById('reg-password').value = '';
                     
                     // Fill login form
