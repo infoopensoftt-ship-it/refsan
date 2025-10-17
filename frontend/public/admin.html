@@ -956,6 +956,12 @@
                 document.getElementById('total-customers').textContent = stats.total_customers || 0;
                 document.getElementById('total-technicians').textContent = stats.total_technicians || 0;
                 
+                // Update payment stats
+                const totalPayment = stats.total_payment || 0;
+                document.getElementById('total-payment').textContent = `₺${totalPayment.toLocaleString('tr-TR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                document.getElementById('paid-repairs').textContent = stats.paid_repairs || 0;
+                document.getElementById('unpaid-repairs').textContent = stats.unpaid_repairs || 0;
+                
                 // Update system management stats
                 const systemTotalRepairs = document.getElementById('system-total-repairs');
                 const systemTotalCustomers = document.getElementById('system-total-customers');
