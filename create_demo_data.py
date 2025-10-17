@@ -131,30 +131,48 @@ def create_demo_repairs():
     repairs = [
         {
             "customer_id": customers[0]["id"],
-            "device_type": "iPhone",
-            "brand": "Apple", 
-            "model": "14 Pro",
-            "description": "Ekran çatlamış, dokunmatik çalışmıyor",
+            "device_type": "Karo Kesim Makinesi",
+            "brand": "Refsan", 
+            "model": "RKM-2000",
+            "description": "Kesim diskinin titreşim yapması, düzgün kesim yapamıyor. Rulman değişimi gerekebilir.",
             "priority": "yuksek",
-            "cost_estimate": 1500.0
+            "cost_estimate": 4800.0
         },
         {
             "customer_id": customers[1]["id"],
-            "device_type": "Laptop",
-            "brand": "Dell",
-            "model": "XPS 13",
-            "description": "Açılmıyor, güç sorunu var",
-            "priority": "orta", 
-            "cost_estimate": 800.0
+            "device_type": "Seramik Fırını",
+            "brand": "Refsan",
+            "model": "RF-1500",
+            "description": "Fırın sıcaklık kontrol sisteminde arıza. İstenilen dereceye ulaşamıyor.",
+            "priority": "yuksek", 
+            "cost_estimate": 8500.0
         },
         {
             "customer_id": customers[2]["id"],
-            "device_type": "Samsung",
-            "brand": "Samsung",
-            "model": "Galaxy S23",
-            "description": "Batarya hızla bitiyor",
+            "device_type": "Çini Baskı Presi",
+            "brand": "Refsan",
+            "model": "CBP-800",
+            "description": "Hidrolik sistemde basınç kaybı var. Mühür ve contalar kontrol edilmeli.",
+            "priority": "orta",
+            "cost_estimate": 3200.0
+        },
+        {
+            "customer_id": customers[3]["id"],
+            "device_type": "Hamur Karıştırıcı",
+            "brand": "Refsan",
+            "model": "RHK-500",
+            "description": "Motor aşırı ısınma yapıyor. Soğutma fanı çalışmıyor.",
+            "priority": "orta",
+            "cost_estimate": 2100.0
+        },
+        {
+            "customer_id": customers[4]["id"],
+            "device_type": "Glazür Püskürtme Kabini",
+            "brand": "Refsan",
+            "model": "GPK-300",
+            "description": "Püskürtme memelerinde tıkanma. Basınç ayarı bozulmuş.",
             "priority": "dusuk",
-            "cost_estimate": 300.0
+            "cost_estimate": 1800.0
         }
     ]
     
