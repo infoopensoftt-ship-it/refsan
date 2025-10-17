@@ -153,6 +153,7 @@ class Notification(BaseModel):
     # Enhanced fields for frontend linking
     repair_id: Optional[str] = None
     customer_name: Optional[str] = None
+    customer_phone: Optional[str] = None
     device_info: Optional[str] = None
     new_status: Optional[str] = None
 
