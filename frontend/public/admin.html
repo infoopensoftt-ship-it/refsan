@@ -581,19 +581,19 @@
         <!-- Payment Stats Section -->
         <div class="stats-grid" style="margin-top: 1rem; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
             <div class="stat-card" style="background: linear-gradient(135deg, #10b981, #059669); color: white;">
-                <h3 style="color: white;">💰 Toplam Ödeme</h3>
-                <div class="number" id="total-payment" style="color: white;">₺0</div>
-                <small style="color: rgba(255,255,255,0.9);">Ödenen İşlemler</small>
-            </div>
-            <div class="stat-card" style="background: linear-gradient(135deg, #3b82f6, #2563eb); color: white;">
-                <h3 style="color: white;">✅ Ödenen</h3>
-                <div class="number" id="paid-repairs" style="color: white;">-</div>
-                <small style="color: rgba(255,255,255,0.9);">İşlem</small>
+                <h3 style="color: white;">💰 Ödenen Tutar</h3>
+                <div class="number" id="total-paid-amount" style="color: white;">₺0,00</div>
+                <small style="color: rgba(255,255,255,0.9);" id="paid-count-text">0 İşlem Ödendi</small>
             </div>
             <div class="stat-card" style="background: linear-gradient(135deg, #ef4444, #dc2626); color: white;">
-                <h3 style="color: white;">⏳ Ödenmedi</h3>
-                <div class="number" id="unpaid-repairs" style="color: white;">-</div>
-                <small style="color: rgba(255,255,255,0.9);">Bekleyen İşlem</small>
+                <h3 style="color: white;">⏳ Bekleyen Tutar</h3>
+                <div class="number" id="total-unpaid-amount" style="color: white;">₺0,00</div>
+                <small style="color: rgba(255,255,255,0.9);" id="unpaid-count-text">0 İşlem Bekliyor</small>
+            </div>
+            <div class="stat-card" style="background: linear-gradient(135deg, #3b82f6, #2563eb); color: white;">
+                <h3 style="color: white;">📊 Toplam Gelir</h3>
+                <div class="number" id="total-revenue" style="color: white;">₺0,00</div>
+                <small style="color: rgba(255,255,255,0.9);">Ödenen + Bekleyen</small>
             </div>
         </div>
 
