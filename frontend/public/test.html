@@ -451,40 +451,6 @@
                 });
                 console.log('✅ Login button event listener added');
             }
-            
-            // Demo buttons event listeners  
-            const adminBtnText = Array.from(document.querySelectorAll('button')).find(btn => btn.textContent.includes('Admin'));
-            const techBtnText = Array.from(document.querySelectorAll('button')).find(btn => btn.textContent.includes('Teknisyen'));
-            const customerBtnText = Array.from(document.querySelectorAll('button')).find(btn => btn.textContent.includes('Müşteri'));
-            
-            console.log('🔍 Demo buttons found:', {adminBtnText, techBtnText, customerBtnText});
-            
-            if (adminBtnText) {
-                adminBtnText.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    console.log('🔧 Admin demo button clicked');
-                    quickLogin('admin@demo.com', 'admin123');
-                });
-                console.log('✅ Admin demo button event listener added');
-            }
-            
-            if (techBtnText) {
-                techBtnText.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    console.log('🔧 Technician demo button clicked');
-                    quickLogin('teknisyen@demo.com', 'teknisyen123');
-                });
-                console.log('✅ Technician demo button event listener added');
-            }
-            
-            if (customerBtnText) {
-                customerBtnText.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    console.log('🔧 Customer demo button clicked');
-                    quickLogin('musteri@demo.com', 'musteri123');
-                });
-                console.log('✅ Customer demo button event listener added');
-            }
         });
     </script>
 </body>
