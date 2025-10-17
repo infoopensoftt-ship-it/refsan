@@ -509,7 +509,7 @@ frontend:
     implemented: true
     working: false
     file: "frontend/public/admin.html"
-    stuck_count: 3
+    stuck_count: 4
     priority: "high"
     needs_retesting: false
     status_history:
@@ -528,6 +528,9 @@ frontend:
       - working: false
         agent: "testing"
         comment: "❌ CRITICAL LOGIN SYSTEM FAILURE: Comprehensive testing reveals that the login system in test.html is completely broken. Login button clicks generate no network requests, indicating JavaScript login function is not working. Console shows 'quickLogin is not defined' error. Even when obtaining valid authentication tokens via direct API calls, the admin.html page still redirects back to test.html due to authentication check failures. All window.* functions (filterRepairsByStatus, updateRepairStatus, loadRepairs, loadStats, openModal, closeModal) are properly defined in admin.html code, but cannot be tested due to inability to access the admin panel. The authentication system needs to be fixed before stat cards and repair status buttons can be properly tested."
+      - working: false
+        agent: "testing"
+        comment: "❌ REPAIR MODAL CANNOT OPEN - MISSING ONCLICK HANDLERS: Comprehensive testing reveals repair items have NO onclick handlers, preventing repair detail modal from opening. Investigation shows: 1) Repair items display correctly (5 items found) 2) All window.* functions are properly defined and available 3) Repair items have onclick attribute = None (no click handlers assigned) 4) Cannot access repair status buttons because modal won't open 5) filterRepairsByStatus function works but stat cards not clickable due to visibility issues. ROOT CAUSE: Repair items are missing onclick handlers in the HTML generation code. The updateRepairStatus functionality is correctly implemented but inaccessible due to missing click handlers on repair items."
 
   - task: "Stat cards functionality"
     implemented: true
