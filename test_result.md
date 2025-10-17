@@ -509,7 +509,7 @@ frontend:
     implemented: true
     working: false
     file: "frontend/public/admin.html"
-    stuck_count: 1
+    stuck_count: 2
     priority: "high"
     needs_retesting: false
     status_history:
@@ -522,12 +522,15 @@ frontend:
       - working: false
         agent: "testing"
         comment: "❌ CRITICAL ISSUE FOUND: Stat cards and repair status buttons are NOT working due to JavaScript function scoping issues. Functions openModal, closeModal, and loadRepairs are defined as regular functions but called from HTML onclick handlers, causing 'function is not defined' errors. Admin panel loads with stats (1 total, 1 pending, 0 approved, 0 completed) but clicking stat cards fails with 'filterRepairsByStatus is not defined' error. Repair detail modal doesn't open when clicking repair items. Functions updateRepairStatus and filterRepairsByStatus are correctly defined in window scope, but openModal/closeModal are not."
+      - working: false
+        agent: "testing"
+        comment: "❌ CRITICAL JAVASCRIPT SYNTAX ERRORS FOUND: After investigation, discovered major JavaScript syntax errors in admin.html preventing functions from being defined properly. Issues found: 1) Incomplete createUser function missing function body and closing brace (lines 1813-1823) 2) Incomplete deleteAllCustomers function with duplicate/misplaced code causing syntax errors 3) These syntax errors prevent window.updateRepairStatus and window.filterRepairsByStatus from being properly defined. Fixed syntax errors by completing createUser function and removing duplicate code. However, functions are still not being recognized in window scope, indicating deeper structural issues in the JavaScript code."
 
   - task: "Stat cards functionality"
     implemented: true
     working: false
     file: "frontend/public/admin.html"
-    stuck_count: 1
+    stuck_count: 2
     priority: "high"
     needs_retesting: false
     status_history:
@@ -537,12 +540,15 @@ frontend:
       - working: false
         agent: "testing"
         comment: "❌ CONFIRMED: Stat cards are not working. JavaScript error 'filterRepairsByStatus is not defined' occurs when clicking stat cards. The function is defined as window.filterRepairsByStatus but there appears to be a scoping issue preventing it from being accessible to onclick handlers. Admin panel loads correctly with stats showing (1 total repair, 1 pending, 0 approved, 0 completed) but filtering functionality is broken."
+      - working: false
+        agent: "testing"
+        comment: "❌ PERSISTENT ISSUE: After fixing JavaScript syntax errors, stat cards still show 'filterRepairsByStatus is not defined' error when clicked. The function is defined as window.filterRepairsByStatus in the code but is not being recognized at runtime. Admin panel loads successfully with 6 stat cards visible and clickable, but the filtering functionality fails due to function not being available in window scope. This indicates a deeper issue with the JavaScript execution context or script loading order."
 
   - task: "Repair status buttons functionality"
     implemented: true
     working: false
     file: "frontend/public/admin.html"
-    stuck_count: 1
+    stuck_count: 2
     priority: "high"
     needs_retesting: false
     status_history:
@@ -552,6 +558,9 @@ frontend:
       - working: false
         agent: "testing"
         comment: "❌ CONFIRMED: Repair status buttons are not working because repair detail modal doesn't open. When clicking on repair items, the modal remains hidden (display: none) due to JavaScript errors. Functions openModal and closeModal are defined as regular functions instead of window.openModal/window.closeModal, causing 'function is not defined' errors when called from HTML onclick handlers. This prevents the repair detail modal from opening, making status buttons inaccessible."
+      - working: false
+        agent: "testing"
+        comment: "❌ PERSISTENT ISSUE: After fixing JavaScript syntax errors, repair status buttons are still not accessible because the underlying JavaScript functions (loadRepairs, openModal, closeModal, loadStats, filterRepairsByStatus, updateRepairStatus) are not being defined in window scope at runtime. Even though these functions are correctly defined as window.functionName in the code, they are not available when the page loads. Created demo data successfully but no repair items appear in the UI, suggesting the loadRepairs function is not working. This indicates a fundamental issue with JavaScript execution or script loading."
 
 metadata:
   created_by: "main_agent"
