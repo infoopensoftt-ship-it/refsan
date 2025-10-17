@@ -1131,10 +1131,17 @@
                 document.getElementById('total-technicians').textContent = stats.total_technicians || 0;
                 
                 // Update payment stats
-                const totalPayment = stats.total_payment || 0;
-                document.getElementById('total-payment').textContent = `₺${totalPayment.toLocaleString('tr-TR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-                document.getElementById('paid-repairs').textContent = stats.paid_repairs || 0;
-                document.getElementById('unpaid-repairs').textContent = stats.unpaid_repairs || 0;
+                const totalPaidAmount = stats.total_paid_amount || 0;
+                const totalUnpaidAmount = stats.total_unpaid_amount || 0;
+                const totalRevenue = totalPaidAmount + totalUnpaidAmount;
+                const paidCount = stats.paid_repairs || 0;
+                const unpaidCount = stats.unpaid_repairs || 0;
+                
+                document.getElementById('total-paid-amount').textContent = `₺${totalPaidAmount.toLocaleString('tr-TR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                document.getElementById('total-unpaid-amount').textContent = `₺${totalUnpaidAmount.toLocaleString('tr-TR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                document.getElementById('total-revenue').textContent = `₺${totalRevenue.toLocaleString('tr-TR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                document.getElementById('paid-count-text').textContent = `${paidCount} İşlem Ödendi`;
+                document.getElementById('unpaid-count-text').textContent = `${unpaidCount} İşlem Bekliyor`;
                 
                 // Update system management stats
                 const systemTotalRepairs = document.getElementById('system-total-repairs');
