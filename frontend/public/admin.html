@@ -1180,24 +1180,6 @@
             }
         }
 
-                        <div class="clickable-customer" onclick="openCustomerDetail('${customer.id}')" style="cursor: pointer;">
-                            <strong>${customer.full_name}</strong><br>
-                            <small>📞 ${customer.phone}</small>
-                            ${customer.email ? `<br><small>📧 ${customer.email}</small>` : ''}
-                            ${customer.address ? `<br><small>📍 ${customer.address}</small>` : ''}
-                            ${customer.created_by_technician ? `<br><small>🔧 Teknisyen eklemesi</small>` : ''}
-                            <br><small>📅 ${new Date(customer.created_at).toLocaleDateString('tr-TR')}</small>
-                        </div>
-                        <div style="margin-top: 0.5rem;">
-                            <button class="delete-btn" onclick="event.stopPropagation(); deleteCustomer('${customer.id}', '${customer.full_name}')">🗑️ Sil</button>
-                        </div>
-                    </div>
-                `).join('');
-            } catch (error) {
-                console.error('Customers load error:', error);
-                document.getElementById('modal-customer-list').innerHTML = '<div style="color: red;">Müşteriler yüklenemedi</div>';
-            }
-        }
 
         async function openCustomerDetail(customerId) {
             try {
