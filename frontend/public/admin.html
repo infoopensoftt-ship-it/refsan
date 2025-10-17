@@ -811,18 +811,23 @@
         // Check authentication
         window.onload = async function() {
             if (!authToken) {
+                console.error('No token found');
                 alert('Giriş gerekli!');
                 window.location.href = 'test.html';
                 return;
             }
 
             try {
+                console.log('Verifying token with /api/auth/me...');
                 const response = await fetch(`${API_BASE}/auth/me`, {
                     headers: { 'Authorization': `Bearer ${authToken}` }
                 });
 
+                console.log('Auth response status:', response.status);
+
                 if (response.ok) {
                     currentUser = await response.json();
+                    console.log('Current user:', currentUser);
                     if (currentUser.role !== 'admin') {
                         alert('Admin yetkisi gerekli!');
                         window.location.href = 'test.html';
@@ -837,10 +842,14 @@
                     // Auto-refresh notifications every 30 seconds
                     setInterval(loadNotificationCount, 30000);
                 } else {
+                    console.error('Auth verification failed:', response.status, response.statusText);
                     throw new Error('Auth failed');
                 }
             } catch (error) {
+                console.error('Auth error:', error);
                 alert('Giriş doğrulanamadı!');
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
                 window.location.href = 'test.html';
             }
         };
