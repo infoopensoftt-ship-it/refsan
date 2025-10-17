@@ -346,6 +346,8 @@
                 
                 const data = await response.json();
                 console.log('Response data:', data);
+                console.log('User role:', data.user ? data.user.role : 'NO USER');
+                console.log('Access token exists:', !!data.access_token);
                 
                 if (data.access_token && data.user) {
                     showResult(`✅ ${data.user.full_name} olarak giriş yapıldı! (${data.user.role})`);
@@ -354,20 +356,30 @@
                     localStorage.setItem('token', data.access_token);
                     localStorage.setItem('user', JSON.stringify(data.user));
                     
+                    console.log('✅ Token stored, redirecting in 1 second...');
+                    console.log('User role for switch:', data.user.role);
+                    
                     // Redirect based on role
                     setTimeout(() => {
+                        console.log('🚀 Redirecting now for role:', data.user.role);
                         switch(data.user.role) {
                             case 'admin':
+                                console.log('Redirecting to admin.html');
                                 window.location.href = 'admin.html';
                                 break;
                             case 'teknisyen':
+                                console.log('Redirecting to teknisyen.html');
                                 window.location.href = 'teknisyen.html';
                                 break;
                             case 'musteri':
+                                console.log('Redirecting to musteri.html');
                                 window.location.href = 'musteri.html';
                                 break;
+                            default:
+                                console.error('Unknown role:', data.user.role);
+                                showResult('❌ Bilinmeyen rol: ' + data.user.role, false);
                         }
-                    }, 500);
+                    }, 1000);
                 } else {
                     showResult('❌ Giriş başarısız: Geçersiz yanıt formatı', false);
                 }
