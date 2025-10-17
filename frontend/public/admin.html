@@ -1939,18 +1939,6 @@
             }
         };
 
-                });
-                
-                if (filteredRepairs.length === 0) {
-                    alert(`${selectedDate} tarihinde arıza kaydı bulunamadı`);
-                }
-                
-                loadRepairs(filteredRepairs);
-            } catch (error) {
-                alert('❌ Hata: ' + error.message);
-            }
-        }
-
         window.clearDateFilter = function() {
             document.getElementById('repair-date-filter').value = '';
             loadRepairs();
