@@ -527,8 +527,7 @@ metadata:
   run_ui: false
 
 test_plan:
-  current_focus:
-    - "Repair status update with popup and auto-move"
+  current_focus: []
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
