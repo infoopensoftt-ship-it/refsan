@@ -356,30 +356,33 @@
                     localStorage.setItem('token', data.access_token);
                     localStorage.setItem('user', JSON.stringify(data.user));
                     
-                    console.log('✅ Token stored, redirecting in 1 second...');
+                    // Verify storage
+                    const storedToken = localStorage.getItem('token');
+                    console.log('✅ Token stored successfully:', storedToken ? 'YES' : 'NO');
                     console.log('User role for switch:', data.user.role);
                     
-                    // Redirect based on role
+                    // Redirect based on role with slight delay to ensure localStorage is written
                     setTimeout(() => {
                         console.log('🚀 Redirecting now for role:', data.user.role);
+                        let targetPage = '';
                         switch(data.user.role) {
                             case 'admin':
-                                console.log('Redirecting to admin.html');
-                                window.location.href = 'admin.html';
+                                targetPage = 'admin.html';
                                 break;
                             case 'teknisyen':
-                                console.log('Redirecting to teknisyen.html');
-                                window.location.href = 'teknisyen.html';
+                                targetPage = 'teknisyen.html';
                                 break;
                             case 'musteri':
-                                console.log('Redirecting to musteri.html');
-                                window.location.href = 'musteri.html';
+                                targetPage = 'musteri.html';
                                 break;
                             default:
                                 console.error('Unknown role:', data.user.role);
                                 showResult('❌ Bilinmeyen rol: ' + data.user.role, false);
+                                return;
                         }
-                    }, 1000);
+                        console.log('Navigating to:', targetPage);
+                        window.location.replace(targetPage);
+                    }, 1500);
                 } else {
                     showResult('❌ Giriş başarısız: Geçersiz yanıt formatı', false);
                 }
