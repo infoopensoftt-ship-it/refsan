@@ -475,16 +475,29 @@
         </div>
     </div>
 
-    <!-- Sticky Navigation Menu -->
-    <div class="sticky-nav" id="sticky-nav">
-        <button class="nav-btn" onclick="scrollToTop()">📊 Dashboard</button>
-        <button class="nav-btn" onclick="scrollToSection('repair-management')">🔧 Arıza Yönetimi</button>
-        <button class="nav-btn" onclick="scrollToSection('user-management')">👥 Kullanıcı Yönetimi</button>
-        <button class="nav-btn" onclick="scrollToSection('customer-management')">👤 Müşteri Yönetimi</button>
-        <button class="nav-btn" onclick="scrollToSection('stock-management')">📦 Stok Yönetimi</button>
-        <button class="nav-btn" onclick="scrollToSection('system-management')">⚙️ Sistem Yönetimi</button>
+    <!-- Left Sidebar Navigation -->
+    <div class="sidebar" id="sidebar">
+        <button class="nav-btn active" onclick="showSection('dashboard')">
+            <span>📊</span> Dashboard
+        </button>
+        <button class="nav-btn" onclick="showSection('repair-management')">
+            <span>🔧</span> Arıza Yönetimi
+        </button>
+        <button class="nav-btn" onclick="showSection('user-management')">
+            <span>👥</span> Kullanıcı Yönetimi
+        </button>
+        <button class="nav-btn" onclick="showSection('customer-management')">
+            <span>👤</span> Müşteri Yönetimi
+        </button>
+        <button class="nav-btn" onclick="showSection('stock-management')">
+            <span>📦</span> Stok Yönetimi
+        </button>
+        <button class="nav-btn" onclick="showSection('system-management')">
+            <span>⚙️</span> Sistem Yönetimi
+        </button>
     </div>
 
+    <div class="main-content">
     <div class="container">
         <!-- Stats -->
         <div class="stats-grid">
