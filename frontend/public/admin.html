@@ -2211,6 +2211,24 @@
             // Scroll to top of main content
             document.querySelector('.main-content').scrollTo({ top: 0, behavior: 'smooth' });
         };
+        
+        // Toggle sidebar visibility
+        window.toggleSidebar = function() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('main-content');
+            const toggleBtn = document.getElementById('sidebar-toggle');
+            
+            sidebar.classList.toggle('hidden');
+            mainContent.classList.toggle('expanded');
+            toggleBtn.classList.toggle('hidden');
+            
+            // Change button icon
+            if (sidebar.classList.contains('hidden')) {
+                toggleBtn.innerHTML = '▶';
+            } else {
+                toggleBtn.innerHTML = '◀';
+            }
+        };
 
         window.clearDateFilter = function() {
             document.getElementById('repair-date-filter').value = '';
