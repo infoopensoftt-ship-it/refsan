@@ -1835,7 +1835,7 @@
             }
         }
 
-        async function filterRepairsByDate() {
+        window.filterRepairsByDate = async function() {
             const selectedDate = document.getElementById('repair-date-filter').value;
             if (!selectedDate) {
                 alert('Lütfen bir tarih seçin');
