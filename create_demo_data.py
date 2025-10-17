@@ -60,22 +60,34 @@ def create_demo_customers():
     
     customers = [
         {
-            "full_name": "Mehmet Yılmaz",
-            "email": "mehmet@email.com",
-            "phone": "05551111111",
-            "address": "İstanbul, Kadıköy"
+            "full_name": "Ege Karo Ltd. Şti.",
+            "email": "info@egekaro.com",
+            "phone": "0274 789 0123",
+            "address": "Kütahya Organize Sanayi Bölgesi, Kütahya"
         },
         {
-            "full_name": "Zeynep Demir",
-            "email": "zeynep@email.com", 
-            "phone": "05552222222",
-            "address": "Ankara, Çankaya"
+            "full_name": "Manisa Seramik A.Ş.",
+            "email": "servis@manisaseramik.com", 
+            "phone": "0236 234 5678",
+            "address": "Manisa Akhisar Organize Sanayi, Manisa"
         },
         {
-            "full_name": "Can Özkan",
-            "email": "can@email.com",
-            "phone": "05553333333", 
-            "address": "İzmir, Konak"
+            "full_name": "Çanakkale Çini Atölyesi",
+            "email": "atolye@canakkalecini.com",
+            "phone": "0286 456 7890", 
+            "address": "Çanakkale Merkez, Çanakkale"
+        },
+        {
+            "full_name": "Bursa Fayans Fabrikası",
+            "email": "teknik@bursafayans.com",
+            "phone": "0224 567 8901",
+            "address": "Bursa İnegöl Organize Sanayi, Bursa"
+        },
+        {
+            "full_name": "İzmir Porselen San. Tic.",
+            "email": "bakim@izmirporselen.com",
+            "phone": "0232 678 9012",
+            "address": "İzmir Kemalpaşa Organize Sanayi, İzmir"
         }
     ]
     
