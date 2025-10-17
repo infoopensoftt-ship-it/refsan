@@ -525,10 +525,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Delete all repairs endpoint"
-    - "Delete all customers endpoint"
-    - "System reset endpoint"
-    - "Demo data creation endpoint"
+    - "Repair status update with popup and auto-move"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
