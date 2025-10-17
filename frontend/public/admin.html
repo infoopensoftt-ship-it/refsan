@@ -1864,7 +1864,7 @@
             }
         }
 
-        function clearDateFilter() {
+        window.clearDateFilter = function() {
             document.getElementById('repair-date-filter').value = '';
             loadRepairs();
         }
