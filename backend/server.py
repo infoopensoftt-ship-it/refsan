@@ -795,6 +795,7 @@ async def create_repair_request(
     
     repair_dict = repair_data.dict()
     repair_dict["customer_name"] = customer["full_name"]
+    repair_dict["customer_phone"] = customer.get("phone", "")
     repair_dict["status"] = RepairStatus.PENDING
     repair_dict["created_by"] = current_user.id
     
