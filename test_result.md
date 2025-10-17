@@ -536,7 +536,7 @@ frontend:
     implemented: true
     working: false
     file: "frontend/public/admin.html"
-    stuck_count: 3
+    stuck_count: 4
     priority: "high"
     needs_retesting: false
     status_history:
@@ -552,6 +552,9 @@ frontend:
       - working: false
         agent: "testing"
         comment: "❌ CANNOT TEST DUE TO LOGIN FAILURE: Extensive testing confirms that window.filterRepairsByStatus function is properly defined in admin.html code (line 1919). However, cannot perform live testing of stat cards functionality because the login system in test.html is completely broken. Login button clicks generate no network requests, and even with valid API tokens, admin.html redirects back to test.html. The stat cards code appears correct but requires functional authentication to test properly. Root cause: Login system failure preventing access to admin panel."
+      - working: false
+        agent: "testing"
+        comment: "❌ STAT CARDS NOT CLICKABLE - VISIBILITY ISSUE: Comprehensive testing reveals stat cards are not clickable due to visibility/layout issues. Investigation shows: 1) Login system now working correctly 2) Admin panel loads with correct stats (5 repairs, 8 customers, 1 technician) 3) window.filterRepairsByStatus function is properly defined and available 4) Stat cards have correct onclick attributes but Playwright reports 'Element is not visible' when attempting to click 5) filterRepairsByStatus function works when called directly and filters repairs correctly (3 visible items after filtering). ROOT CAUSE: Stat cards have CSS/layout issues preventing clicks, possibly due to overlapping elements or z-index problems."
 
   - task: "Repair status buttons functionality"
     implemented: true
