@@ -1838,6 +1838,7 @@
                     const result = await response.json();
                     alert(`✅ Arıza durumu güncellendi: ${statusNames[newStatus]}\n${result.sms_sent ? '📱 SMS bildirimi gönderildi' : '⚠️ SMS gönderilemedi (telefon numarası yok)'}`);
                     loadRepairs(); // Refresh list
+                    loadStats(); // Update stat cards
                 } else {
                     const error = await response.json();
                     alert('❌ ' + (error.detail || 'Durum güncellenemedi'));
