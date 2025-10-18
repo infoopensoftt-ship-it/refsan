@@ -242,20 +242,25 @@ async def send_sms(phone: str, message: str):
         return {"success": False, "message": f"SMS error: {str(e)}"}
 
 # Utility functions
-def verify_password(plain_password, hashed_password):
+def verify_password(plain_password: str, hashed_password: str) -> bool:
     """Verify a password against its hash using bcrypt"""
-    # Bcrypt has a 72 byte limit
-    plain_password = plain_password[:72] if isinstance(plain_password, str) else plain_password
     try:
-        return pwd_context.verify(plain_password, hashed_password)
-    except ValueError:
+        # Bcrypt requires bytes
+        if isinstance(plain_password, str):
+            plain_password = plain_password.encode('utf-8')
+        if isinstance(hashed_password, str):
+            hashed_password = hashed_password.encode('utf-8')
+        return bcrypt.checkpw(plain_password, hashed_password)
+    except Exception as e:
+        logging.error(f"Password verification error: {e}")
         return False
 
-def get_password_hash(password):
+def get_password_hash(password: str) -> str:
     """Hash a password using bcrypt"""
-    # Bcrypt has a 72 byte limit
-    password = password[:72] if isinstance(password, str) else password
-    return pwd_context.hash(password)
+    if isinstance(password, str):
+        password = password.encode('utf-8')
+    hashed = bcrypt.hashpw(password, bcrypt.gensalt(rounds=12))
+    return hashed.decode('utf-8')
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()
