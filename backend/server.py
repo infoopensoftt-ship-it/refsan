@@ -4,6 +4,7 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
+from passlib.context import CryptContext
 import os
 import logging
 from pathlib import Path
@@ -18,6 +19,10 @@ import shutil
 from enum import Enum
 
 ROOT_DIR = Path(__file__).parent
+load_dotenv(ROOT_DIR / ".env")
+
+# Password hashing
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 load_dotenv(ROOT_DIR / '.env')
 
 # MongoDB connection
