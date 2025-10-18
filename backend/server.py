@@ -868,6 +868,15 @@ async def create_repair_request(
     repair_dict["customer_phone"] = customer.get("phone", "")
     repair_dict["status"] = RepairStatus.PENDING
     repair_dict["created_by"] = current_user.id
+    repair_dict["maintenance_reminder_sent"] = False
+    
+    # Bakım ise vade tarihi hesapla
+    if repair_data.service_type == ServiceType.MAINTENANCE and repair_data.maintenance_year:
+        from dateutil.relativedelta import relativedelta
+        maintenance_due_date = datetime.now(timezone.utc) + relativedelta(years=repair_data.maintenance_year)
+        repair_dict["maintenance_due_date"] = maintenance_due_date
+    else:
+        repair_dict["maintenance_due_date"] = None
     
     repair_obj = RepairRequest(**repair_dict)
     
@@ -877,14 +886,19 @@ async def create_repair_request(
     repair_mongo_dict["updated_at"] = repair_mongo_dict["updated_at"].isoformat()
     if repair_mongo_dict["completed_at"]:
         repair_mongo_dict["completed_at"] = repair_mongo_dict["completed_at"].isoformat()
+    if repair_mongo_dict["maintenance_due_date"]:
+        repair_mongo_dict["maintenance_due_date"] = repair_mongo_dict["maintenance_due_date"].isoformat()
     
     await db.repairs.insert_one(repair_mongo_dict)
     
     # Create notification for new repair
+    service_type_text = "Bakım" if repair_data.service_type == ServiceType.MAINTENANCE else "Hizmet"
+    maintenance_info = f" ({repair_data.maintenance_year} yıllık)" if repair_data.service_type == ServiceType.MAINTENANCE else ""
+    
     await create_notification(
         notification_type="new_repair",
-        title="Yeni Arıza Kaydı",
-        message=f"{repair_obj.customer_name} için yeni arıza: {repair_obj.device_type} {repair_obj.brand}",
+        title=f"Yeni {service_type_text} Kaydı",
+        message=f"{repair_obj.customer_name} için yeni {service_type_text.lower()}{maintenance_info}: {repair_obj.device_type} {repair_obj.brand}",
         related_id=repair_obj.id,
         extra_data={
             "repair_id": repair_obj.id,
