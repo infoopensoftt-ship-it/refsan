@@ -341,7 +341,8 @@ async def register(user_data: UserCreate):
     # Hash password
     hashed_password = get_password_hash(user_data.password)
     
-    # Create user with pending approval
+    # Create user - Admin kullanıcıları otomatik onaylı, diğerleri onay bekler
+    is_admin = user_data.role == "admin"
     user_dict = {
         "id": str(uuid.uuid4()),
         "email": user_data.email,
@@ -350,19 +351,21 @@ async def register(user_data: UserCreate):
         "role": user_data.role,  # Varsayılan rol, admin değiştirebilir
         "requested_role": user_data.role,  # Kullanıcının talep ettiği rol
         "is_active": True,
-        "is_approved": False,  # Admin onayı bekliyor
+        "is_approved": is_admin,  # Admin ise otomatik onaylı, diğerleri onay bekler
         "hashed_password": hashed_password,
         "created_at": datetime.now(timezone.utc).isoformat()
     }
     
     await db.users.insert_one(user_dict)
     
-    # Admin bildirimi oluştur
-    admins = await db.users.find({"role": "admin", "is_approved": True}).to_list(100)
-    role_display = {
-        "admin": "Admin",
-        "teknisyen": "Teknisyen",
-        "musteri": "Müşteri"
+    # Admin bildirimi oluştur (sadece admin olmayan kullanıcılar için)
+    if not is_admin:
+        admins = await db.users.find({"role": "admin"}).to_list(100)
+        role_display = {
+            "admin": "Admin",
+            "teknisyen": "Teknisyen",
+            "musteri": "Müşteri"
+        }
     }
     for admin in admins:
         notification = {
