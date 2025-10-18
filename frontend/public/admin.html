@@ -1370,6 +1370,148 @@
             }
         }
 
+        // Bekleyen kullanıcıları yükle
+        async function loadPendingUsers() {
+            try {
+                const response = await fetch(`${API_BASE}/users/pending`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                const pendingUsers = await response.json();
+                
+                const listDiv = document.getElementById('pending-users-list');
+                
+                if (pendingUsers.length === 0) {
+                    listDiv.innerHTML = '<div style="text-align: center; padding: 2rem; color: #64748b;">✅ Bekleyen kullanıcı yok</div>';
+                    return;
+                }
+                
+                listDiv.innerHTML = pendingUsers.map(user => `
+                    <div class="list-item" style="border-left: 4px solid #f59e0b; background: #fffbeb;">
+                        <div style="margin-bottom: 1rem;">
+                            <strong style="font-size: 1.1em;">${user.full_name}</strong>
+                            <br>
+                            <small style="color: #64748b;">📧 ${user.email}</small>
+                            ${user.phone ? `<br><small style="color: #64748b;">📞 ${user.phone}</small>` : ''}
+                            <br>
+                            <small style="color: #64748b;">📅 Kayıt: ${new Date(user.created_at).toLocaleDateString('tr-TR', {year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'})}</small>
+                            <br>
+                            <span style="background: #fef3c7; color: #92400e; padding: 4px 8px; border-radius: 4px; font-size: 0.85em; margin-top: 0.5rem; display: inline-block;">
+                                🎯 Talep Edilen Rol: ${user.requested_role === 'admin' ? 'Admin' : user.requested_role === 'teknisyen' ? 'Teknisyen' : 'Müşteri'}
+                            </span>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem; align-items: center;">
+                            <label style="font-weight: 600; margin-right: 0.5rem;">Rol Seç:</label>
+                            <select id="role-select-${user.id}" style="padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 4px;">
+                                <option value="admin" ${user.requested_role === 'admin' ? 'selected' : ''}>Admin</option>
+                                <option value="teknisyen" ${user.requested_role === 'teknisyen' ? 'selected' : ''}>Teknisyen</option>
+                                <option value="musteri" ${user.requested_role === 'musteri' ? 'selected' : ''}>Müşteri</option>
+                            </select>
+                            <button class="btn" onclick="approveUser('${user.id}', '${user.full_name}')" style="background: #10b981;">
+                                ✅ Onayla
+                            </button>
+                            <button class="btn" onclick="rejectUser('${user.id}', '${user.full_name}')" style="background: #ef4444;">
+                                ❌ Reddet
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+                
+                // Badge güncelle
+                updatePendingUsersBadge();
+            } catch (error) {
+                console.error('Pending users load error:', error);
+                document.getElementById('pending-users-list').innerHTML = '<div style="color: red;">❌ Bekleyen kullanıcılar yüklenemedi</div>';
+            }
+        }
+
+        // Kullanıcıyı onayla
+        async function approveUser(userId, userName) {
+            const selectedRole = document.getElementById(`role-select-${userId}`).value;
+            
+            if (!confirm(`${userName} kullanıcısını ${selectedRole} rolü ile onaylamak istediğinize emin misiniz?`)) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/users/${userId}/approve`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        user_id: userId,
+                        approved: true,
+                        role: selectedRole
+                    })
+                });
+                
+                if (response.ok) {
+                    alert(`✅ ${userName} başarıyla onaylandı!`);
+                    loadPendingUsers();
+                    loadDashboard(); // Dashboard'u güncelle
+                } else {
+                    const error = await response.json();
+                    alert(`❌ Hata: ${error.detail || 'Onaylama başarısız'}`);
+                }
+            } catch (error) {
+                console.error('Approve user error:', error);
+                alert('❌ Kullanıcı onaylanırken hata oluştu');
+            }
+        }
+
+        // Kullanıcıyı reddet
+        async function rejectUser(userId, userName) {
+            if (!confirm(`${userName} kullanıcısının kaydını reddetmek istediğinize emin misiniz? Bu işlem geri alınamaz!`)) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/users/${userId}/approve`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        user_id: userId,
+                        approved: false
+                    })
+                });
+                
+                if (response.ok) {
+                    alert(`✅ ${userName} kullanıcısı reddedildi ve silindi`);
+                    loadPendingUsers();
+                } else {
+                    const error = await response.json();
+                    alert(`❌ Hata: ${error.detail || 'Reddetme başarısız'}`);
+                }
+            } catch (error) {
+                console.error('Reject user error:', error);
+                alert('❌ Kullanıcı reddedilirken hata oluştu');
+            }
+        }
+
+        // Bekleyen kullanıcı sayısını güncelle
+        async function updatePendingUsersBadge() {
+            try {
+                const response = await fetch(`${API_BASE}/users/pending/count`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                const data = await response.json();
+                
+                const badge = document.getElementById('pending-users-badge');
+                if (data.count > 0) {
+                    badge.textContent = data.count;
+                    badge.style.display = 'inline-block';
+                } else {
+                    badge.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Update badge error:', error);
+            }
+        }
+
         async function loadCustomersInModal() {
             try {
                 const response = await fetch(`${API_BASE}/customers`, {
