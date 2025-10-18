@@ -67,6 +67,10 @@ class PaymentStatus(str, Enum):
     PAID = "odendi"
     PARTIAL = "kismi"
 
+class ServiceType(str, Enum):
+    MAINTENANCE = "bakim"  # Yıllık bakım
+    SERVICE = "hizmet"     # Tek seferlik hizmet
+
 # Models
 class User(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
