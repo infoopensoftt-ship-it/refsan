@@ -1657,7 +1657,7 @@ async def create_first_admin():
                 "id": str(uuid.uuid4()),
                 "email": "admin@demo.com",
                 "full_name": "Admin User",
-                "hashed_password": pwd_context.hash("admin123"),
+                "hashed_password": get_password_hash("admin123"),
                 "role": "admin",
                 "phone": "05551234567",
                 "is_active": True,
