@@ -366,19 +366,18 @@ async def register(user_data: UserCreate):
             "teknisyen": "Teknisyen",
             "musteri": "Müşteri"
         }
-    }
-    for admin in admins:
-        notification = {
-            "id": str(uuid.uuid4()),
-            "user_id": admin["id"],
-            "type": "new_user_registration",
-            "title": "Yeni Kullanıcı Kaydı",
-            "message": f"{user_data.full_name} ({user_data.email}) sisteme kayıt oldu. Rol talebi: {role_display.get(user_data.role, user_data.role)}",
-            "read": False,
-            "created_at": datetime.now(timezone.utc).isoformat(),
-            "data": {"new_user_id": user_dict["id"]}
-        }
-        await db.notifications.insert_one(notification)
+        for admin in admins:
+            notification = {
+                "id": str(uuid.uuid4()),
+                "user_id": admin["id"],
+                "type": "new_user_registration",
+                "title": "Yeni Kullanıcı Kaydı",
+                "message": f"{user_data.full_name} ({user_data.email}) sisteme kayıt oldu. Rol talebi: {role_display.get(user_data.role, user_data.role)}",
+                "read": False,
+                "created_at": datetime.now(timezone.utc).isoformat(),
+                "data": {"new_user_id": user_dict["id"]}
+            }
+            await db.notifications.insert_one(notification)
     
     # Return user without password
     user_dict_response = {k: v for k, v in user_dict.items() if k != "hashed_password"}
