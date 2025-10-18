@@ -1192,6 +1192,72 @@ async def update_user_role(
     return {"success": True, "message": f"User role updated to {role}"}
 
 
+@api_router.get("/users/pending", response_model=List[User])
+async def get_pending_users(current_user: User = Depends(require_role([UserRole.ADMIN]))):
+    """Get all pending users waiting for approval"""
+    users = await db.users.find({"is_approved": False}, {"hashed_password": 0}).to_list(1000)
+    result = []
+    for user in users:
+        if isinstance(user.get("created_at"), str):
+            user["created_at"] = datetime.fromisoformat(user["created_at"])
+        result.append(User(**user))
+    return result
+
+
+@api_router.post("/users/{user_id}/approve")
+async def approve_user(
+    user_id: str,
+    approval_data: UserApproval,
+    current_user: User = Depends(require_role([UserRole.ADMIN]))
+):
+    """Approve or reject user registration"""
+    # Find user
+    user = await db.users.find_one({"id": user_id})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    if user.get("is_approved", False):
+        raise HTTPException(status_code=400, detail="User already approved/rejected")
+    
+    if approval_data.approved:
+        # Onay ver
+        update_data = {
+            "is_approved": True,
+            "role": approval_data.role if approval_data.role else user.get("requested_role", UserRole.CUSTOMER)
+        }
+        
+        await db.users.update_one(
+            {"id": user_id},
+            {"$set": update_data}
+        )
+        
+        # Kullanıcıya bildirim gönder
+        notification = {
+            "id": str(uuid.uuid4()),
+            "user_id": user_id,
+            "type": "account_approved",
+            "title": "Hesap Onaylandı",
+            "message": f"Hesabınız onaylandı! Rol: {update_data['role']}. Artık giriş yapabilirsiniz.",
+            "read": False,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+        await db.notifications.insert_one(notification)
+        
+        return {"success": True, "message": "User approved successfully", "role": update_data['role']}
+    else:
+        # Reddet - kullanıcıyı sil
+        await db.users.delete_one({"id": user_id})
+        
+        return {"success": True, "message": "User registration rejected and removed"}
+
+
+@api_router.get("/users/pending/count")
+async def get_pending_users_count(current_user: User = Depends(require_role([UserRole.ADMIN]))):
+    """Get count of pending users"""
+    count = await db.users.count_documents({"is_approved": False})
+    return {"count": count}
+
+
 # Technician report endpoint
 @api_router.get("/reports/technician/{technician_id}")
 async def get_technician_report(
