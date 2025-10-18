@@ -1777,6 +1777,8 @@ async def create_first_admin():
                 "role": "admin",
                 "phone": "05551234567",
                 "is_active": True,
+                "is_approved": True,  # Admin onaylı başlar
+                "requested_role": "admin",
                 "created_at": datetime.now(timezone.utc)
             }
             
