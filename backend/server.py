@@ -129,6 +129,10 @@ class RepairRequest(BaseModel):
     description: str
     priority: Priority
     status: RepairStatus
+    service_type: ServiceType = ServiceType.SERVICE  # Bakım veya Hizmet
+    maintenance_year: Optional[int] = None  # Bakımsa kaç yıl (1, 2, 3 vs)
+    maintenance_due_date: Optional[datetime] = None  # Bakım vadesi
+    maintenance_reminder_sent: bool = False  # Hatırlatma gönderildi mi
     assigned_technician_id: Optional[str] = None
     assigned_technician_name: Optional[str] = None
     images: List[str] = []
