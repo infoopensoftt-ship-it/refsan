@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Refsan Technical Türkiye - Müşteri Panel</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: #e5e7eb;
+            min-height: 100vh;
+        }
+        .header {
+            background: linear-gradient(135deg, #f97316, #ea580c);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(249, 115, 22, 0.2);
+        }
+        .header h1 { font-size: 1.5em; }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .header-logo {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+        }
+        .header-text {
+            display: flex;
+            flex-direction: column;
+        }
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .logout-btn:hover { background: rgba(255,255,255,0.3); }
+        .container { 
+            max-width: 1000px; 
+            margin: 0 auto; 
+            padding: 2rem;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.3s;
+        }
+        .stat-card:hover { transform: translateY(-5px); }
+        .stat-card h3 { color: #64748b; font-size: 0.9em; margin-bottom: 0.5rem; }
+        .stat-card .number { font-size: 2em; font-weight: bold; }
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        .section h2 { 
+            color: #1e293b; 
+            margin-bottom: 1rem; 
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #f1f5f9;
+        }
+        .btn {
+            background: linear-gradient(135deg, #f97316, #ea580c);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 5px;
+            font-weight: 500;
+            transition: all 0.3s;
+            font-size: 1rem;
+        }
+        .btn:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 8px 20px rgba(249, 115, 22, 0.3);
+            background: linear-gradient(135deg, #ea580c, #c2410c);
+        }
+        .btn-secondary { background: linear-gradient(135deg, #64748b, #475569); }
+        .form-group {
+            margin: 1rem 0;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #374151;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+        .repair-list {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        .list-item {
+            background: #f8fafc;
+            padding: 1rem;
+            margin: 0.75rem 0;
+            border-radius: 8px;
+            border-left: 4px solid #059669;
+            transition: all 0.3s;
+        }
+        .list-item:hover {
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+        .modal-content {
+            background: white;
+            margin: 3% auto;
+            padding: 2rem;
+            border-radius: 12px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .close {
+            float: right;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+        }
+        .close:hover { color: #333; }
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: bold;
+            margin: 2px;
+        }
+        .status-pending { background: #fef3c7; color: #92400e; }
+        .status-in-progress { background: #dbeafe; color: #1e40af; }
+        .status-completed { background: #dcfce7; color: #166534; }
+        .priority-low { background: #f3f4f6; color: #374151; }
+        .priority-medium { background: #fef3c7; color: #92400e; }
+        .priority-high { background: #fed7d7; color: #c53030; }
+        .priority-urgent { background: #fecaca; color: #991b1b; }
+        .welcome-section {
+            background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+            border: 1px solid #059669;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #64748b;
+        }
+        .empty-state img {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-left">
+            <img src="refsan-logo.png" alt="Refsan Technical Logo" class="header-logo">
+            <div class="header-text">
+                <h1>Refsan Technical Türkiye</h1>
+                <small id="user-info">Yükleniyor...</small>
+            </div>
+        </div>
+        <button class="logout-btn" onclick="logout()">Çıkış Yap</button>
+    </div>
+
+    <div class="container">
+        <!-- Welcome Section -->
+        <div class="welcome-section">
+            <h2 style="color: #065f46; margin-bottom: 1rem;">Hoş Geldiniz!</h2>
+            <p style="color: #ea580c; margin-bottom: 1.5rem;">Refsan Technical Türkiye seramik makineleri teknik servis sistemine hoş geldiniz. Arıza kayıtlarınızı takip edebilir, yeni başvurular yapabilirsiniz.</p>
+            <button class="btn" onclick="openModal('repairModal')" style="font-size: 1.1em; padding: 12px 30px;">
+                🆕 Yeni Arıza Başvurusu
+            </button>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Toplam Başvurularım</h3>
+                <div class="number" id="my-repairs" style="color: #059669;">-</div>
+            </div>
+            <div class="stat-card">
+                <h3>Bekleyen İşler</h3>
+                <div class="number" id="my-pending" style="color: #d97706;">-</div>
+            </div>
+        </div>
+
+        <!-- My Repairs -->
+        <div class="section">
+            <h2>Arıza Başvurularım</h2>
+            <div id="repair-list" class="repair-list">
+                <div class="empty-state">
+                    <div style="font-size: 48px; margin-bottom: 1rem;">⏳</div>
+                    <div>Arızalar yükleniyor...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Repair Modal -->
+    <div id="repairModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('repairModal')">&times;</span>
+            <h2>Yeni Arıza Başvurusu</h2>
+            <p style="color: #64748b; margin-bottom: 1.5rem;">Seramik makinenizle ilgili arıza bilgilerini detaylı bir şekilde belirtin.</p>
+            
+            <form onsubmit="createRepair(event)">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label>Makine Türü *</label>
+                        <select id="device-type" required>
+                            <option value="">Seçiniz...</option>
+                            <option value="Pres Makinesi">Pres Makinesi</option>
+                            <option value="Sırlama Makinesi">Sırlama Makinesi</option>
+                            <option value="Fırın">Fırın</option>
+                            <option value="Kurutma Fırını">Kurutma Fırını</option>
+                            <option value="Paketleme Makinesi">Paketleme Makinesi</option>
+                            <option value="Konveyör Sistemi">Konveyör Sistemi</option>
+                            <option value="Karışım Makinesi">Karışım Makinesi</option>
+                            <option value="Diğer">Diğer</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Marka *</label>
+                        <select id="brand" required>
+                            <option value="">Seçiniz...</option>
+                            <option value="Sacmi">Sacmi</option>
+                            <option value="System">System</option>
+                            <option value="LB">LB</option>
+                            <option value="Siti B&T">Siti B&T</option>
+                            <option value="Ancora">Ancora</option>
+                            <option value="Keda">Keda</option>
+                            <option value="BMR">BMR</option>
+                            <option value="Diğer">Diğer</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Model *</label>
+                    <input type="text" id="model" placeholder="Makine modeli (ör: RS-1000, SP-250...)" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Arıza Açıklaması *</label>
+                    <textarea id="description" rows="4" placeholder="Lütfen arizayı detaylı bir şekilde açıklayın: 
+• Ne zaman başladı?
+• Hangi durumlarda oluyor?
+• Hata kodları var mı?
+• Ses, titreşim vb. başka belirtiler?" required></textarea>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label>Aciliyet Durumu</label>
+                        <select id="priority">
+                            <option value="dusuk">Düşük - Normal çalışma</option>
+                            <option value="orta" selected>Orta - Hafif sorun</option>
+                            <option value="yuksek">Yüksek - Çalışmıyor</option>
+                            <option value="acil">Acil - Üretim durdu</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Tahmini Bütçe (₺)</label>
+                        <input type="number" id="cost-estimate" placeholder="Opsiyonel">
+                    </div>
+                </div>
+                
+                <div style="background: #f0f9ff; padding: 1rem; border-radius: 6px; margin: 1rem 0;">
+                    <p style="font-size: 0.9em; color: #0c4a6e;">
+                        <strong>Not:</strong> Başvurunuz alındıktan sonra teknik ekibimiz size en kısa sürede dönüş yapacaktır. 
+                        Acil durumlar için ayrıca telefon ile iletişime geçebilirsiniz.
+                    </p>
+                </div>
+                
+                <button type="submit" class="btn" style="width: 100%; font-size: 1.1em; padding: 15px;">
+                    📤 Arıza Başvurusunu Gönder
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Repair Detail Modal -->
+    <div id="detailModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('detailModal')">&times;</span>
+            <h2>🔍 Arıza Detayları</h2>
+            <div id="repair-details"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.origin + '/api';
+        let authToken = localStorage.getItem('token');
+        let currentUser = null;
+        let repairs = [];
+
+        window.onload = async function() {
+            if (!authToken) {
+                alert('Giriş gerekli!');
+                window.location.href = 'test.html';
+                return;
+            }
+
+            try {
+                // First check localStorage
+                const storedUser = localStorage.getItem('user');
+                if (storedUser) {
+                    try {
+                        currentUser = JSON.parse(storedUser);
+                        if (currentUser.role !== 'musteri') {
+                            alert('Müşteri yetkisi gerekli!');
+                            window.location.href = 'test.html';
+                            return;
+                        }
+                        document.getElementById('user-info').textContent = `Hoş geldin, ${currentUser.full_name}`;
+                        await ensureCustomerExists();
+                        await loadStats();
+                        await loadMyRepairs();
+                        return;
+                    } catch (e) {
+                        console.error('Error parsing user:', e);
+                    }
+                }
+                
+                // Fallback to API verification
+                const response = await fetch(`${API_BASE}/auth/me`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+
+                if (response.ok) {
+                    currentUser = await response.json();
+                    localStorage.setItem('user', JSON.stringify(currentUser));
+                    if (currentUser.role !== 'musteri') {
+                        alert('Müşteri yetkisi gerekli!');
+                        window.location.href = 'test.html';
+                        return;
+                    }
+                    document.getElementById('user-info').textContent = `Hoş geldin, ${currentUser.full_name}`;
+                    await ensureCustomerExists();
+                    await loadStats();
+                    await loadMyRepairs();
+                } else {
+                    throw new Error('Auth failed');
+                }
+            } catch (error) {
+                alert('Giriş doğrulanamadı!');
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                window.location.href = 'test.html';
+            }
+        };
+
+        async function ensureCustomerExists() {
+            // Customer record will be auto-created when needed via /api/customers/me
+            // No need to pre-create it
+            return true;
+        }
+
+        async function loadStats() {
+            try {
+                const response = await fetch(`${API_BASE}/stats`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                const stats = await response.json();
+                
+                document.getElementById('my-repairs').textContent = stats.my_repairs || 0;
+                document.getElementById('my-pending').textContent = stats.my_pending || 0;
+            } catch (error) {
+                console.error('Stats load error:', error);
+                document.getElementById('my-repairs').textContent = '0';
+                document.getElementById('my-pending').textContent = '0';
+            }
+        }
+
+        async function loadMyRepairs() {
+            try {
+                const response = await fetch(`${API_BASE}/repairs`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                repairs = await response.json();
+                displayRepairs();
+            } catch (error) {
+                console.error('Repairs load error:', error);
+                document.getElementById('repair-list').innerHTML = '<div class="empty-state"><div style="font-size: 48px; color: #ef4444;">❌</div><div>Arızalar yüklenirken hata oluştu</div></div>';
+            }
+        }
+
+        function displayRepairs() {
+            const listDiv = document.getElementById('repair-list');
+            
+            if (repairs.length === 0) {
+                listDiv.innerHTML = `
+                    <div class="empty-state">
+                        <div style="font-size: 48px; margin-bottom: 1rem;">📋</div>
+                        <h3 style="color: #475569; margin-bottom: 0.5rem;">Henüz arıza başvurunuz bulunmuyor</h3>
+                        <p style="color: #64748b; margin-bottom: 1.5rem;">İlk arıza başvurunuzu yaparak teknik destek alabilirsiniz.</p>
+                        <button class="btn" onclick="openModal('repairModal')">🆕 Arıza Başvurusu Yap</button>
+                    </div>
+                `;
+                return;
+            }
+
+            listDiv.innerHTML = repairs.map(repair => {
+                const statusClass = `status-${repair.status.replace('ç', 'c').replace('ı', 'i')}`;
+                const priorityClass = `priority-${repair.priority}`;
+                const statusText = getStatusText(repair.status);
+                const priorityText = getPriorityText(repair.priority);
+                
+                return `
+                    <div class="list-item">
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.75rem;">
+                            <div>
+                                <strong style="font-size: 1.1em; color: #1e293b;">${repair.device_type} - ${repair.brand} ${repair.model}</strong>
+                            </div>
+                            <button class="btn" style="padding: 6px 12px; font-size: 0.85em;" onclick="showRepairDetails('${repair.id}')">
+                                👁️ Detay
+                            </button>
+                        </div>
+                        
+                        <div style="margin-bottom: 0.75rem;">
+                            <span class="status-badge ${statusClass}">${statusText}</span>
+                            <span class="status-badge ${priorityClass}">${priorityText}</span>
+                        </div>
+                        
+                        <div style="background: white; padding: 0.75rem; border-radius: 6px; margin: 0.75rem 0; border-left: 3px solid #059669;">
+                            <p style="font-size: 0.95em; color: #374151; line-height: 1.5;">${repair.description}</p>
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.5rem; font-size: 0.9em; color: #64748b;">
+                            <div>${new Date(repair.created_at).toLocaleDateString('tr-TR')}</div>
+                            ${repair.assigned_technician_name ? `<div>${repair.assigned_technician_name}</div>` : '<div>Teknisyen atanmadı</div>'}
+                            ${repair.cost_estimate ? `<div>💰 Tahmini: ₺${repair.cost_estimate}</div>` : ''}
+                            ${repair.final_cost ? `<div>💳 Tutar: ₺${repair.final_cost}</div>` : ''}
+                        </div>
+                        
+                        ${repair.payment_status ? `
+                            <div style="margin-top: 0.5rem;">
+                                <span class="status-badge" style="background: ${getPaymentColor(repair.payment_status)}; color: white;">
+                                    ${getPaymentText(repair.payment_status)}
+                                </span>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function showRepairDetails(repairId) {
+            const repair = repairs.find(r => r.id === repairId);
+            if (!repair) return;
+
+            const detailsDiv = document.getElementById('repair-details');
+            detailsDiv.innerHTML = `
+                <div style="space-y: 1rem;">
+                    <div style="background: #f8fafc; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                        <h4 style="color: #1e293b; margin-bottom: 0.5rem;">Makine Bilgileri</h4>
+                        <p><strong>Tür:</strong> ${repair.device_type}</p>
+                        <p><strong>Marka:</strong> ${repair.brand}</p>
+                        <p><strong>Model:</strong> ${repair.model}</p>
+                    </div>
+                    
+                    <div style="background: #f8fafc; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                        <h4 style="color: #1e293b; margin-bottom: 0.5rem;">Arıza Detayları</h4>
+                        <p style="line-height: 1.6;">${repair.description}</p>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0;">
+                        <div style="background: #f8fafc; padding: 1rem; border-radius: 8px;">
+                            <h5 style="color: #64748b;">Durum</h5>
+                            <span class="status-badge status-${repair.status.replace('ç', 'c').replace('ı', 'i')}">${getStatusText(repair.status)}</span>
+                        </div>
+                        <div style="background: #f8fafc; padding: 1rem; border-radius: 8px;">
+                            <h5 style="color: #64748b;">Öncelik</h5>
+                            <span class="status-badge priority-${repair.priority}">${getPriorityText(repair.priority)}</span>
+                        </div>
+                    </div>
+                    
+                    ${repair.assigned_technician_name ? `
+                        <div style="background: #dbeafe; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                            <h4 style="color: #1e40af; margin-bottom: 0.5rem;">👨‍Atanan Teknisyen</h4>
+                            <p>${repair.assigned_technician_name}</p>
+                        </div>
+                    ` : `
+                        <div style="background: #fef3c7; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                            <h4 style="color: #92400e; margin-bottom: 0.5rem;">Teknisyen Ataması</h4>
+                            <p>Henüz teknisyen atanmamış, en kısa sürede atanacaktır.</p>
+                        </div>
+                    `}
+                    
+                    ${(repair.cost_estimate || repair.final_cost) ? `
+                        <div style="background: #ecfdf5; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                            <h4 style="color: #065f46; margin-bottom: 0.5rem;">💰 Maliyet Bilgileri</h4>
+                            ${repair.cost_estimate ? `<p><strong>Tahmini Tutar:</strong> ₺${repair.cost_estimate}</p>` : ''}
+                            ${repair.final_cost ? `<p><strong>Final Tutar:</strong> ₺${repair.final_cost}</p>` : ''}
+                            ${repair.payment_status ? `<p><strong>Ödeme Durumu:</strong> <span class="status-badge" style="background: ${getPaymentColor(repair.payment_status)}; color: white;">${getPaymentText(repair.payment_status)}</span></p>` : ''}
+                        </div>
+                    ` : ''}
+                    
+                    <div style="background: #f3f4f6; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                        <h4 style="color: #374151; margin-bottom: 0.5rem;">Tarih Bilgileri</h4>
+                        <p><strong>Başvuru Tarihi:</strong> ${new Date(repair.created_at).toLocaleString('tr-TR')}</p>
+                        ${repair.completed_at ? `<p><strong>Tamamlanma Tarihi:</strong> ${new Date(repair.completed_at).toLocaleString('tr-TR')}</p>` : ''}
+                    </div>
+                </div>
+            `;
+            
+            openModal('detailModal');
+        }
+
+        async function createRepair(event) {
+            event.preventDefault();
+            
+            try {
+                // Get own customer record (auto-creates if not exists)
+                const customerResponse = await fetch(`${API_BASE}/customers/me`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                
+                if (!customerResponse.ok) {
+                    alert('❌ Müşteri kaydı alınamadı. Lütfen tekrar giriş yapın.');
+                    return;
+                }
+                
+                const selfCustomer = await customerResponse.json();
+
+                const repairData = {
+                    customer_id: selfCustomer.id,
+                    device_type: document.getElementById('device-type').value,
+                    brand: document.getElementById('brand').value,
+                    model: document.getElementById('model').value,
+                    description: document.getElementById('description').value,
+                    priority: document.getElementById('priority').value,
+                    cost_estimate: parseFloat(document.getElementById('cost-estimate').value) || null,
+                    images: []
+                };
+
+                const response = await fetch(`${API_BASE}/repairs`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}` 
+                    },
+                    body: JSON.stringify(repairData)
+                });
+
+                if (response.ok) {
+                    alert('✅ Arıza başvurunuz başarıyla kaydedildi!\n\nTeknik ekibimiz en kısa sürede başvurunuzu değerlendirecek ve size geri dönüş yapacaktır.');
+                    closeModal('repairModal');
+                    event.target.reset();
+                    await loadMyRepairs();
+                    await loadStats();
+                } else {
+                    const error = await response.json();
+                    alert('❌ Başvuru kaydedilemedi: ' + (error.detail || 'Bilinmeyen hata'));
+                }
+            } catch (error) {
+                alert('❌ Başvuru kaydedilirken hata oluştu: ' + error.message);
+            }
+        }
+
+        function getStatusText(status) {
+            const statusMap = {
+                'beklemede': 'Beklemede',
+                'isleniyor': 'İşleniyor', 
+                'tamamlandi': 'Tamamlandı',
+                'iptal': 'İptal Edildi'
+            };
+            return statusMap[status] || status;
+        }
+
+        function getPriorityText(priority) {
+            const priorityMap = {
+                'dusuk': 'Düşük',
+                'orta': 'Orta',
+                'yuksek': 'Yüksek', 
+                'acil': 'Acil'
+            };
+            return priorityMap[priority] || priority;
+        }
+
+        function getPaymentText(status) {
+            const paymentMap = {
+                'beklemede': 'Ödeme Bekliyor',
+                'kismi': 'Kısmi Ödendi',
+                'odendi': 'Ödendi'
+            };
+            return paymentMap[status] || status;
+        }
+
+        function getPaymentColor(status) {
+            const colorMap = {
+                'beklemede': '#d97706',
+                'kismi': '#ea580c',
+                'odendi': '#059669'
+            };
+            return colorMap[status] || '#64748b';
+        }
+
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'test.html';
+        }
+    </script>
+</body>
+</html>
