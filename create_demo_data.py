@@ -4,8 +4,10 @@ Demo verileri oluşturma scripti
 """
 import requests
 import json
+import os
 
-BACKEND_URL = "https://refsan-repairs.preview.emergentagent.com/api"
+# Use environment variable or default to localhost
+BACKEND_URL = os.environ.get('BACKEND_URL', 'http://localhost:3000/api')
 
 def create_demo_users():
     """Demo kullanıcıları oluştur"""
