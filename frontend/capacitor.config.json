@@ -1,5 +1,10 @@
 {
   "appId": "com.refsan.technical",
   "appName": "Refsan Technical",
-  "webDir": "build"
+  "webDir": "build",
+  "bundledWebRuntime": false,
+  "server": {
+    "androidScheme": "https",
+    "cleartext": true
+  }
 }
