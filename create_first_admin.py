@@ -16,7 +16,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 async def create_first_admin():
     # Get MongoDB connection from environment
     mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
-    db_name = os.environ.get('DB_NAME', 'refsan_repairs')
+    db_name = os.environ.get('DB_NAME', 'test')  # Emergent uses 'test' as default
     
     print(f"Connecting to MongoDB...")
     print(f"URL: {mongo_url}")
