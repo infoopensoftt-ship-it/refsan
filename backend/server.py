@@ -241,11 +241,12 @@ async def send_sms(phone: str, message: str):
 
 # Utility functions
 def verify_password(plain_password, hashed_password):
-    """Verify a password against its hash using SHA-256 + salt"""
-    return get_password_hash(plain_password) == hashed_password
+    """Verify a password against its hash using bcrypt"""
+    return pwd_context.verify(plain_password, hashed_password)
 
 def get_password_hash(password):
-    """Hash a password using SHA-256 + salt"""
+    """Hash a password using bcrypt"""
+    return pwd_context.hash(password)
     salt = SECRET_KEY.encode('utf-8')
     return base64.b64encode(
         hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), salt, 100000)
