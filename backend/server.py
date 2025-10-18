@@ -341,17 +341,43 @@ async def register(user_data: UserCreate):
     # Hash password
     hashed_password = get_password_hash(user_data.password)
     
-    # Create user
-    user_dict = user_data.dict(exclude={"password"})
-    user_obj = User(**user_dict)
+    # Create user with pending approval
+    user_dict = {
+        "id": str(uuid.uuid4()),
+        "email": user_data.email,
+        "full_name": user_data.full_name,
+        "phone": user_data.phone,
+        "role": user_data.role,  # Varsayılan rol, admin değiştirebilir
+        "requested_role": user_data.role,  # Kullanıcının talep ettiği rol
+        "is_active": True,
+        "is_approved": False,  # Admin onayı bekliyor
+        "hashed_password": hashed_password,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
     
-    # Prepare for MongoDB
-    user_mongo_dict = user_obj.dict()
-    user_mongo_dict["created_at"] = user_mongo_dict["created_at"].isoformat()
-    user_mongo_dict["password"] = hashed_password
+    await db.users.insert_one(user_dict)
     
-    await db.users.insert_one(user_mongo_dict)
-    return user_obj
+    # Admin bildirimi oluştur
+    admins = await db.users.find({"role": "admin", "is_approved": True}).to_list(100)
+    for admin in admins:
+        notification = {
+            "id": str(uuid.uuid4()),
+            "user_id": admin["id"],
+            "type": "new_user_registration",
+            "title": "Yeni Kullanıcı Kaydı",
+            "message": f"{user_data.full_name} ({user_data.email}) sisteme kayıt oldu. Rol talebi: {user_data.role}",
+            "read": False,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "data": {"new_user_id": user_dict["id"]}
+        }
+        await db.notifications.insert_one(notification)
+    
+    # Return user without password
+    user_dict_response = {k: v for k, v in user_dict.items() if k != "hashed_password"}
+    if isinstance(user_dict_response.get("created_at"), str):
+        user_dict_response["created_at"] = datetime.fromisoformat(user_dict_response["created_at"])
+    
+    return User(**user_dict_response)
 
 @api_router.post("/auth/login", response_model=Token)
 async def login(user_credentials: UserLogin):
