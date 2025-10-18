@@ -1355,6 +1355,76 @@ async def get_technician_report(
     }
 
 # Stats endpoint
+@api_router.get("/maintenance/check-reminders")
+async def check_maintenance_reminders(current_user: User = Depends(require_role([UserRole.ADMIN]))):
+    """Check for upcoming maintenance and send reminders (Admin only)"""
+    from dateutil.relativedelta import relativedelta
+    
+    # 30 gün sonrası için bakımları bul
+    thirty_days_later = datetime.now(timezone.utc) + relativedelta(days=30)
+    
+    # Bakım vadesi yaklaşan ve hatırlatma gönderilmemiş kayıtları bul
+    upcoming_maintenances = await db.repairs.find({
+        "service_type": "bakim",
+        "maintenance_due_date": {"$lte": thirty_days_later.isoformat()},
+        "maintenance_reminder_sent": False,
+        "status": "tamamlandi"  # Sadece tamamlanmış bakımlar için
+    }).to_list(100)
+    
+    reminders_sent = 0
+    
+    for repair in upcoming_maintenances:
+        customer = await db.customers.find_one({"id": repair["customer_id"]})
+        if not customer:
+            continue
+        
+        # Vade tarihini hesapla
+        due_date = datetime.fromisoformat(repair["maintenance_due_date"])
+        days_until_due = (due_date - datetime.now(timezone.utc)).days
+        
+        # Admin'e bildirim
+        admin_notification = {
+            "id": str(uuid.uuid4()),
+            "user_id": current_user.id,  # Admin için
+            "type": "maintenance_reminder",
+            "title": "Yıllık Bakım Yaklaşıyor",
+            "message": f"{customer['full_name']} müşterisinin yıllık bakımı {days_until_due} gün sonra yapılmalı. Cihaz: {repair['device_type']} {repair['brand']}",
+            "read": False,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "data": {"repair_id": repair["id"], "customer_id": customer["id"]}
+        }
+        await db.notifications.insert_one(admin_notification)
+        
+        # Müşteri kullanıcısını bul (varsa)
+        customer_user = await db.users.find_one({"email": customer.get("email")})
+        if customer_user:
+            customer_notification = {
+                "id": str(uuid.uuid4()),
+                "user_id": customer_user["id"],
+                "type": "maintenance_reminder",
+                "title": "Yıllık Bakım Hatırlatması",
+                "message": f"Merhaba {customer['full_name']}, cihazınızın ({repair['device_type']} {repair['brand']}) yıllık bakımı {days_until_due} gün sonra gerekiyor. Lütfen bizimle iletişime geçin.",
+                "read": False,
+                "created_at": datetime.now(timezone.utc).isoformat(),
+                "data": {"repair_id": repair["id"]}
+            }
+            await db.notifications.insert_one(customer_notification)
+        
+        # Hatırlatma gönderildi olarak işaretle
+        await db.repairs.update_one(
+            {"id": repair["id"]},
+            {"$set": {"maintenance_reminder_sent": True}}
+        )
+        
+        reminders_sent += 1
+    
+    return {
+        "success": True,
+        "reminders_sent": reminders_sent,
+        "checked_count": len(upcoming_maintenances)
+    }
+
+
 @api_router.get("/stats")
 async def get_stats(current_user: User = Depends(get_current_user)):
     if current_user.role == UserRole.ADMIN:
