@@ -359,13 +359,18 @@ async def register(user_data: UserCreate):
     
     # Admin bildirimi oluştur
     admins = await db.users.find({"role": "admin", "is_approved": True}).to_list(100)
+    role_display = {
+        "admin": "Admin",
+        "teknisyen": "Teknisyen",
+        "musteri": "Müşteri"
+    }
     for admin in admins:
         notification = {
             "id": str(uuid.uuid4()),
             "user_id": admin["id"],
             "type": "new_user_registration",
             "title": "Yeni Kullanıcı Kaydı",
-            "message": f"{user_data.full_name} ({user_data.email}) sisteme kayıt oldu. Rol talebi: {user_data.role}",
+            "message": f"{user_data.full_name} ({user_data.email}) sisteme kayıt oldu. Rol talebi: {role_display.get(user_data.role, user_data.role)}",
             "read": False,
             "created_at": datetime.now(timezone.utc).isoformat(),
             "data": {"new_user_id": user_dict["id"]}
