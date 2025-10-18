@@ -23,7 +23,9 @@ load_dotenv(ROOT_DIR / '.env')
 # MongoDB connection
 mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ['DB_NAME']]
+# Use Emergent's default database name or from env
+db_name = os.environ.get('DB_NAME', 'test')  # Emergent uses 'test' as default
+db = client[db_name]
 
 # Security setup
 SECRET_KEY = os.environ.get('SECRET_KEY', 'your-secret-key-change-in-production')
