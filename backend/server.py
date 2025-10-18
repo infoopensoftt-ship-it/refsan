@@ -1237,12 +1237,17 @@ async def approve_user(
         )
         
         # Kullanıcıya bildirim gönder
+        role_display = {
+            "admin": "Admin",
+            "teknisyen": "Teknisyen", 
+            "musteri": "Müşteri"
+        }
         notification = {
             "id": str(uuid.uuid4()),
             "user_id": user_id,
             "type": "account_approved",
             "title": "Hesap Onaylandı",
-            "message": f"Hesabınız onaylandı! Rol: {update_data['role']}. Artık giriş yapabilirsiniz.",
+            "message": f"Hesabınız onaylandı! Rol: {role_display.get(update_data['role'], update_data['role'])}. Artık giriş yapabilirsiniz.",
             "read": False,
             "created_at": datetime.now(timezone.utc).isoformat()
         }
