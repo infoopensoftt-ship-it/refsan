@@ -395,6 +395,13 @@ async def login(user_credentials: UserLogin):
             detail="Inactive user"
         )
     
+    # Onay kontrolü - Admin onayı bekleyen kullanıcılar giriş yapamaz
+    if not user.get("is_approved", False):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Your account is pending admin approval"
+        )
+    
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         data={"sub": user["email"]}, expires_delta=access_token_expires
