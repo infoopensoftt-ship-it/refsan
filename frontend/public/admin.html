@@ -2685,6 +2685,9 @@
                 }
             }
             
+            const serviceType = document.getElementById('repair-service-type').value;
+            const maintenanceYear = document.getElementById('repair-maintenance-year').value;
+            
             const repairData = {
                 customer_id: document.getElementById('repair-customer').value,
                 device_type: document.getElementById('repair-device-type').value,
@@ -2692,6 +2695,8 @@
                 model: document.getElementById('repair-model').value || null,
                 description: document.getElementById('repair-description').value,
                 priority: document.getElementById('repair-priority').value,
+                service_type: serviceType,
+                maintenance_year: serviceType === 'bakim' && maintenanceYear ? parseInt(maintenanceYear) : null,
                 cost_estimate: document.getElementById('repair-cost-estimate').value || null,
                 assigned_technician_id: document.getElementById('repair-technician').value || null,
                 images: uploadedFiles
