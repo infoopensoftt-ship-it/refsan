@@ -247,10 +247,6 @@ def verify_password(plain_password, hashed_password):
 def get_password_hash(password):
     """Hash a password using bcrypt"""
     return pwd_context.hash(password)
-    salt = SECRET_KEY.encode('utf-8')
-    return base64.b64encode(
-        hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), salt, 100000)
-    ).decode('utf-8')
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()
