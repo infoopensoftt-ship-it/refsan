@@ -3118,6 +3118,30 @@
                 alert('❌ Hata: ' + error.message);
             }
         }
+        
+        // Bakım hatırlatmalarını kontrol et
+        async function checkMaintenanceReminders() {
+            if (!confirm('30 gün içinde vadesi dolan bakımlar için hatırlatma gönderilecek. Devam edilsin mi?')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/maintenance/check-reminders`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    alert(`✅ Bakım hatırlatmaları kontrol edildi!\n\n${result.reminders_sent} hatırlatma gönderildi\n${result.checked_count} bakım kaydı kontrol edildi`);
+                    loadNotificationCount();
+                } else {
+                    const error = await response.json();
+                    alert('❌ ' + (error.detail || 'Hatırlatma kontrolü başarısız'));
+                }
+            } catch (error) {
+                alert('❌ Hata: ' + error.message);
+            }
+        }
     </script>
 </body>
 </html>
