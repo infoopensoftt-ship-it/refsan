@@ -400,9 +400,10 @@
             const email = document.getElementById('reg-email').value;
             const phone = document.getElementById('reg-phone').value;
             const password = document.getElementById('reg-password').value;
+            const role = document.getElementById('reg-role').value;
 
-            if (!full_name || !email || !password) {
-                showResult('Zorunlu alanları doldurun!', false);
+            if (!full_name || !email || !password || !role) {
+                showResult('❌ Tüm zorunlu alanları doldurun!', false);
                 return;
             }
 
@@ -414,24 +415,25 @@
                         full_name, 
                         email, 
                         phone, 
-                        role: 'musteri',  // Default role
+                        role,  // Kullanıcının seçtiği rol
                         password 
                     })
                 });
 
                 if (response.ok) {
                     const data = await response.json();
-                    showResult(`✅ Kayıt başarılı! Yönetici hesabınızı onaylayacaktır. Email: ${email}`);
+                    showResult(`✅ Kayıt başarılı! Yönetici onayından sonra giriş yapabilirsiniz.\n📧 Email: ${email}\n🎯 Talep Edilen Rol: ${role === 'teknisyen' ? 'Teknisyen' : 'Müşteri'}`);
                     
                     // Clear form and switch to login
                     document.getElementById('reg-name').value = '';
                     document.getElementById('reg-email').value = '';
                     document.getElementById('reg-phone').value = '';
                     document.getElementById('reg-password').value = '';
+                    document.getElementById('reg-role').value = '';
                     
                     // Fill login form
                     document.getElementById('login-email').value = email;
-                    setTimeout(() => showTab('login'), 2000);
+                    setTimeout(() => showTab('login'), 3000);
                 } else {
                     const error = await response.json();
                     showResult('❌ ' + (error.detail || 'Kayıt başarısız'), false);
