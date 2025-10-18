@@ -75,6 +75,8 @@ class User(BaseModel):
     role: UserRole
     phone: Optional[str] = None
     is_active: bool = True
+    is_approved: bool = False  # Admin onayı için
+    requested_role: Optional[UserRole] = None  # Kullanıcının talep ettiği rol
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class UserCreate(BaseModel):
