@@ -1644,9 +1644,6 @@ async def create_first_admin():
         user_count = await db.users.count_documents({})
         if user_count == 0:
             # Create default admin user
-            from passlib.context import CryptContext
-            pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-            
             admin_user = {
                 "id": str(uuid.uuid4()),
                 "email": "admin@demo.com",
