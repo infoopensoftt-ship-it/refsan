@@ -1083,6 +1083,7 @@
                         loadStats();
                         loadTechnicians();
                         loadNotificationCount();
+                        updatePendingUsersBadge(); // Bekleyen kullanıcı sayısını yükle
                         // loadStock(); // TODO: Will be added when stock page is ready
                         
                         // Verify token in background (optional)
@@ -1096,8 +1097,11 @@
                             console.warn('Background token verification error:', err);
                         });
                         
-                        // Auto-refresh notifications every 30 seconds
-                        setInterval(loadNotificationCount, 30000);
+                        // Auto-refresh notifications and pending users every 30 seconds
+                        setInterval(() => {
+                            loadNotificationCount();
+                            updatePendingUsersBadge();
+                        }, 30000);
                         return;
                         
                     } catch (parseError) {
