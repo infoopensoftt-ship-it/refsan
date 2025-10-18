@@ -83,8 +83,13 @@ class UserCreate(BaseModel):
     email: EmailStr
     password: str
     full_name: str
-    role: UserRole
+    role: UserRole  # Kullanıcının talep ettiği rol
     phone: Optional[str] = None
+
+class UserApproval(BaseModel):
+    user_id: str
+    approved: bool
+    role: Optional[UserRole] = None  # Admin onay verirken rolü belirleyecek
 
 class UserLogin(BaseModel):
     email: EmailStr
