@@ -338,7 +338,7 @@ async def register(user_data: UserCreate):
 @api_router.post("/auth/login", response_model=Token)
 async def login(user_credentials: UserLogin):
     user = await db.users.find_one({"email": user_credentials.email})
-    if not user or not verify_password(user_credentials.password, user["password"]):
+    if not user or not verify_password(user_credentials.password, user["hashed_password"]):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
@@ -361,7 +361,7 @@ async def login(user_credentials: UserLogin):
     if isinstance(user_data.get("created_at"), str):
         user_data["created_at"] = datetime.fromisoformat(user_data["created_at"])
     
-    user_obj = User(**{k: v for k, v in user_data.items() if k != "password"})
+    user_obj = User(**{k: v for k, v in user_data.items() if k != "hashed_password"})
     
     return Token(
         access_token=access_token,
