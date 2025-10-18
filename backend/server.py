@@ -1630,6 +1630,37 @@ async def get_low_stock_items(
 upload_dir = Path(ROOT_DIR) / "uploads"
 upload_dir.mkdir(exist_ok=True)
 app.mount("/uploads", StaticFiles(directory=str(upload_dir)), name="uploads")
+
+# Startup event to create first admin user
+@app.on_event("startup")
+async def create_first_admin():
+    """Create first admin user on startup if no users exist"""
+    try:
+        # Check if any users exist
+        user_count = await db.users.count_documents({})
+        if user_count == 0:
+            # Create default admin user
+            from passlib.context import CryptContext
+            pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+            
+            admin_user = {
+                "id": str(uuid.uuid4()),
+                "email": "admin@demo.com",
+                "full_name": "Admin User",
+                "hashed_password": pwd_context.hash("admin123"),
+                "role": "admin",
+                "phone": "05551234567",
+                "is_active": True,
+                "created_at": datetime.now(timezone.utc)
+            }
+            
+            await db.users.insert_one(admin_user)
+            logging.info("✅ First admin user created: admin@demo.com / admin123")
+        else:
+            logging.info(f"ℹ️ Database already has {user_count} users")
+    except Exception as e:
+        logging.error(f"❌ Error creating first admin user: {e}")
+
 @app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()
