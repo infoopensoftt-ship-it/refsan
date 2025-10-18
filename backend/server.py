@@ -252,10 +252,17 @@ async def send_sms(phone: str, message: str):
 # Utility functions
 def verify_password(plain_password, hashed_password):
     """Verify a password against its hash using bcrypt"""
-    return pwd_context.verify(plain_password, hashed_password)
+    # Bcrypt has a 72 byte limit
+    plain_password = plain_password[:72] if isinstance(plain_password, str) else plain_password
+    try:
+        return pwd_context.verify(plain_password, hashed_password)
+    except ValueError:
+        return False
 
 def get_password_hash(password):
     """Hash a password using bcrypt"""
+    # Bcrypt has a 72 byte limit
+    password = password[:72] if isinstance(password, str) else password
     return pwd_context.hash(password)
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
