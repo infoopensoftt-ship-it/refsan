@@ -2750,6 +2750,19 @@
         window.closeModal = function(modalId) {
             document.getElementById(modalId).style.display = 'none';
         }
+        
+        // Toggle maintenance year field based on service type
+        window.toggleMaintenanceYear = function() {
+            const serviceType = document.getElementById('repair-service-type').value;
+            const maintenanceYearGroup = document.getElementById('maintenance-year-group');
+            
+            if (serviceType === 'bakim') {
+                maintenanceYearGroup.style.display = 'block';
+            } else {
+                maintenanceYearGroup.style.display = 'none';
+                document.getElementById('repair-maintenance-year').value = '';
+            }
+        }
 
         function logout() {
             localStorage.removeItem('token');
