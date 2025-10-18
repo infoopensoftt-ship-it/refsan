@@ -333,7 +333,23 @@
                     console.error('HTTP error:', response.status, response.statusText);
                     const errorText = await response.text();
                     console.error('Error response:', errorText);
-                    showResult('❌ Giriş hatası: ' + response.status + ' - ' + errorText, false);
+                    
+                    // Özel hata mesajları
+                    let errorMessage = '❌ Giriş hatası';
+                    try {
+                        const errorData = JSON.parse(errorText);
+                        if (errorData.detail === 'Your account is pending admin approval') {
+                            errorMessage = '⏳ Hesabınız yönetici onayı bekliyor. Lütfen onay sonrası tekrar deneyin.';
+                        } else if (errorData.detail === 'Incorrect email or password') {
+                            errorMessage = '❌ E-posta veya şifre hatalı';
+                        } else {
+                            errorMessage = '❌ ' + errorData.detail;
+                        }
+                    } catch (e) {
+                        errorMessage = '❌ Giriş hatası: ' + response.status;
+                    }
+                    
+                    showResult(errorMessage, false);
                     return;
                 }
                 
