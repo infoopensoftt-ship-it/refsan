@@ -400,8 +400,8 @@ async def login(user_credentials: UserLogin):
             detail="Inactive user"
         )
     
-    # Onay kontrolü - Admin onayı bekleyen kullanıcılar giriş yapamaz
-    if not user.get("is_approved", False):
+    # Onay kontrolü - Admin kullanıcıları onaylanmış sayılır, diğerleri admin onayı bekler
+    if user.get("role") != "admin" and not user.get("is_approved", False):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Your account is pending admin approval"
