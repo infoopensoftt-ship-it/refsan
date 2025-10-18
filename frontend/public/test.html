@@ -439,7 +439,19 @@
 
                 if (response.ok) {
                     const data = await response.json();
-                    showResult(`✅ Kayıt başarılı! Yönetici onayından sonra giriş yapabilirsiniz.\n📧 Email: ${email}\n🎯 Talep Edilen Rol: ${role === 'teknisyen' ? 'Teknisyen' : 'Müşteri'}`);
+                    const roleNames = {
+                        'admin': 'Admin',
+                        'teknisyen': 'Teknisyen',
+                        'musteri': 'Müşteri'
+                    };
+                    
+                    let message = '';
+                    if (role === 'admin') {
+                        message = `✅ Kayıt başarılı! Admin olarak direkt giriş yapabilirsiniz.\n📧 Email: ${email}\n🎯 Rol: Admin`;
+                    } else {
+                        message = `✅ Kayıt başarılı! Yönetici onayından sonra giriş yapabilirsiniz.\n📧 Email: ${email}\n🎯 Talep Edilen Rol: ${roleNames[role]}`;
+                    }
+                    showResult(message);
                     
                     // Clear form and switch to login
                     document.getElementById('reg-name').value = '';
@@ -450,7 +462,7 @@
                     
                     // Fill login form
                     document.getElementById('login-email').value = email;
-                    setTimeout(() => showTab('login'), 3000);
+                    setTimeout(() => showTab('login'), role === 'admin' ? 2000 : 3000);
                 } else {
                     const error = await response.json();
                     showResult('❌ ' + (error.detail || 'Kayıt başarısız'), false);
