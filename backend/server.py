@@ -872,6 +872,15 @@ async def create_repair_request(
     repair_dict["created_by"] = current_user.id
     repair_dict["maintenance_reminder_sent"] = False
     
+    # Arıza tarihi varsa parse et
+    if repair_data.repair_date:
+        try:
+            repair_dict["repair_date"] = datetime.fromisoformat(repair_data.repair_date.replace('Z', '+00:00'))
+        except:
+            repair_dict["repair_date"] = datetime.now(timezone.utc)
+    else:
+        repair_dict["repair_date"] = datetime.now(timezone.utc)
+    
     # Bakım ise vade tarihi hesapla
     if repair_data.service_type == ServiceType.MAINTENANCE and repair_data.maintenance_year:
         from dateutil.relativedelta import relativedelta
@@ -890,6 +899,8 @@ async def create_repair_request(
         repair_mongo_dict["completed_at"] = repair_mongo_dict["completed_at"].isoformat()
     if repair_mongo_dict["maintenance_due_date"]:
         repair_mongo_dict["maintenance_due_date"] = repair_mongo_dict["maintenance_due_date"].isoformat()
+    if repair_mongo_dict["repair_date"]:
+        repair_mongo_dict["repair_date"] = repair_mongo_dict["repair_date"].isoformat()
     
     await db.repairs.insert_one(repair_mongo_dict)
     
