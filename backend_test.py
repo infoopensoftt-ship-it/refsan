@@ -1834,7 +1834,7 @@ class TechnicalServiceAPITester:
         """Test GET /api/spare-parts endpoint"""
         print(f"\n🔧 Testing Spare Parts Endpoint for: {self.current_user.get('role')}")
         
-        success, spare_parts = self.run_test(
+        success, spare_parts_response = self.run_test(
             "Get spare parts list",
             "GET",
             "spare-parts",
@@ -1844,9 +1844,13 @@ class TechnicalServiceAPITester:
         if not success:
             return False
         
+        # Extract parts array from response
+        spare_parts = spare_parts_response.get('parts', [])
+        total_count = spare_parts_response.get('total_count', 0)
+        
         # Verify we have 57 spare parts as expected
-        if len(spare_parts) != 57:
-            print(f"   ❌ Expected 57 spare parts, got {len(spare_parts)}")
+        if total_count != 57 or len(spare_parts) != 57:
+            print(f"   ❌ Expected 57 spare parts, got {len(spare_parts)} (total_count: {total_count})")
             return False
         
         print(f"   ✅ Retrieved {len(spare_parts)} spare parts")
