@@ -135,6 +135,11 @@ class RepairRequest(BaseModel):
     maintenance_due_date: Optional[datetime] = None  # Bakım vadesi
     maintenance_reminder_sent: bool = False  # Hatırlatma gönderildi mi
     repair_date: Optional[datetime] = None  # Arıza/hizmet tarihi
+    distance_category: Optional[str] = None  # Mesafe kategorisi: ankara_ici, 350km_kadar, 350km_uzeri
+    service_fee: Optional[float] = None  # Servis bedeli (Euro)
+    vat_rate: float = 0.20  # KDV oranı (%20)
+    vat_amount: Optional[float] = None  # KDV tutarı
+    total_with_vat: Optional[float] = None  # KDV dahil toplam
     assigned_technician_id: Optional[str] = None
     assigned_technician_name: Optional[str] = None
     images: List[str] = []
@@ -145,6 +150,7 @@ class RepairRequest(BaseModel):
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     completed_at: Optional[datetime] = None
+
 
 class RepairRequestCreate(BaseModel):
     customer_id: str
