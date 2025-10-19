@@ -2269,7 +2269,7 @@ class TechnicalServiceAPITester:
             )
         
         return (stats_success and customers_success and users_success and 
-                admin_panel_success and notifications_access_success and new_endpoints_success)
+                admin_panel_success and notifications_access_success and new_endpoints_success and spare_parts_success)
 
 def main():
     print("🚀 Starting Technical Service API Tests")
