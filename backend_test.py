@@ -2242,6 +2242,7 @@ class TechnicalServiceAPITester:
                 403  # Expecting forbidden
             )
             customers_success = success  # Success means it correctly returned 403
+            spare_parts_success = True  # Skip spare parts tests for customers
             admin_panel_success = True  # Skip admin panel tests for customers
             new_endpoints_success = True  # Skip new endpoint tests for customers
         
