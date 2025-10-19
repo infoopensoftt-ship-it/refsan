@@ -1035,6 +1035,34 @@
                         </small>
                     </div>
                     
+                    <!-- Yedek Parça Seçimi -->
+                    <div class="form-group">
+                        <label>Yedek Parçalar (İsteğe Bağlı)</label>
+                        <div style="position: relative;">
+                            <button type="button" id="toggle-spare-parts-btn" onclick="toggleSparePartsSelection()" 
+                                style="width: 100%; padding: 0.75rem; background: white; border: 2px solid #e5e7eb; border-radius: 8px; color: #1f2937; font-size: 1em; cursor: pointer; text-align: left; display: flex; justify-content: space-between; align-items: center;">
+                                <span id="selected-parts-summary">Yedek Parça Seçmek İçin Tıklayın</span>
+                                <span id="parts-arrow">▼</span>
+                            </button>
+                        </div>
+                        <div id="spare-parts-dropdown" style="display: none; margin-top: 0.5rem; max-height: 300px; overflow-y: auto; border: 2px solid #e5e7eb; border-radius: 8px; background: white; padding: 1rem;">
+                            <div style="margin-bottom: 0.5rem;">
+                                <input type="text" id="spare-parts-search" placeholder="Parça ara..." 
+                                    onkeyup="filterSpareParts()" 
+                                    style="width: 100%; padding: 0.5rem; border: 1px solid #e5e7eb; border-radius: 6px;">
+                            </div>
+                            <div id="spare-parts-list">
+                                <!-- Spare parts will be loaded here -->
+                            </div>
+                        </div>
+                        <div id="selected-parts-display" style="margin-top: 0.75rem; display: none;">
+                            <h5 style="margin: 0 0 0.5rem 0; color: #1f2937; font-size: 0.95em;">Seçilen Parçalar:</h5>
+                            <div id="selected-parts-container" style="display: flex; flex-direction: column; gap: 0.5rem;">
+                                <!-- Selected parts will be displayed here -->
+                            </div>
+                        </div>
+                    </div>
+                    
                     <!-- Toplam Maliyet Özeti -->
                     <div style="padding: 1rem; background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-radius: 12px; border: 2px solid #f59e0b; margin-top: 1rem;">
                         <h4 style="color: #92400e; margin: 0 0 0.75rem 0; font-size: 1.1em;">💰 Maliyet Özeti</h4>
