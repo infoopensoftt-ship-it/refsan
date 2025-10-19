@@ -191,8 +191,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Spare Parts Selection UI in Repair Form"
-    - "Spare Parts JavaScript Functions"
+    - "Model Selection Dropdown with Specific Models"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
