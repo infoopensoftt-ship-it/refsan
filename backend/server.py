@@ -883,7 +883,12 @@ async def create_repair_request(
         repair_dict["repair_date"] = datetime.now(timezone.utc)
     
     # Bakım ise vade tarihi hesapla
-    if repair_data.service_type == ServiceType.MAINTENANCE and repair_data.maintenance_year:
+    # service_type string olarak geliyor: "hizmet", "bakim" veya "hizmet,bakim"
+    service_type_str = str(repair_data.service_type)
+    has_maintenance = "bakim" in service_type_str.lower()
+    has_service = "hizmet" in service_type_str.lower()
+    
+    if has_maintenance and repair_data.maintenance_year:
         from dateutil.relativedelta import relativedelta
         maintenance_due_date = datetime.now(timezone.utc) + relativedelta(years=repair_data.maintenance_year)
         repair_dict["maintenance_due_date"] = maintenance_due_date
@@ -906,8 +911,13 @@ async def create_repair_request(
     await db.repairs.insert_one(repair_mongo_dict)
     
     # Create notification for new repair
-    service_type_text = "Bakım" if repair_data.service_type == ServiceType.MAINTENANCE else "Hizmet"
-    maintenance_info = f" ({repair_data.maintenance_year} yıllık)" if repair_data.service_type == ServiceType.MAINTENANCE else ""
+    service_parts = []
+    if has_service:
+        service_parts.append("Hizmet")
+    if has_maintenance:
+        service_parts.append("Bakım")
+    service_type_text = " ve ".join(service_parts) if service_parts else "Hizmet"
+    maintenance_info = f" ({repair_data.maintenance_year} yıllık)" if has_maintenance and repair_data.maintenance_year else ""
     
     await create_notification(
         notification_type="new_repair",
