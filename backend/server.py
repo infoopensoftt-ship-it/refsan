@@ -1503,6 +1503,34 @@ async def get_stats(current_user: User = Depends(get_current_user)):
             "my_pending": my_pending
         }
 
+# Exchange rate endpoint
+@api_router.get("/exchange-rate")
+async def get_exchange_rate():
+    """Get current EUR/TRY exchange rate"""
+    try:
+        # Try exchangerate-api.com (free, no API key needed)
+        response = requests.get("https://api.exchangerate-api.com/v4/latest/EUR", timeout=5)
+        if response.ok:
+            data = response.json()
+            eur_try_rate = data.get("rates", {}).get("TRY", 35.0)  # Default 35 if fails
+            return {
+                "success": True,
+                "currency": "EUR",
+                "rate": eur_try_rate,
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }
+    except Exception as e:
+        logging.error(f"Exchange rate API error: {e}")
+    
+    # Fallback: Return default rate
+    return {
+        "success": True,
+        "currency": "EUR",
+        "rate": 35.0,  # Default fallback rate
+        "updated_at": datetime.now(timezone.utc).isoformat(),
+        "note": "Using fallback rate"
+    }
+
 # Notifications endpoint
 @api_router.get("/notifications")
 async def get_notifications(
