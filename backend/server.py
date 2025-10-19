@@ -154,6 +154,7 @@ class RepairRequestCreate(BaseModel):
     priority: Priority = Priority.MEDIUM
     service_type: ServiceType = ServiceType.SERVICE  # Bakım veya Hizmet
     maintenance_year: Optional[int] = None  # Bakımsa yıl sayısı
+    repair_date: Optional[str] = None  # Arıza/hizmet tarihi (ISO format)
     cost_estimate: Optional[float] = None
     images: List[str] = []  # File URLs from upload endpoint
 
