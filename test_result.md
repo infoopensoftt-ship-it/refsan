@@ -109,27 +109,33 @@ user_problem_statement: |
 backend:
   - task: "Spare Parts API Endpoint"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Added SparePart and SelectedSparePart models. Updated RepairRequest model to include spare_parts array and spare_parts_total field. Updated /repairs POST endpoint to calculate spare parts total and include in cost calculation. Spare parts list already exists at /spare-parts endpoint with 57 parts."
+      - working: true
+        agent: "testing"
+        comment: "✅ PASSED - GET /api/spare-parts endpoint tested successfully. Returns 57 spare parts with correct structure (id, name, category, model, price). Verified specific parts: Termokupl K 15CM (75.0€) and Dijital Soket (30.0€) found with correct prices. Response format: {success: true, parts: [...], total_count: 57}"
         
   - task: "Repair Creation with Spare Parts Cost Calculation"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Updated repair creation endpoint to accept spare_parts array in request, calculate total spare parts cost (price * quantity), and include in total cost calculation with KDV. Formula: (cost_estimate + service_fee + spare_parts_total) * 1.20"
+      - working: true
+        agent: "testing"
+        comment: "✅ PASSED - POST /api/repairs with spare parts tested successfully. Cost calculation verified: 2x Termokupl K (75€) + 1x Dijital Soket (30€) = 180€ spare parts total. Total with VAT: (100€ cost + 100€ service + 180€ parts) * 1.20 = 456€. Spare parts array stored correctly. Also tested without spare parts (0€ total) and specific accuracy scenario from review request (420€ total). All calculations match expected values exactly."
 
 frontend:
   - task: "Spare Parts Selection UI in Repair Form"
