@@ -913,12 +913,11 @@ async def create_repair_request(
         repair_dict["repair_date"] = datetime.now(timezone.utc)
     
     # Bakım ise vade tarihi hesapla
-    # service_type string olarak geliyor: "hizmet", "bakim" veya "hizmet,bakim"
-    service_type_str = str(repair_data.service_type)
-    has_maintenance = "bakim" in service_type_str.lower()
-    has_service = "hizmet" in service_type_str.lower()
+    # service_type string olarak geliyor: "bakim_hizmeti", "teknik_destek,ariza_tespiti" vs
+    service_type_str = str(repair_data.service_type).lower()
+    has_bakim_hizmeti = "bakim_hizmeti" in service_type_str
     
-    if has_maintenance and repair_data.maintenance_year:
+    if has_bakim_hizmeti and repair_data.maintenance_year:
         from dateutil.relativedelta import relativedelta
         maintenance_due_date = datetime.now(timezone.utc) + relativedelta(years=repair_data.maintenance_year)
         repair_dict["maintenance_due_date"] = maintenance_due_date
@@ -941,11 +940,17 @@ async def create_repair_request(
     await db.repairs.insert_one(repair_mongo_dict)
     
     # Create notification for new repair
+    service_type_map = {
+        'bakim_hizmeti': 'Bakım Hizmeti',
+        'teknik_destek': 'Teknik Destek',
+        'ariza_tespiti': 'Arıza Tespiti',
+        'parca_degisimi': 'Parça Değişimi'
+    }
+    
     service_parts = []
-    if has_service:
-        service_parts.append("Hizmet")
-    if has_maintenance:
-        service_parts.append("Bakım")
+    for service_key, service_name in service_type_map.items():
+        if service_key in service_type_str:
+            service_parts.append(service_name)
     service_type_text = " ve ".join(service_parts) if service_parts else "Hizmet"
     maintenance_info = f" ({repair_data.maintenance_year} yıllık)" if has_maintenance and repair_data.maintenance_year else ""
     
