@@ -1326,7 +1326,7 @@ async def update_repair_status(
         "id": str(uuid.uuid4()),
         "user_id": current_user.id,
         "repair_id": repair_id,
-        "title": f"Arıza Durumu Güncellendi",
+        "title": "Arıza Durumu Güncellendi",
         "message": f"{customer['full_name'] if customer else 'Müşteri'} - Durum: {status}",
         "is_read": False,
         "created_at": datetime.now(timezone.utc).isoformat()
