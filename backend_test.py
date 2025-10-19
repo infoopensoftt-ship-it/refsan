@@ -1868,17 +1868,17 @@ class TechnicalServiceAPITester:
             print(f"   ✅ Spare parts have correct structure")
             
             # Check specific parts mentioned in review request
-            tk_k_15cm = next((part for part in spare_parts if part['id'] == 'sp001'), None)
-            dijital_soket = next((part for part in spare_parts if part['id'] == 'sp012'), None)
+            tk_k_15cm = next((part for part in spare_parts if part['id'] == 'tk_k_15cm'), None)
+            dijital_soket = next((part for part in spare_parts if part['id'] == 'dijital_soket'), None)
             
-            if tk_k_15cm and tk_k_15cm['price_eur'] == 75.0:
-                print(f"   ✅ Found Termokupl K 15CM with correct price: {tk_k_15cm['price_eur']}€")
+            if tk_k_15cm and tk_k_15cm['price'] == 75.0:
+                print(f"   ✅ Found Termokupl K 15CM with correct price: {tk_k_15cm['price']}€")
             else:
                 print(f"   ❌ Termokupl K 15CM not found or incorrect price")
                 return False
                 
-            if dijital_soket and dijital_soket['price_eur'] == 30.0:
-                print(f"   ✅ Found Dijital Soket with correct price: {dijital_soket['price_eur']}€")
+            if dijital_soket and dijital_soket['price'] == 30.0:
+                print(f"   ✅ Found Dijital Soket with correct price: {dijital_soket['price']}€")
             else:
                 print(f"   ❌ Dijital Soket not found or incorrect price")
                 return False
