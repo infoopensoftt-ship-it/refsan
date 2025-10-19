@@ -1858,7 +1858,7 @@ class TechnicalServiceAPITester:
         # Verify spare parts structure
         if spare_parts:
             first_part = spare_parts[0]
-            required_fields = ['id', 'name', 'price_eur']
+            required_fields = ['id', 'name', 'price']
             missing_fields = [field for field in required_fields if field not in first_part]
             
             if missing_fields:
