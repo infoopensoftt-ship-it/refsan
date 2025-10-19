@@ -2112,8 +2112,8 @@ class TechnicalServiceAPITester:
             "distance_category": "ankara_ici",
             "spare_parts": [
                 {
-                    "part_id": "sp001",
-                    "part_name": "RD16 - RD27 - RD50 / TOP 16 Termokupl K Tipi (0-1200°C) 15CM (60 + 100)",
+                    "part_id": "tk_k_15cm",
+                    "part_name": "Termokupl K Tipi (0-1200°C) 15CM (60+100)",
                     "price_eur": 75.0,
                     "quantity": 2
                 }
