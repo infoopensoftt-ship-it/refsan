@@ -951,8 +951,9 @@ async def create_repair_request(
     for service_key, service_name in service_type_map.items():
         if service_key in service_type_str:
             service_parts.append(service_name)
-    service_type_text = " ve ".join(service_parts) if service_parts else "Hizmet"
-    maintenance_info = f" ({repair_data.maintenance_year} yıllık)" if has_maintenance and repair_data.maintenance_year else ""
+    
+    service_type_text = ", ".join(service_parts) if service_parts else "Hizmet"
+    maintenance_info = f" ({repair_data.maintenance_year} yıllık)" if has_bakim_hizmeti and repair_data.maintenance_year else ""
     
     await create_notification(
         notification_type="new_repair",
