@@ -137,6 +137,8 @@ class RepairRequest(BaseModel):
     repair_date: Optional[datetime] = None  # Arıza/hizmet tarihi
     distance_category: Optional[str] = None  # Mesafe kategorisi: ankara_ici, 350km_kadar, 350km_uzeri
     service_fee: Optional[float] = None  # Servis bedeli (Euro)
+    spare_parts: List[SelectedSparePart] = []  # Seçilen yedek parçalar
+    spare_parts_total: Optional[float] = None  # Yedek parçaların toplam maliyeti
     vat_rate: float = 0.20  # KDV oranı (%20)
     vat_amount: Optional[float] = None  # KDV tutarı
     total_with_vat: Optional[float] = None  # KDV dahil toplam
