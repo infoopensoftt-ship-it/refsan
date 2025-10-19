@@ -162,6 +162,18 @@ frontend:
         agent: "main"
         comment: "Added functions: loadSpareParts(), renderSparePartsList(), toggleSparePartsSelection(), filterSpareParts(), addSparePart(), removeSparePart(), updatePartQuantity(), updateSelectedPartsDisplay(). Updated calculateTotalCost() to include spare parts total. Updated createRepair() to send spare_parts array to API."
 
+  - task: "Model Selection Dropdown with Specific Models"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/public/admin.html"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Changed model input from text field to required dropdown with 26 specific Refsan oven models (PORSELEN FIRINI and SERAMİK FIRINI variants for RDH27, RSH150, RSH200, RS300, RS400, TOP16, TOP45, TOP60, TOP80, TOP100, TOP140, TOP190)."
+
 metadata:
   created_by: "main_agent"
   version: "1.0"
