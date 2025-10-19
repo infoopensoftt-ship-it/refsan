@@ -1230,6 +1230,179 @@
             calculateTotalCost();
         }
 
+        // Load spare parts from API
+        async function loadSpareParts() {
+            try {
+                const response = await fetch(`${API_BASE}/spare-parts`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    availableSpareParts = data.parts || [];
+                    renderSparePartsList();
+                }
+            } catch (error) {
+                console.error('Error loading spare parts:', error);
+            }
+        }
+
+        // Render spare parts list
+        function renderSparePartsList() {
+            const listContainer = document.getElementById('spare-parts-list');
+            if (!listContainer) return;
+            
+            listContainer.innerHTML = '';
+            
+            const searchTerm = (document.getElementById('spare-parts-search')?.value || '').toLowerCase();
+            
+            const filteredParts = availableSpareParts.filter(part => 
+                part.name.toLowerCase().includes(searchTerm) || 
+                part.category.toLowerCase().includes(searchTerm) ||
+                part.model.toLowerCase().includes(searchTerm)
+            );
+            
+            if (filteredParts.length === 0) {
+                listContainer.innerHTML = '<div style="text-align: center; color: #64748b; padding: 1rem;">Parça bulunamadı</div>';
+                return;
+            }
+            
+            filteredParts.forEach(part => {
+                const isSelected = selectedSpareParts[part.id];
+                const partDiv = document.createElement('div');
+                partDiv.style.cssText = 'padding: 0.75rem; border: 1px solid #e5e7eb; border-radius: 6px; margin-bottom: 0.5rem; background: ' + (isSelected ? '#f0fdf4' : 'white');
+                
+                partDiv.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: start;">
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600; color: #1f2937; margin-bottom: 0.25rem;">${part.name}</div>
+                            <div style="font-size: 0.85em; color: #64748b;">${part.category} - ${part.model}</div>
+                            <div style="font-size: 0.9em; color: #059669; font-weight: 600; margin-top: 0.25rem;">${part.price.toFixed(2)} €</div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            ${isSelected ? `
+                                <input type="number" min="1" value="${isSelected.quantity}" 
+                                    onchange="updatePartQuantity('${part.id}', this.value)"
+                                    style="width: 60px; padding: 0.25rem; border: 1px solid #e5e7eb; border-radius: 4px; text-align: center;">
+                                <button onclick="removeSpare Part('${part.id}')" 
+                                    style="padding: 0.5rem 0.75rem; background: #ef4444; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.9em;">
+                                    Kaldır
+                                </button>
+                            ` : `
+                                <button onclick="addSparePart('${part.id}')" 
+                                    style="padding: 0.5rem 0.75rem; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.9em;">
+                                    Ekle
+                                </button>
+                            `}
+                        </div>
+                    </div>
+                `;
+                
+                listContainer.appendChild(partDiv);
+            });
+        }
+
+        // Toggle spare parts dropdown
+        function toggleSparePartsSelection() {
+            const dropdown = document.getElementById('spare-parts-dropdown');
+            const arrow = document.getElementById('parts-arrow');
+            
+            if (dropdown.style.display === 'none') {
+                dropdown.style.display = 'block';
+                arrow.textContent = '▲';
+                if (availableSpareParts.length === 0) {
+                    loadSpareParts();
+                }
+            } else {
+                dropdown.style.display = 'none';
+                arrow.textContent = '▼';
+            }
+        }
+
+        // Filter spare parts
+        function filterSpareParts() {
+            renderSparePartsList();
+        }
+
+        // Add spare part
+        function addSparePart(partId) {
+            const part = availableSpareParts.find(p => p.id === partId);
+            if (!part) return;
+            
+            selectedSpareParts[partId] = {
+                ...part,
+                quantity: 1
+            };
+            
+            renderSparePartsList();
+            updateSelectedPartsDisplay();
+            calculateTotalCost();
+        }
+
+        // Remove spare part
+        function removeSparePart(partId) {
+            delete selectedSpareParts[partId];
+            renderSparePartsList();
+            updateSelectedPartsDisplay();
+            calculateTotalCost();
+        }
+
+        // Update part quantity
+        function updatePartQuantity(partId, quantity) {
+            const qty = parseInt(quantity) || 1;
+            if (selectedSpareParts[partId]) {
+                selectedSpareParts[partId].quantity = Math.max(1, qty);
+                updateSelectedPartsDisplay();
+                calculateTotalCost();
+            }
+        }
+
+        // Update selected parts display
+        function updateSelectedPartsDisplay() {
+            const container = document.getElementById('selected-parts-container');
+            const displayDiv = document.getElementById('selected-parts-display');
+            const summarySpan = document.getElementById('selected-parts-summary');
+            
+            if (!container || !displayDiv || !summarySpan) return;
+            
+            const selectedArray = Object.values(selectedSpareParts);
+            
+            if (selectedArray.length === 0) {
+                displayDiv.style.display = 'none';
+                summarySpan.textContent = 'Yedek Parça Seçmek İçin Tıklayın';
+                return;
+            }
+            
+            displayDiv.style.display = 'block';
+            summarySpan.textContent = `${selectedArray.length} Parça Seçildi`;
+            
+            container.innerHTML = '';
+            
+            selectedArray.forEach(part => {
+                const partDiv = document.createElement('div');
+                partDiv.style.cssText = 'padding: 0.5rem; background: #f9fafb; border-radius: 6px; border: 1px solid #e5e7eb;';
+                
+                const total = part.price * part.quantity;
+                
+                partDiv.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600; color: #1f2937; font-size: 0.9em;">${part.name}</div>
+                            <div style="font-size: 0.8em; color: #64748b;">Miktar: ${part.quantity} x ${part.price.toFixed(2)}€ = ${total.toFixed(2)}€</div>
+                        </div>
+                        <button onclick="removeSparePart('${part.id}')" 
+                            style="padding: 0.25rem 0.5rem; background: #ef4444; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.8em;">
+                            ×
+                        </button>
+                    </div>
+                `;
+                
+                container.appendChild(partDiv);
+            });
+        }
+
         // Toplam maliyet hesaplama
         function calculateTotalCost() {
             const costEstimate = parseFloat(document.getElementById('repair-cost-estimate').value) || 0;
