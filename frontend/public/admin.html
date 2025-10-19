@@ -2815,17 +2815,38 @@
             document.getElementById(modalId).style.display = 'none';
         }
         
-        // Toggle maintenance year field based on service type
-        window.toggleMaintenanceYear = function() {
-            const serviceType = document.getElementById('repair-service-type').value;
+        // Update service type based on checkboxes
+        window.updateServiceType = function() {
+            const hizmetChecked = document.getElementById('service-type-hizmet').checked;
+            const bakimChecked = document.getElementById('service-type-bakim').checked;
             const maintenanceYearGroup = document.getElementById('maintenance-year-group');
             
-            if (serviceType === 'bakim') {
+            let serviceTypes = [];
+            if (hizmetChecked) serviceTypes.push('hizmet');
+            if (bakimChecked) serviceTypes.push('bakim');
+            
+            // Set hidden field value
+            document.getElementById('repair-service-type').value = serviceTypes.join(',');
+            
+            // Show maintenance year group if bakım is selected
+            if (bakimChecked) {
                 maintenanceYearGroup.style.display = 'block';
             } else {
                 maintenanceYearGroup.style.display = 'none';
                 document.getElementById('repair-maintenance-year').value = '';
             }
+            
+            // Update label borders
+            const hizmetLabel = document.getElementById('service-type-hizmet').parentElement;
+            const bakimLabel = document.getElementById('service-type-bakim').parentElement;
+            
+            hizmetLabel.style.borderColor = hizmetChecked ? '#3b82f6' : 'transparent';
+            bakimLabel.style.borderColor = bakimChecked ? '#3b82f6' : 'transparent';
+        }
+        
+        // Toggle maintenance year field based on service type (legacy - keep for compatibility)
+        window.toggleMaintenanceYear = function() {
+            updateServiceType();
         }
 
         function logout() {
