@@ -1417,8 +1417,14 @@
             
             const serviceFee = serviceFeeMap[distanceCategory] || 0;
             
+            // Yedek parça toplamı
+            let sparePartsTotal = 0;
+            Object.values(selectedSpareParts).forEach(part => {
+                sparePartsTotal += part.price * part.quantity;
+            });
+            
             // Hesaplamalar
-            const subtotal = costEstimate + serviceFee;
+            const subtotal = costEstimate + serviceFee + sparePartsTotal;
             const vat = subtotal * 0.20;
             const total = subtotal + vat;
             const totalTL = total * currentExchangeRate;
@@ -1426,6 +1432,7 @@
             // Göster
             document.getElementById('summary-cost-estimate').textContent = `${costEstimate.toFixed(2)} €`;
             document.getElementById('summary-service-fee').textContent = `${serviceFee.toFixed(2)} €`;
+            document.getElementById('summary-spare-parts').textContent = `${sparePartsTotal.toFixed(2)} €`;
             document.getElementById('summary-subtotal').textContent = `${subtotal.toFixed(2)} €`;
             document.getElementById('summary-vat').textContent = `${vat.toFixed(2)} €`;
             document.getElementById('summary-total').textContent = `${total.toFixed(2)} €`;
