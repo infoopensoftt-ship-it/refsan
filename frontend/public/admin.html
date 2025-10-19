@@ -2707,6 +2707,13 @@
             
             const serviceType = document.getElementById('repair-service-type').value;
             const maintenanceYear = document.getElementById('repair-maintenance-year').value;
+            const repairDateInput = document.getElementById('repair-date').value;
+            
+            // Tarih varsa ISO formatına çevir
+            let repairDate = null;
+            if (repairDateInput) {
+                repairDate = new Date(repairDateInput).toISOString();
+            }
             
             const repairData = {
                 customer_id: document.getElementById('repair-customer').value,
@@ -2717,6 +2724,7 @@
                 priority: document.getElementById('repair-priority').value,
                 service_type: serviceType,
                 maintenance_year: serviceType === 'bakim' && maintenanceYear ? parseInt(maintenanceYear) : null,
+                repair_date: repairDate,
                 cost_estimate: document.getElementById('repair-cost-estimate').value || null,
                 assigned_technician_id: document.getElementById('repair-technician').value || null,
                 images: uploadedFiles
