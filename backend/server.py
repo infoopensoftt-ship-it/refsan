@@ -181,6 +181,17 @@ class CustomerCreate(BaseModel):
     phone: str
     address: Optional[str] = None
 
+class SparePart(BaseModel):
+    id: str
+    name: str
+    price_eur: float
+
+class SelectedSparePart(BaseModel):
+    part_id: str
+    part_name: str
+    price_eur: float
+    quantity: int = 1
+
 class RepairRequest(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     customer_id: str
