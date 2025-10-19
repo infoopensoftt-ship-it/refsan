@@ -1101,6 +1101,32 @@
         const API_BASE = window.location.origin + '/api';
         let authToken = localStorage.getItem('token');
         let currentUser = null;
+        let currentExchangeRate = 35.0; // Default exchange rate
+
+        // Load exchange rate
+        async function loadExchangeRate() {
+            try {
+                const response = await fetch(`${API_BASE}/exchange-rate`);
+                if (response.ok) {
+                    const data = await response.json();
+                    currentExchangeRate = data.rate;
+                    document.getElementById('exchange-rate-display').textContent = `1 € = ${currentExchangeRate.toFixed(2)} ₺`;
+                    calculateTLCost(); // Recalculate if there's a value
+                } else {
+                    document.getElementById('exchange-rate-display').textContent = `1 € = ${currentExchangeRate.toFixed(2)} ₺ (varsayılan)`;
+                }
+            } catch (error) {
+                console.error('Exchange rate load error:', error);
+                document.getElementById('exchange-rate-display').textContent = `1 € = ${currentExchangeRate.toFixed(2)} ₺ (varsayılan)`;
+            }
+        }
+
+        // Calculate TL cost from EUR
+        function calculateTLCost() {
+            const eurCost = parseFloat(document.getElementById('repair-cost-estimate').value) || 0;
+            const tlCost = eurCost * currentExchangeRate;
+            document.getElementById('cost-tl-display').textContent = `${tlCost.toFixed(2)} ₺`;
+        }
 
         // Check authentication
         window.onload = async function() {
