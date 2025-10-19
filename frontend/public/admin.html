@@ -3100,6 +3100,8 @@
                     closeModal('repairModal');
                     event.target.reset();
                     document.getElementById('admin-file-preview').innerHTML = '';
+                    selectedSpareParts = {}; // Reset selected spare parts
+                    updateSelectedPartsDisplay(); // Update display
                     loadStats();
                     loadRepairs();
                 } else {
