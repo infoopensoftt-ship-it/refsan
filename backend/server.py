@@ -880,6 +880,29 @@ async def create_repair_request(
     repair_dict["created_by"] = current_user.id
     repair_dict["maintenance_reminder_sent"] = False
     
+    # Servis bedeli hesapla
+    service_fee_map = {
+        "ankara_ici": 100.0,
+        "350km_kadar": 300.0,
+        "350km_uzeri": 400.0
+    }
+    
+    distance_category = repair_data.distance_category or "ankara_ici"
+    service_fee = service_fee_map.get(distance_category, 100.0)
+    
+    repair_dict["distance_category"] = distance_category
+    repair_dict["service_fee"] = service_fee
+    repair_dict["vat_rate"] = 0.20  # %20 KDV
+    
+    # Toplam hesaplama: Tahmini Maliyet + Servis Bedeli
+    cost_estimate = repair_data.cost_estimate or 0.0
+    subtotal = cost_estimate + service_fee
+    vat_amount = subtotal * 0.20
+    total_with_vat = subtotal + vat_amount
+    
+    repair_dict["vat_amount"] = vat_amount
+    repair_dict["total_with_vat"] = total_with_vat
+    
     # Arıza tarihi varsa parse et
     if repair_data.repair_date:
         try:
