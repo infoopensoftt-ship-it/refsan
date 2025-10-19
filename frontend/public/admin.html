@@ -2847,7 +2847,8 @@
                 service_type: serviceType,
                 maintenance_year: serviceType === 'bakim' && maintenanceYear ? parseInt(maintenanceYear) : null,
                 repair_date: repairDate,
-                cost_estimate: document.getElementById('repair-cost-estimate').value || null,
+                distance_category: document.getElementById('repair-distance-category').value,
+                cost_estimate: parseFloat(document.getElementById('repair-cost-estimate').value) || null,
                 assigned_technician_id: document.getElementById('repair-technician').value || null,
                 images: uploadedFiles
             };
