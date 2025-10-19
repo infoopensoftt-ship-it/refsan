@@ -2173,6 +2173,32 @@ class TechnicalServiceAPITester:
         
         return calculations_correct
 
+    def test_spare_parts_integration(self):
+        """Test complete spare parts integration"""
+        print(f"\n🔧 Testing Complete Spare Parts Integration for: {self.current_user.get('role')}")
+        
+        # Test 1: Spare parts endpoint
+        spare_parts_endpoint_success = self.test_spare_parts_endpoint()
+        
+        # Test 2: Repair creation with spare parts
+        repair_with_parts_success = self.test_repair_creation_with_spare_parts()
+        
+        # Test 3: Repair creation without spare parts
+        repair_without_parts_success = self.test_repair_creation_without_spare_parts()
+        
+        # Test 4: Cost calculation accuracy
+        cost_calculation_success = self.test_spare_parts_cost_calculation_accuracy()
+        
+        integration_success = (spare_parts_endpoint_success and repair_with_parts_success and 
+                             repair_without_parts_success and cost_calculation_success)
+        
+        if integration_success:
+            print(f"   ✅ All spare parts integration tests passed")
+        else:
+            print(f"   ❌ Some spare parts integration tests failed")
+        
+        return integration_success
+
     def test_new_backend_endpoints(self):
         """Test all newly added backend endpoints from the review request"""
         print(f"\n🆕 Testing New Backend Endpoints for: {self.current_user.get('role')}")
