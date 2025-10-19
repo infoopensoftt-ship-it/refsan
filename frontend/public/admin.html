@@ -1012,6 +1012,60 @@
                             </div>
                         </div>
                     </div>
+                    
+                    <!-- Servis Bedeli ve Mesafe Seçimi -->
+                    <div class="form-group">
+                        <label>Servis Bedeli (Mesafe) *</label>
+                        <select id="repair-distance-category" required onchange="calculateTotalCost()">
+                            <option value="">Mesafe Seçiniz</option>
+                            <option value="ankara_ici">Ankara İçi - 100€ + KDV</option>
+                            <option value="350km_kadar">350 km'ye Kadar - 300€ + KDV</option>
+                            <option value="350km_uzeri">350 km Üzeri - 400€ + KDV</option>
+                        </select>
+                        <small style="color: #64748b; font-size: 0.85em; margin-top: 0.25rem; display: block;">
+                            Zorunlu seçimdir. KDV %20 olarak hesaplanır.
+                        </small>
+                    </div>
+                    
+                    <!-- Toplam Maliyet Özeti -->
+                    <div style="padding: 1rem; background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-radius: 12px; border: 2px solid #f59e0b; margin-top: 1rem;">
+                        <h4 style="color: #92400e; margin: 0 0 0.75rem 0; font-size: 1.1em;">💰 Maliyet Özeti</h4>
+                        
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; color: #78350f;">
+                            <span>Tahmini Maliyet:</span>
+                            <span id="summary-cost-estimate" style="font-weight: 600;">0.00 €</span>
+                        </div>
+                        
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; color: #78350f;">
+                            <span>Servis Bedeli:</span>
+                            <span id="summary-service-fee" style="font-weight: 600;">0.00 €</span>
+                        </div>
+                        
+                        <div style="height: 1px; background: #f59e0b; margin: 0.5rem 0;"></div>
+                        
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; color: #78350f;">
+                            <span>Ara Toplam:</span>
+                            <span id="summary-subtotal" style="font-weight: 600;">0.00 €</span>
+                        </div>
+                        
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; color: #78350f;">
+                            <span>KDV (%20):</span>
+                            <span id="summary-vat" style="font-weight: 600;">0.00 €</span>
+                        </div>
+                        
+                        <div style="height: 2px; background: #f59e0b; margin: 0.75rem 0;"></div>
+                        
+                        <div style="display: flex; justify-content: space-between; font-size: 1.2em;">
+                            <span style="color: #92400e; font-weight: bold;">TOPLAM (KDV Dahil):</span>
+                            <span id="summary-total" style="color: #92400e; font-weight: bold;">0.00 €</span>
+                        </div>
+                        
+                        <div style="margin-top: 0.75rem; padding: 0.5rem; background: white; border-radius: 6px; text-align: center;">
+                            <div style="font-size: 0.85em; color: #64748b;">TL Karşılığı (Tahmini)</div>
+                            <div id="summary-total-tl" style="font-size: 1.3em; color: #1e40af; font-weight: bold;">0.00 ₺</div>
+                        </div>
+                    </div>
+                    
                     <div class="form-group">
                         <label>Teknisyen Ataması</label>
                         <select id="repair-technician">
