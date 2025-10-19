@@ -2227,6 +2227,8 @@ class TechnicalServiceAPITester:
         # Test customers access (admin and technician only)
         if self.current_user.get('role') in ['admin', 'teknisyen']:
             customers_success = self.test_customers_crud()
+            # Test spare parts endpoints
+            spare_parts_success = self.test_spare_parts_integration()
             # Test new admin panel endpoints
             admin_panel_success = self.test_admin_panel_endpoints()
             # Test new backend endpoints
