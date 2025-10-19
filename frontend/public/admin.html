@@ -2912,19 +2912,23 @@
         
         // Update service type based on checkboxes
         window.updateServiceType = function() {
-            const hizmetChecked = document.getElementById('service-type-hizmet').checked;
-            const bakimChecked = document.getElementById('service-type-bakim').checked;
+            const bakimHizmetiChecked = document.getElementById('service-type-bakim-hizmeti').checked;
+            const teknikDestekChecked = document.getElementById('service-type-teknik-destek').checked;
+            const arizaTespitiChecked = document.getElementById('service-type-ariza-tespiti').checked;
+            const parcaDegisimiChecked = document.getElementById('service-type-parca-degisimi').checked;
             const maintenanceYearGroup = document.getElementById('maintenance-year-group');
             
             let serviceTypes = [];
-            if (hizmetChecked) serviceTypes.push('hizmet');
-            if (bakimChecked) serviceTypes.push('bakim');
+            if (bakimHizmetiChecked) serviceTypes.push('bakim_hizmeti');
+            if (teknikDestekChecked) serviceTypes.push('teknik_destek');
+            if (arizaTespitiChecked) serviceTypes.push('ariza_tespiti');
+            if (parcaDegisimiChecked) serviceTypes.push('parca_degisimi');
             
             // Set hidden field value
             document.getElementById('repair-service-type').value = serviceTypes.join(',');
             
-            // Show maintenance year group if bakım is selected
-            if (bakimChecked) {
+            // Show maintenance year group if Bakım Hizmeti is selected
+            if (bakimHizmetiChecked) {
                 maintenanceYearGroup.style.display = 'block';
             } else {
                 maintenanceYearGroup.style.display = 'none';
@@ -2932,11 +2936,15 @@
             }
             
             // Update label borders
-            const hizmetLabel = document.getElementById('service-type-hizmet').parentElement;
-            const bakimLabel = document.getElementById('service-type-bakim').parentElement;
+            const bakimLabel = document.getElementById('service-type-bakim-hizmeti').parentElement;
+            const teknikLabel = document.getElementById('service-type-teknik-destek').parentElement;
+            const arizaLabel = document.getElementById('service-type-ariza-tespiti').parentElement;
+            const parcaLabel = document.getElementById('service-type-parca-degisimi').parentElement;
             
-            hizmetLabel.style.borderColor = hizmetChecked ? '#3b82f6' : 'transparent';
-            bakimLabel.style.borderColor = bakimChecked ? '#3b82f6' : 'transparent';
+            bakimLabel.style.borderColor = bakimHizmetiChecked ? '#3b82f6' : 'transparent';
+            teknikLabel.style.borderColor = teknikDestekChecked ? '#3b82f6' : 'transparent';
+            arizaLabel.style.borderColor = arizaTespitiChecked ? '#3b82f6' : 'transparent';
+            parcaLabel.style.borderColor = parcaDegisimiChecked ? '#3b82f6' : 'transparent';
         }
         
         // Toggle maintenance year field based on service type (legacy - keep for compatibility)
