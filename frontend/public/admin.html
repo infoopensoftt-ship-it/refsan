@@ -1199,6 +1199,8 @@
         let authToken = localStorage.getItem('token');
         let currentUser = null;
         let currentExchangeRate = 35.0; // Default exchange rate
+        let availableSpareParts = []; // All available spare parts
+        let selectedSpareParts = {}; // Selected spare parts with quantities
 
         // Load exchange rate
         async function loadExchangeRate() {
