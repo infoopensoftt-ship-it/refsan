@@ -969,9 +969,18 @@ async def create_repair_request(
     repair_dict["service_fee"] = service_fee
     repair_dict["vat_rate"] = 0.20  # %20 KDV
     
-    # Toplam hesaplama: Tahmini Maliyet + Servis Bedeli
+    # Yedek parça toplam maliyeti hesapla
+    spare_parts_total = 0.0
+    if repair_data.spare_parts:
+        for part in repair_data.spare_parts:
+            spare_parts_total += part.price_eur * part.quantity
+    
+    repair_dict["spare_parts"] = [part.dict() for part in repair_data.spare_parts]
+    repair_dict["spare_parts_total"] = spare_parts_total
+    
+    # Toplam hesaplama: Tahmini Maliyet + Servis Bedeli + Yedek Parça
     cost_estimate = repair_data.cost_estimate or 0.0
-    subtotal = cost_estimate + service_fee
+    subtotal = cost_estimate + service_fee + spare_parts_total
     vat_amount = subtotal * 0.20
     total_with_vat = subtotal + vat_amount
     
