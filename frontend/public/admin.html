@@ -1182,6 +1182,38 @@
             const eurCost = parseFloat(document.getElementById('repair-cost-estimate').value) || 0;
             const tlCost = eurCost * currentExchangeRate;
             document.getElementById('cost-tl-display').textContent = `${tlCost.toFixed(2)} ₺`;
+            
+            // Toplam maliyeti de hesapla
+            calculateTotalCost();
+        }
+
+        // Toplam maliyet hesaplama
+        function calculateTotalCost() {
+            const costEstimate = parseFloat(document.getElementById('repair-cost-estimate').value) || 0;
+            const distanceCategory = document.getElementById('repair-distance-category').value;
+            
+            // Servis bedeli
+            const serviceFeeMap = {
+                'ankara_ici': 100,
+                '350km_kadar': 300,
+                '350km_uzeri': 400
+            };
+            
+            const serviceFee = serviceFeeMap[distanceCategory] || 0;
+            
+            // Hesaplamalar
+            const subtotal = costEstimate + serviceFee;
+            const vat = subtotal * 0.20;
+            const total = subtotal + vat;
+            const totalTL = total * currentExchangeRate;
+            
+            // Göster
+            document.getElementById('summary-cost-estimate').textContent = `${costEstimate.toFixed(2)} €`;
+            document.getElementById('summary-service-fee').textContent = `${serviceFee.toFixed(2)} €`;
+            document.getElementById('summary-subtotal').textContent = `${subtotal.toFixed(2)} €`;
+            document.getElementById('summary-vat').textContent = `${vat.toFixed(2)} €`;
+            document.getElementById('summary-total').textContent = `${total.toFixed(2)} €`;
+            document.getElementById('summary-total-tl').textContent = `${totalTL.toFixed(2)} ₺`;
         }
 
         // Check authentication
