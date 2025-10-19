@@ -166,6 +166,7 @@ class RepairRequestCreate(BaseModel):
     repair_date: Optional[str] = None  # Arıza/hizmet tarihi (ISO format)
     distance_category: Optional[str] = None  # Mesafe kategorisi
     cost_estimate: Optional[float] = None
+    spare_parts: List[SelectedSparePart] = []  # Seçilen yedek parçalar
     images: List[str] = []  # File URLs from upload endpoint
 
 class RepairRequestUpdate(BaseModel):
