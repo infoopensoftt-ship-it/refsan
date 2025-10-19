@@ -1577,6 +1577,76 @@ async def get_exchange_rate():
         "note": "Using fallback rate"
     }
 
+# Spare parts catalog
+@api_router.get("/spare-parts")
+async def get_spare_parts():
+    """Get spare parts catalog with prices"""
+    parts = [
+        {"id": "tk_k_15cm", "category": "Termokupl K", "model": "RD16-RD27-RD50/TOP16", "name": "Termokupl K Tipi (0-1200°C) 15CM (60+100)", "price": 75.0},
+        {"id": "tk_k_20cm", "category": "Termokupl K", "model": "RS80-RS300/TOP", "name": "Termokupl K Tipi (0-1200°C) 20CM (60+150)", "price": 80.0},
+        {"id": "tk_k_25cm", "category": "Termokupl K", "model": "RS400-RS1000", "name": "Termokupl K Tipi (0-1200°C) 25CM (60+200)", "price": 85.0},
+        {"id": "tk_k_30cm", "category": "Termokupl K", "model": "ÖZEL ÖLÇÜ", "name": "Termokupl K Tipi (0-1200°C) 30CM (60+250)", "price": 87.0},
+        {"id": "tk_k_35cm", "category": "Termokupl K", "model": "ÖZEL ÖLÇÜ", "name": "Termokupl K Tipi (0-1200°C) 35CM (60+300)", "price": 90.0},
+        {"id": "tk_s_15cm", "category": "Termokupl S", "model": "RD16-RD27-RD50/TOP16", "name": "Termokupl S Tipi (0-1320°C) 15CM (60+100)", "price": 260.0},
+        {"id": "tk_s_20cm", "category": "Termokupl S", "model": "RS80-RS300/TOP", "name": "Termokupl S Tipi (0-1320°C) 20CM (60+150)", "price": 285.0},
+        {"id": "tk_s_25cm", "category": "Termokupl S", "model": "RS400-RS1000", "name": "Termokupl S Tipi (0-1320°C) 25CM (60+200)", "price": 295.0},
+        {"id": "tk_s_30cm", "category": "Termokupl S", "model": "ÖZEL", "name": "Termokupl S Tipi (0-1320°C) 30CM (60+250)", "price": 325.0},
+        {"id": "prog_upgrade", "category": "Programatör", "model": "Dijital", "name": "Dijital Programatör Versiyon Yükseltme", "price": 50.0},
+        {"id": "prog_rf800", "category": "Programatör", "model": "RF800-RF850", "name": "RF800-RF850 Dijital Programatör", "price": 325.0},
+        {"id": "dijital_soket", "category": "Programatör", "model": "Dijital", "name": "Dijital Soket", "price": 30.0},
+        {"id": "rez_rd16", "category": "Rezistans", "model": "RD16-RD27", "name": "Rezistans Teli 2-2.5mm/16mm Boruya Göre", "price": 10.0},
+        {"id": "rez_rd50", "category": "Rezistans", "model": "RD50", "name": "Rezistans Teli 2-2.5mm/21mm Boruya Göre", "price": 10.0},
+        {"id": "rez_rs80", "category": "Rezistans", "model": "RS80-RS100", "name": "Rezistans Teli 2-2.5mm/25mm Boruya Göre", "price": 15.0},
+        {"id": "rez_rs150", "category": "Rezistans", "model": "RS150-RS200", "name": "Rezistans Teli 2.5mm/25mm Boruya Göre", "price": 20.0},
+        {"id": "rez_rs300", "category": "Rezistans", "model": "RS300 (1200-1320°C)", "name": "Rezistans Teli 2.5-3.0mm/25mm Boruya Göre", "price": 28.0},
+        {"id": "rez_rs400", "category": "Rezistans", "model": "RS400 (1200-1320°C)", "name": "Rezistans Teli 2.5-3.0mm/30mm Boruya Göre", "price": 35.0},
+        {"id": "rez_rs500", "category": "Rezistans", "model": "RS500-RS660-RS750", "name": "Rezistans Teli 3.5mm/30mm Boruya Göre", "price": 45.0},
+        {"id": "rez_rs660", "category": "Rezistans", "model": "RS660-RS750", "name": "Rezistans Teli 3.5mm/30mm Boruya Göre", "price": 54.0},
+        {"id": "rez_rs1000", "category": "Rezistans", "model": "RS1000", "name": "Rezistans Teli 2.5mm/30mm Boruya Göre", "price": 42.0},
+        {"id": "rez_rs1500", "category": "Rezistans", "model": "RS1500", "name": "Rezistans Teli 3.0mm/30mm Boruya Göre", "price": 55.0},
+        {"id": "rez_top16", "category": "Rezistans", "model": "TOP16", "name": "TOP16 Rezistans Teli 1.5mm/14mm (3 Boy)", "price": 15.0},
+        {"id": "rez_top45", "category": "Rezistans", "model": "TOP45", "name": "TOP45 Rezistans Teli 2.5mm/14mm (3 Boy)", "price": 26.0},
+        {"id": "rez_top60", "category": "Rezistans", "model": "TOP60", "name": "TOP60 Rezistans Teli 2.0mm/14mm (3 Boy)", "price": 26.0},
+        {"id": "rez_top80", "category": "Rezistans", "model": "TOP80", "name": "TOP80 Rezistans Teli 2.0mm/14mm (3 Boy)", "price": 24.0},
+        {"id": "rez_top100", "category": "Rezistans", "model": "TOP100", "name": "TOP100 Rezistans Teli 2.0mm/14mm (3 Boy)", "price": 23.0},
+        {"id": "rez_top140", "category": "Rezistans", "model": "TOP140", "name": "TOP140 Rezistans Teli 2.0mm/14mm (3 Boy)", "price": 30.0},
+        {"id": "rez_top190", "category": "Rezistans", "model": "TOP190", "name": "TOP190 Rezistans Teli 2.5mm/14mm (3 Boy)", "price": 42.0},
+        {"id": "kont_25a", "category": "Kontaktör", "model": "RS80-RS200 1200°C", "name": "Kontaktör LC1D25A/Siemens 25A", "price": 50.0},
+        {"id": "kont_32a_1320", "category": "Kontaktör", "model": "RSH80-RSH200 1320°C", "name": "Kontaktör LC1D32A/Siemens 32A", "price": 70.0},
+        {"id": "kont_32a_1200", "category": "Kontaktör", "model": "RD16-RS300 1200°C", "name": "Kontaktör LC1D32A/Siemens 32A", "price": 70.0},
+        {"id": "kont_38a", "category": "Kontaktör", "model": "RDH27-RSH300 1320°C", "name": "Kontaktör LC1D38A/Siemens 38A", "price": 80.0},
+        {"id": "kont_40a", "category": "Kontaktör", "model": "RS400 1200°C", "name": "Kontaktör LC1D40A/Siemens 40A", "price": 95.0},
+        {"id": "kont_50a", "category": "Kontaktör", "model": "RSH400 1320°C", "name": "Kontaktör LC1D50A/Siemens 50A", "price": 110.0},
+        {"id": "kont_65a", "category": "Kontaktör", "model": "RS500-RS1000", "name": "Kontaktör LC1D65A/Siemens 65A", "price": 130.0},
+        {"id": "kont_95a", "category": "Kontaktör", "model": "RS1500", "name": "Kontaktör LC1D95A/Siemens 95A", "price": 200.0},
+        {"id": "sig_6a", "category": "Sigorta", "model": "TÜM FIRINLAR", "name": "Sigorta EZ9F43106/Siemens 6A", "price": 4.80},
+        {"id": "sig_16a", "category": "Sigorta", "model": "TÜM MAKİNALAR", "name": "Sigorta EZ9F43116/Siemens 16A", "price": 4.80},
+        {"id": "sig_25a", "category": "Sigorta", "model": "RS80-RS200", "name": "Sigorta EZ9F43125/Siemens 25A", "price": 4.80},
+        {"id": "sig_32a", "category": "Sigorta", "model": "RD16-RS300", "name": "Sigorta EZ9F43132/Siemens 32A", "price": 5.00},
+        {"id": "sig_40a", "category": "Sigorta", "model": "RD27-RS400", "name": "Sigorta EZ9F43140/Siemens 40A", "price": 5.50},
+        {"id": "sig_50a", "category": "Sigorta", "model": "RS400 1320°C", "name": "Sigorta EZ9F43150/Siemens 50A", "price": 6.75},
+        {"id": "sig_63a", "category": "Sigorta", "model": "RS500-RS1000", "name": "Sigorta EZ9F43163/Siemens 63A", "price": 11.00},
+        {"id": "kablo_4mm", "category": "Kablo", "model": "RS80-RS200", "name": "Yanmaz kablo 4mm", "price": 4.50},
+        {"id": "kablo_6mm", "category": "Kablo", "model": "RD16-RS750", "name": "Yanmaz kablo 6mm", "price": 6.00},
+        {"id": "kablo_10mm", "category": "Kablo", "model": "RS1000+", "name": "Yanmaz kablo 10mm", "price": 11.00},
+        {"id": "klemens_16", "category": "Klemens", "model": "RD16-RS500", "name": "Prinç klemens 16'lık", "price": 2.30},
+        {"id": "klemens_25", "category": "Klemens", "model": "RS660+", "name": "Prinç klemens 25'lik", "price": 3.50},
+        {"id": "ssr_60a", "category": "SSR", "model": "RD16-RS300", "name": "SSR 60A", "price": 38.00},
+        {"id": "ssr_90a", "category": "SSR", "model": "RS400-RS1000", "name": "SSR 90A", "price": 40.00},
+        {"id": "ssr_125a", "category": "SSR", "model": "RS1250+", "name": "SSR 125A", "price": 125.0},
+        {"id": "izolator", "category": "Aksesuar", "model": "İZOLATÖR", "name": "Tel Çıkış Koruması", "price": 1.00},
+        {"id": "switch", "category": "Aksesuar", "model": "TÜM FIRINLAR", "name": "Switch MN2MUM3 + Kılıf", "price": 15.0},
+        {"id": "switch_yuzuk", "category": "Aksesuar", "model": "TÜM FIRINLAR", "name": "Switch Ayar Yüzüğü Alüminyum", "price": 6.0},
+        {"id": "fan", "category": "Aksesuar", "model": "TÜM FIRINLAR", "name": "Fan", "price": 12.0},
+        {"id": "civisi", "category": "Aksesuar", "model": "GENEL", "name": "Rezistans Çivisi", "price": 0.40}
+    ]
+    
+    return {
+        "success": True,
+        "parts": parts,
+        "total_count": len(parts)
+    }
+
 # Notifications endpoint
 @api_router.get("/notifications")
 async def get_notifications(
