@@ -248,17 +248,6 @@ class RepairRequestUpdate(BaseModel):
     final_cost: Optional[float] = None
     payment_status: Optional[PaymentStatus] = None
 
-class SparePart(BaseModel):
-    id: str
-    name: str
-    price_eur: float
-
-class SelectedSparePart(BaseModel):
-    part_id: str
-    part_name: str
-    price_eur: float
-    quantity: int = 1
-
 class Notification(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     type: Optional[str] = None  # "new_repair", "new_customer", "repair_status_update", "repair_cancelled"
