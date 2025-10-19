@@ -233,7 +233,7 @@ class RepairRequestCreate(BaseModel):
     model: str
     description: str
     priority: Priority = Priority.MEDIUM
-    service_type: ServiceType = ServiceType.SERVICE  # Bakım veya Hizmet
+    service_type: str = "hizmet"  # Birden fazla tip virgülle ayrılabilir: "bakim_hizmeti,teknik_destek"
     maintenance_year: Optional[int] = None  # Bakımsa yıl sayısı
     repair_date: Optional[str] = None  # Arıza/hizmet tarihi (ISO format)
     distance_category: Optional[str] = None  # Mesafe kategorisi
