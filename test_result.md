@@ -170,8 +170,6 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Spare Parts API Endpoint"
-    - "Repair Creation with Spare Parts Cost Calculation"
     - "Spare Parts Selection UI in Repair Form"
     - "Spare Parts JavaScript Functions"
   stuck_tasks: []
