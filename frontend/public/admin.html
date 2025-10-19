@@ -3060,6 +3060,14 @@
                 repairDate = new Date(repairDateInput).toISOString();
             }
             
+            // Seçilen yedek parçaları hazırla
+            const sparePartsArray = Object.values(selectedSpareParts).map(part => ({
+                part_id: part.id,
+                part_name: part.name,
+                price_eur: part.price,
+                quantity: part.quantity
+            }));
+            
             const repairData = {
                 customer_id: document.getElementById('repair-customer').value,
                 device_type: document.getElementById('repair-device-type').value,
@@ -3073,6 +3081,7 @@
                 distance_category: document.getElementById('repair-distance-category').value,
                 cost_estimate: parseFloat(document.getElementById('repair-cost-estimate').value) || null,
                 assigned_technician_id: document.getElementById('repair-technician').value || null,
+                spare_parts: sparePartsArray,
                 images: uploadedFiles
             };
 
