@@ -991,7 +991,7 @@ async def create_repair_request(
     if repair_data.repair_date:
         try:
             repair_dict["repair_date"] = datetime.fromisoformat(repair_data.repair_date.replace('Z', '+00:00'))
-        except:
+        except (ValueError, AttributeError):
             repair_dict["repair_date"] = datetime.now(timezone.utc)
     else:
         repair_dict["repair_date"] = datetime.now(timezone.utc)
