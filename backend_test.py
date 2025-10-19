@@ -1830,6 +1830,349 @@ class TechnicalServiceAPITester:
         
         return validation_success
 
+    def test_spare_parts_endpoint(self):
+        """Test GET /api/spare-parts endpoint"""
+        print(f"\n🔧 Testing Spare Parts Endpoint for: {self.current_user.get('role')}")
+        
+        success, spare_parts = self.run_test(
+            "Get spare parts list",
+            "GET",
+            "spare-parts",
+            200
+        )
+        
+        if not success:
+            return False
+        
+        # Verify we have 57 spare parts as expected
+        if len(spare_parts) != 57:
+            print(f"   ❌ Expected 57 spare parts, got {len(spare_parts)}")
+            return False
+        
+        print(f"   ✅ Retrieved {len(spare_parts)} spare parts")
+        
+        # Verify spare parts structure
+        if spare_parts:
+            first_part = spare_parts[0]
+            required_fields = ['id', 'name', 'price_eur']
+            missing_fields = [field for field in required_fields if field not in first_part]
+            
+            if missing_fields:
+                print(f"   ❌ Spare part missing fields: {missing_fields}")
+                return False
+            
+            print(f"   ✅ Spare parts have correct structure")
+            
+            # Check specific parts mentioned in review request
+            tk_k_15cm = next((part for part in spare_parts if part['id'] == 'sp001'), None)
+            dijital_soket = next((part for part in spare_parts if part['id'] == 'sp012'), None)
+            
+            if tk_k_15cm and tk_k_15cm['price_eur'] == 75.0:
+                print(f"   ✅ Found Termokupl K 15CM with correct price: {tk_k_15cm['price_eur']}€")
+            else:
+                print(f"   ❌ Termokupl K 15CM not found or incorrect price")
+                return False
+                
+            if dijital_soket and dijital_soket['price_eur'] == 30.0:
+                print(f"   ✅ Found Dijital Soket with correct price: {dijital_soket['price_eur']}€")
+            else:
+                print(f"   ❌ Dijital Soket not found or incorrect price")
+                return False
+        
+        return True
+
+    def test_repair_creation_with_spare_parts(self):
+        """Test POST /api/repairs with spare parts cost calculation"""
+        print(f"\n🔧 Testing Repair Creation with Spare Parts for: {self.current_user.get('role')}")
+        
+        # Create a test customer first
+        customer_data = {
+            "full_name": "Spare Parts Test Customer",
+            "email": "spareparts@test.com",
+            "phone": "05551234567",
+            "address": "Spare Parts Test Address"
+        }
+        
+        customer_success, customer = self.run_test(
+            "Create customer for spare parts test",
+            "POST",
+            "customers",
+            200,
+            data=customer_data
+        )
+        
+        if not customer_success:
+            return False
+        
+        customer_id = customer.get('id')
+        
+        # Test repair with spare parts
+        repair_data = {
+            "customer_id": customer_id,
+            "device_type": "Seramik Fırını",
+            "brand": "Refsan",
+            "model": "RS300",
+            "description": "Termokupl ve dijital soket değişimi",
+            "priority": "yuksek",
+            "cost_estimate": 100.0,
+            "distance_category": "ankara_ici",
+            "spare_parts": [
+                {
+                    "part_id": "sp001",
+                    "part_name": "RD16 - RD27 - RD50 / TOP 16 Termokupl K Tipi (0-1200°C) 15CM (60 + 100)",
+                    "price_eur": 75.0,
+                    "quantity": 2
+                },
+                {
+                    "part_id": "sp012", 
+                    "part_name": "Dijital Soket",
+                    "price_eur": 30.0,
+                    "quantity": 1
+                }
+            ]
+        }
+        
+        repair_success, repair = self.run_test(
+            "Create repair with spare parts",
+            "POST",
+            "repairs",
+            200,
+            data=repair_data
+        )
+        
+        if not repair_success:
+            return False
+        
+        # Verify cost calculations
+        expected_spare_parts_total = (75.0 * 2) + (30.0 * 1)  # 150 + 30 = 180
+        expected_subtotal = 100.0 + 100.0 + 180.0  # cost_estimate + service_fee + spare_parts_total = 380
+        expected_vat = expected_subtotal * 0.20  # 76
+        expected_total_with_vat = expected_subtotal + expected_vat  # 456
+        
+        actual_spare_parts_total = repair.get('spare_parts_total', 0)
+        actual_vat_amount = repair.get('vat_amount', 0)
+        actual_total_with_vat = repair.get('total_with_vat', 0)
+        
+        print(f"   📊 Expected spare parts total: {expected_spare_parts_total}€")
+        print(f"   📊 Actual spare parts total: {actual_spare_parts_total}€")
+        print(f"   📊 Expected total with VAT: {expected_total_with_vat}€")
+        print(f"   📊 Actual total with VAT: {actual_total_with_vat}€")
+        
+        # Check spare parts total calculation
+        if abs(actual_spare_parts_total - expected_spare_parts_total) < 0.01:
+            print(f"   ✅ Spare parts total calculated correctly")
+        else:
+            print(f"   ❌ Spare parts total calculation error")
+            return False
+        
+        # Check total with VAT calculation
+        if abs(actual_total_with_vat - expected_total_with_vat) < 0.01:
+            print(f"   ✅ Total with VAT calculated correctly")
+        else:
+            print(f"   ❌ Total with VAT calculation error")
+            return False
+        
+        # Verify spare parts array is stored
+        stored_spare_parts = repair.get('spare_parts', [])
+        if len(stored_spare_parts) == 2:
+            print(f"   ✅ Spare parts array stored correctly ({len(stored_spare_parts)} parts)")
+        else:
+            print(f"   ❌ Spare parts array not stored correctly")
+            return False
+        
+        return True
+
+    def test_repair_creation_without_spare_parts(self):
+        """Test POST /api/repairs without spare parts"""
+        print(f"\n🔧 Testing Repair Creation without Spare Parts for: {self.current_user.get('role')}")
+        
+        # Create a test customer first
+        customer_data = {
+            "full_name": "No Spare Parts Test Customer",
+            "email": "nospareparts@test.com", 
+            "phone": "05551234567",
+            "address": "No Spare Parts Test Address"
+        }
+        
+        customer_success, customer = self.run_test(
+            "Create customer for no spare parts test",
+            "POST",
+            "customers",
+            200,
+            data=customer_data
+        )
+        
+        if not customer_success:
+            return False
+        
+        customer_id = customer.get('id')
+        
+        # Test repair without spare parts
+        repair_data = {
+            "customer_id": customer_id,
+            "device_type": "Seramik Presi",
+            "brand": "Refsan",
+            "model": "RP100",
+            "description": "Genel bakım ve temizlik",
+            "priority": "orta",
+            "cost_estimate": 200.0,
+            "distance_category": "ankara_ici",
+            "spare_parts": []  # Empty spare parts array
+        }
+        
+        repair_success, repair = self.run_test(
+            "Create repair without spare parts",
+            "POST",
+            "repairs",
+            200,
+            data=repair_data
+        )
+        
+        if not repair_success:
+            return False
+        
+        # Verify cost calculations without spare parts
+        expected_spare_parts_total = 0.0
+        expected_subtotal = 200.0 + 100.0 + 0.0  # cost_estimate + service_fee + spare_parts_total = 300
+        expected_vat = expected_subtotal * 0.20  # 60
+        expected_total_with_vat = expected_subtotal + expected_vat  # 360
+        
+        actual_spare_parts_total = repair.get('spare_parts_total', 0)
+        actual_total_with_vat = repair.get('total_with_vat', 0)
+        
+        print(f"   📊 Expected spare parts total: {expected_spare_parts_total}€")
+        print(f"   📊 Actual spare parts total: {actual_spare_parts_total}€")
+        print(f"   📊 Expected total with VAT: {expected_total_with_vat}€")
+        print(f"   📊 Actual total with VAT: {actual_total_with_vat}€")
+        
+        # Check spare parts total is 0
+        if actual_spare_parts_total == 0.0:
+            print(f"   ✅ Spare parts total is 0 as expected")
+        else:
+            print(f"   ❌ Spare parts total should be 0")
+            return False
+        
+        # Check total calculation without spare parts
+        if abs(actual_total_with_vat - expected_total_with_vat) < 0.01:
+            print(f"   ✅ Total with VAT calculated correctly without spare parts")
+        else:
+            print(f"   ❌ Total with VAT calculation error without spare parts")
+            return False
+        
+        # Verify spare parts array is empty
+        stored_spare_parts = repair.get('spare_parts', [])
+        if len(stored_spare_parts) == 0:
+            print(f"   ✅ Spare parts array is empty as expected")
+        else:
+            print(f"   ❌ Spare parts array should be empty")
+            return False
+        
+        return True
+
+    def test_spare_parts_cost_calculation_accuracy(self):
+        """Test specific cost calculation scenario from review request"""
+        print(f"\n🧮 Testing Spare Parts Cost Calculation Accuracy for: {self.current_user.get('role')}")
+        
+        # Create a test customer first
+        customer_data = {
+            "full_name": "Cost Calculation Test Customer",
+            "email": "costcalc@test.com",
+            "phone": "05551234567"
+        }
+        
+        customer_success, customer = self.run_test(
+            "Create customer for cost calculation test",
+            "POST",
+            "customers",
+            200,
+            data=customer_data
+        )
+        
+        if not customer_success:
+            return False
+        
+        customer_id = customer.get('id')
+        
+        # Test with specific scenario from review request:
+        # cost_estimate: 100€, distance_category: "ankara_ici" (service_fee: 100€)
+        # spare_parts: [{part_id: "sp001", quantity: 2}] (2 * 75€ = 150€)
+        # Expected: subtotal 350€, vat 70€, total 420€
+        repair_data = {
+            "customer_id": customer_id,
+            "device_type": "Test Fırın",
+            "brand": "Refsan",
+            "model": "Test Model",
+            "description": "Cost calculation accuracy test",
+            "priority": "yuksek",
+            "cost_estimate": 100.0,
+            "distance_category": "ankara_ici",
+            "spare_parts": [
+                {
+                    "part_id": "sp001",
+                    "part_name": "RD16 - RD27 - RD50 / TOP 16 Termokupl K Tipi (0-1200°C) 15CM (60 + 100)",
+                    "price_eur": 75.0,
+                    "quantity": 2
+                }
+            ]
+        }
+        
+        repair_success, repair = self.run_test(
+            "Create repair for cost calculation accuracy test",
+            "POST",
+            "repairs",
+            200,
+            data=repair_data
+        )
+        
+        if not repair_success:
+            return False
+        
+        # Expected calculations from review request
+        expected_spare_parts_total = 150.0  # 2 * 75€
+        expected_subtotal = 350.0  # 100 + 100 + 150
+        expected_vat = 70.0  # 350 * 0.20
+        expected_total_with_vat = 420.0  # 350 + 70
+        
+        actual_spare_parts_total = repair.get('spare_parts_total', 0)
+        actual_vat_amount = repair.get('vat_amount', 0)
+        actual_total_with_vat = repair.get('total_with_vat', 0)
+        
+        print(f"   📊 Test Scenario from Review Request:")
+        print(f"   📊 Cost Estimate: 100€")
+        print(f"   📊 Service Fee (ankara_ici): 100€")
+        print(f"   📊 Spare Parts (2x Termokupl): 150€")
+        print(f"   📊 Expected Subtotal: 350€")
+        print(f"   📊 Expected VAT (20%): 70€")
+        print(f"   📊 Expected Total: 420€")
+        print(f"")
+        print(f"   📊 Actual Results:")
+        print(f"   📊 Spare Parts Total: {actual_spare_parts_total}€")
+        print(f"   📊 VAT Amount: {actual_vat_amount}€")
+        print(f"   📊 Total with VAT: {actual_total_with_vat}€")
+        
+        # Verify all calculations match exactly
+        calculations_correct = True
+        
+        if abs(actual_spare_parts_total - expected_spare_parts_total) < 0.01:
+            print(f"   ✅ Spare parts total: CORRECT")
+        else:
+            print(f"   ❌ Spare parts total: INCORRECT (expected {expected_spare_parts_total}, got {actual_spare_parts_total})")
+            calculations_correct = False
+        
+        if abs(actual_vat_amount - expected_vat) < 0.01:
+            print(f"   ✅ VAT amount: CORRECT")
+        else:
+            print(f"   ❌ VAT amount: INCORRECT (expected {expected_vat}, got {actual_vat_amount})")
+            calculations_correct = False
+        
+        if abs(actual_total_with_vat - expected_total_with_vat) < 0.01:
+            print(f"   ✅ Total with VAT: CORRECT")
+        else:
+            print(f"   ❌ Total with VAT: INCORRECT (expected {expected_total_with_vat}, got {actual_total_with_vat})")
+            calculations_correct = False
+        
+        return calculations_correct
+
     def test_new_backend_endpoints(self):
         """Test all newly added backend endpoints from the review request"""
         print(f"\n🆕 Testing New Backend Endpoints for: {self.current_user.get('role')}")
