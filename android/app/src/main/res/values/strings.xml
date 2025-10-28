@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Refsan Servis</string>
+    <string name="title_activity_main">Refsan Servis</string>
+    <string name="package_name">com.refsan.teknikservis</string>
+    <string name="custom_url_scheme">com.refsan.teknikservis</string>
+</resources>
