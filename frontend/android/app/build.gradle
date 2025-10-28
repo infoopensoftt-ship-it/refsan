@@ -20,9 +20,9 @@ android {
     signingConfigs {
         release {
             storeFile file('refsan-release-key.keystore')
-            storePassword 'refsan2024'
-            keyAlias 'refsan-key-alias'
-            keyPassword 'refsan2024'
+            storePassword System.getenv("KEYSTORE_PASSWORD") ?: 'refsan2024'
+            keyAlias System.getenv("KEY_ALIAS") ?: 'refsan-key-alias'
+            keyPassword System.getenv("KEY_PASSWORD") ?: 'refsan2024'
         }
     }
     
